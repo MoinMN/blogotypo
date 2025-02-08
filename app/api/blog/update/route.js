@@ -61,7 +61,7 @@ export async function POST(req) {
       }
 
       // update new image url
-      blog.thumbnail_image = process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/thumbnail_images/' + uniqueFileName;
+      blog.thumbnail_image = 'thumbnail_images/' + uniqueFileName;
     }
 
     blog.title = title.trim();

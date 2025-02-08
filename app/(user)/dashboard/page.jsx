@@ -128,7 +128,7 @@ const UserDashboard = () => {
                 >
                   <Link href={`/blog/${encodeURIComponent(topRated?.title?.split(' ').join('-'))}`}>
                     <Image
-                      src={topRated.thumbnail_image}
+                      src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + topRated.thumbnail_image}
                       layout="fill"
                       objectFit="cover"
                       alt={topRated.title}

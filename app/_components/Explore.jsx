@@ -46,7 +46,7 @@ const Explore = ({ popularBlogs }) => {
                   <div className="flex flex-col flex-grow items-center">
                     {/* Blog Thumbnail */}
                     <motion.img
-                      src={blog?.thumbnail_image}
+                      src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + blog?.thumbnail_image}
                       alt={blog?.title}
                       className="w-full h-40 object-cover rounded-t-2xl relative z-10"
                       variants={{

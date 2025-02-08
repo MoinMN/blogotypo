@@ -51,7 +51,7 @@ export async function POST(req) {
       title: title.replace('-', '_').trim(),
       categories: categories,
       content: content.trim(),
-      thumbnail_image: process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/thumbnail_images/' + uniqueFileName,
+      thumbnail_image: 'thumbnail_images/' + uniqueFileName,
     });
 
     if (!blog) return new Response("Failed to save blog data!", { status: 400 });

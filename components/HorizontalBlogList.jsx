@@ -67,7 +67,7 @@ const HorizontalBlogList = ({ list, header }) => {
               <div className="relative w-full h-full overflow-hidden rounded-xl shadow-md">
                 {/* Thumbnail image */}
                 <Image
-                  src={abc.thumbnail_image}
+                  src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + abc.thumbnail_image}
                   fill
                   alt={abc.title}
                   className="absolute inset-0 opacity-80 group-hover:opacity-65 transition-all duration-300 ease-in-out group-hover:scale-110"

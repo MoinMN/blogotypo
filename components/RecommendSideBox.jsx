@@ -44,7 +44,7 @@ const RecommendSideBox = ({ header, blogs }) => {
               }}
             >
               <img
-                src={blog.thumbnail_image}
+                src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + blog.thumbnail_image}
                 alt="Thumbnail Image"
                 className="h-full w-full rounded-md shadow-md col-span-1"
               />
