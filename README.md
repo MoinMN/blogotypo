@@ -1,10 +1,10 @@
 # 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
-![Blogotypo](https://yourdeployedurl.com/assets/images/favicon.jpg)
+![Blogotypo](https://blogotypo.vercel.app/assets/images/favicon.jpg)
 
 ## 🌍 Live Demo
 
-🔗 **[Visit Blogotypo](https://yourdeployedurl.com)** (Deployed on Vercel)
+🔗 **[Visit Blogotypo](https://blogotypo.vercel.app)** (Deployed on Vercel)
 
 ---
 
@@ -13,6 +13,7 @@
 **Blogotypo** is a **feature-rich, secure, and user-friendly** blogging platform built with **Next.js**. It allows users to **create, publish, and manage blogs**, with advanced features like search, filtering, sharing, and verified user authentication.
 
 ### ✅ Features:
+
 - **Anyone can create & publish blogs**
 - **NextAuth with Google & GitHub authentication**
 - **Secure password encryption using bcrypt**
@@ -31,35 +32,39 @@
 ## 🔥 Tech Stack
 
 | **Technology**                  | **Usage**                          |
-| -------------------------------- | ---------------------------------- |
-| **Next.js**                      | Frontend & Backend                 |
-| **MongoDB + Mongoose**           | Database for storing blogs & users |
-| **NextAuth.js**                  | Authentication (Google & GitHub)   |
-| **Jodit Editor**                 | Rich text editor for writing blogs |
-| **bcrypt**                        | Secure password hashing            |
-| **Nodemailer**                    | Email notifications                |
-| **Chart.js + React Chart.js 2**   | Graphical blog statistics          |
-| **Framer Motion**                 | Smooth animations                  |
-| **Bootstrap & Tailwind CSS**      | Responsive UI design               |
-| **Vercel**                        | Hosting & Deployment               |
+| ------------------------------- | ---------------------------------- |
+| **Next.js**                     | Frontend & Backend                 |
+| **MongoDB + Mongoose**          | Database for storing blogs & users |
+| **NextAuth.js**                 | Authentication (Google & GitHub)   |
+| **Jodit Editor**                | Rich text editor for writing blogs |
+| **bcrypt**                      | Secure password hashing            |
+| **Nodemailer**                  | Email notifications                |
+| **Chart.js + React Chart.js 2** | Graphical blog statistics          |
+| **Framer Motion**               | Smooth animations                  |
+| **Bootstrap & Tailwind CSS**    | Responsive UI design               |
+| **Vercel**                      | Hosting & Deployment               |
 
 ---
 
 ## 🚀 Installation & Setup
 
 ### **1️⃣ Clone the Repository**
+
 ```bash
 git clone https://github.com/MoinMN/blogotypo.git
 cd blogotypo
 ```
 
 ### **2️⃣ Install Dependencies**
+
 ```bash
 npm install
 ```
 
 ### **3️⃣ Set Up Environment Variables**
+
 Create a `.env` file and add the following:
+
 ```env
 NEXT_PUBLIC_NEXTAUTH_URL=your-vercel-url
 MONGODB_URI=your-mongodb-uri
@@ -74,9 +79,11 @@ SMTP_PASS=your_smtp_password
 ```
 
 ### **4️⃣ Run the Development Server**
+
 ```bash
 npm run dev
 ```
+
 Now, open **http://localhost:3000** in your browser.
 
 ---
@@ -84,6 +91,7 @@ Now, open **http://localhost:3000** in your browser.
 ## 🛠 Features & Functionalities
 
 ### 📝 **Blog System**
+
 - **Create, Read, Update, Delete (CRUD) Blogs**
 - **Rich Text Editing with Jodit**
 - **Blog View Count Tracking**
@@ -92,20 +100,24 @@ Now, open **http://localhost:3000** in your browser.
 - **Search & Advanced Filtering**
 
 ### 🔒 **User Authentication**
+
 - **Login with Google & GitHub (NextAuth.js)**
 - **Secure Password Encryption (bcrypt)**
 - **Verified Users System**
 - **Users Can Request Account Deletion**
 
 ### 🛠 **Admin Features**
+
 - **Manage Users (Delete & Set Verified Status)**
 - **No Data Update Permissions for Admins**
 
 ### 📊 **Analytics & Reporting**
+
 - **Graphical Stats on Blog Performance (Chart.js)**
 - **Sort & Filter Blogs Easily**
 
 ### 📜 **Legal & Privacy Features**
+
 - **Terms & Conditions, Privacy Policy, and License Pages**
 - **GDPR-Compliant User Data Handling**
 
@@ -122,6 +134,7 @@ Now, open **http://localhost:3000** in your browser.
 ## 🚀 Deployment
 
 Deployed on **Vercel**. To deploy your own version:
+
 ```bash
 vercel deploy
 ```
@@ -142,17 +155,16 @@ Contributions are welcome!
 
 ## 📜 License
 
-**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://yourblogotypourl.com/view/docs/license) for details.
+**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://blogotypo.vercel.app/view/docs/license) for details.
 
 ---
 
 ## 🛠 Need Help?
 
 📧 **Contact:** [crichit45@gmail.com](mailto:crichit45@gmail.com)  
-🌐 **Website:** [https://yourblogotypourl.com](https://yourblogotypourl.com)  
-📣 **Follow us on Socials:** [Twitter]((https://x.com/MoinMN5)) | [LinkedIn](https://www.linkedin.com/in/moinnaik/) | [Instagram](https://instagram.com/im_moin45)
+🌐 **Website:** [https://blogotypo.vercel.app](https://blogotypo.vercel.app)  
+📣 **Follow us on Socials:** [Twitter](https://x.com/MoinMN5) | [LinkedIn](https://www.linkedin.com/in/moinnaik/) | [Instagram](https://instagram.com/im_moin45)
 
 ---
 
 ⭐ **Star this repo if you found it useful!** ⭐
-
