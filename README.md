@@ -1,4 +1,4 @@
-![Screenshot 2025-02-08 225527](https://github.com/user-attachments/assets/655e820c-dd54-4827-b155-17be59395ebb)# 🚀 Blogotypo - A Modern Next.js Blogging Platform
+# 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
 <img src="https://blogotypo.vercel.app/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
 
