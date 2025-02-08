@@ -89,7 +89,7 @@ const UserDashboard = () => {
                   <Link href={`/blog/${encodeURIComponent(trend?.title?.split(' ').join('-'))}`}>
                     <div className="relative w-full h-[300px] md:h-[500px]">
                       <Image
-                        src={trend.thumbnail_image}
+                        src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + trend.thumbnail_image}
                         layout="fill"
                         objectFit="cover"
                         alt={trend.title}

@@ -160,8 +160,7 @@ const AdminContacts = () => {
           />
           <button
             type="submit"
-            className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isSearching ? 'cursor-not-allowed bg-theme_2' : 'bg-theme_4 hover:bg-theme_5'}
-              `}
+            className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${isSearching ? 'cursor-not-allowed bg-purple-300' : 'bg-purple-600 hover:bg-purple-900'}`}
             disabled={isSearching}
           >
             <i className="fa-solid fa-magnifying-glass text-lg" />

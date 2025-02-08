@@ -1,6 +1,6 @@
 # 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
-![Blogotypo](https://blogotypo.vercel.app/assets/images/favicon.jpg)
+<img src="https://blogotypo.vercel.app/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
 
 ## 🌍 Live Demo
 

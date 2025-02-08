@@ -10,6 +10,7 @@ export async function GET(req) {
 
     const search = searchParams.get("text") || "";
     const searchFrom = searchParams.get("from") || "all";
+    const blogLimit = searchParams.get("blogLimit");
 
     let query = {};
 
@@ -47,7 +48,13 @@ export async function GET(req) {
       }
     }
 
-    let blogs = await Blog.find(query).populate("creator", "name");
+    let blogsQuery = Blog.find(query).populate("creator", "name");
+
+    if (blogLimit && !isNaN(blogLimit)) {
+      blogsQuery = blogsQuery.limit(Number(blogLimit));
+    }
+
+    const blogs = await blogsQuery;
 
     if (blogs.length === 0) {
       return NextResponse.json({ data: [], msg: "No Blog Found!" }, { status: 404 });

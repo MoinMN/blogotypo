@@ -71,7 +71,7 @@ const SearchBlogs = () => {
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   // search blogs
-  const handleSearchBlogs = async (e) => {
+  const handleSearchBlogs = async (e, blogLimit = "no-limit") => { // if not set then default
     setIsSearching(true);     // set true isSearching
     setShowSkeleton(true);   // set skeleton true
 
@@ -79,7 +79,7 @@ const SearchBlogs = () => {
     if (e) e.preventDefault();
 
     try {
-      const response = await fetch(`/api/blog/search?text=${search.trim()}&from=${searchFrom}`, { method: 'GET' });
+      const response = await fetch(`/api/blog/search?text=${search.trim()}&from=${searchFrom}&blogLimit=${blogLimit}`, { method: 'GET' });
       const data = await response.json();
 
       const fetchedBlogs = data?.data || [];
@@ -181,7 +181,7 @@ const SearchBlogs = () => {
 
   useEffect(() => {
     // show initial blogs
-    handleSearchBlogs();
+    handleSearchBlogs(null, 15);
   }, []);
 
   return (
