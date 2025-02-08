@@ -31,7 +31,7 @@ const MyBlogs = () => {
 
   // for pagination
   const [paginatedBlogs, setPaginatedBlogs] = useState([]);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

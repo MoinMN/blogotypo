@@ -1,8 +1,7 @@
 import Blog from '@models/blog';
 import User from '@models/user';
 import connectMongoDB from '@utils/database';
-import { unlink } from 'fs/promises';
-import { writeFile } from 'fs/promises';
+import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
 
 export async function POST(req) {
@@ -39,29 +38,23 @@ export async function POST(req) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // Generate a unique filename using timestamp
-      const timestamp = Date.now();
-      const fileExt = file.name.split('.').pop(); // Extract file extension
-      const uniqueFileName = `thumbnail_${timestamp}.${fileExt}`;
+      // Upload new image to Cloudinary
+      const uploadResponse = await cloudinary.v2.uploader.upload(`data:image/jpeg;base64,${buffer.toString('base64')}`, {
+        folder: 'blog_thumbnails',
+      });
 
-      // Define the path to save the file
-      const path = `public/thumbnail_images/${uniqueFileName}`;
-      await writeFile(path, buffer);
-
-      // Extract the thumbnail image filename for delete prev image
+      // Delete the previous image from Cloudinary (if exists)
       if (blog.thumbnail_image) {
-        const filename = blog.thumbnail_image.split("/").pop(); // Extract filename from URL
-        const filePath = `public/thumbnail_images/${filename}`;
-
+        const publicId = blog.thumbnail_image.split('/').pop().split('.')[0]; // Extract public ID
         try {
-          await unlink(filePath); // Delete the file
+          await cloudinary.v2.uploader.destroy(`blog_thumbnails/${publicId}`);
         } catch (err) {
-          console.error("Error deleting file:", err); // Handle file not found error
+          console.error("Error deleting Cloudinary image:", err);
         }
       }
 
-      // update new image url
-      blog.thumbnail_image = 'thumbnail_images/' + uniqueFileName;
+      // Update new image URL
+      blog.thumbnail_image = uploadResponse.secure_url;
     }
 
     blog.title = title.trim();

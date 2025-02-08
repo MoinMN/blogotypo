@@ -2,7 +2,7 @@
 import Blog from '@models/blog';
 import User from '@models/user';
 import connectMongoDB from '@utils/database';
-import { writeFile } from 'fs/promises';
+import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
 
 export async function POST(req) {
@@ -27,18 +27,20 @@ export async function POST(req) {
       return new Response("Unauthorized", { status: 401 })
     }
 
-    // upload thumbnail image
+    // Convert image file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate a unique filename using timestamp
-    const timestamp = Date.now();
-    const fileExt = file.name.split('.').pop(); // Extract file extension
-    const uniqueFileName = `thumbnail_${timestamp}.${fileExt}`;
+    // Upload Image to Cloudinary
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
+    const cloudinaryResponse = await cloudinary.v2.uploader.upload(base64Image, {
+      folder: "blog_thumbnails", // Cloudinary folder
+      resource_type: "image"
+    });
 
-    // Define the path to save the file
-    const path = `public/thumbnail_images/${uniqueFileName}`;
-    await writeFile(path, buffer);
+    if (!cloudinaryResponse.secure_url) {
+      return new Response("Failed to upload image!", { status: 500 });
+    }
 
     const user = await User.findOne({ email: session.user.email });
     if (!user) return new Response("User not found!", { status: 401 })
@@ -51,7 +53,7 @@ export async function POST(req) {
       title: title.replace('-', '_').trim(),
       categories: categories,
       content: content.trim(),
-      thumbnail_image: 'thumbnail_images/' + uniqueFileName,
+      thumbnail_image: cloudinaryResponse.secure_url,
     });
 
     if (!blog) return new Response("Failed to save blog data!", { status: 400 });

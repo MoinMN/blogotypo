@@ -125,7 +125,7 @@ const ViewPublicBlog = ({ params }) => {
                 <div className="lg:col-span-2 flex flex-col gap-4">
                   {/* Thumbnail Images  */}
                   <img
-                    src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + blogData?.thumbnail_image}
+                    src={blogData?.thumbnail_image}
                     alt="Thumbnail Image"
                     className="w-full h-80 md:h-[30rem] rounded-md shadow-md"
                   />

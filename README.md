@@ -37,6 +37,7 @@
 | **MongoDB + Mongoose**          | Database for storing blogs & users |
 | **NextAuth.js**                 | Authentication (Google & GitHub)   |
 | **Jodit Editor**                | Rich text editor for writing blogs |
+| **Cloudinary**                  | Upload & store images              |
 | **bcrypt**                      | Secure password hashing            |
 | **Nodemailer**                  | Email notifications                |
 | **Chart.js + React Chart.js 2** | Graphical blog statistics          |
@@ -76,6 +77,9 @@ GITHUB_CLIENT_SECRET=your-github-client-secret
 SMTP_HOST=your_smtp_host
 SMTP_USER=your_smtp_email_id
 SMTP_PASS=your_smtp_password
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
 ### **4️⃣ Run the Development Server**

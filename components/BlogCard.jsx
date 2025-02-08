@@ -96,7 +96,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
           {/* Thumbnail Image */}
           <div className="w-full h-52 rounded-lg shadow-md sm:col-span-2 lg:col-span-1">
             <img
-              src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/' + blog?.thumbnail_image}
+              src={blog?.thumbnail_image}
               alt="Thumbnail Image"
               className="w-full h-full object-cover rounded-lg"
             />

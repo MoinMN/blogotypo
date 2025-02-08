@@ -1,7 +1,6 @@
 import User from '@models/user';
 import connectMongoDB from '@utils/database';
-import { unlink } from 'fs/promises';
-import { writeFile } from 'fs/promises';
+import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
 import path from 'path';
 
@@ -30,29 +29,26 @@ export async function POST(req) {
     // Default profile image
     const defaultProfileImage = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/profiles/default/default_avatar.jpg";
 
-    // If user has an existing profile image, and it's not the default one, unlink it
+    // If the user has an existing profile image (not the default one), delete it from Cloudinary
     if (user.image && user.image !== defaultProfileImage) {
-      const previousImagePath = path.join("public", user.image.replace(process.env.NEXT_PUBLIC_NEXTAUTH_URL, ""));
       try {
-        await unlink(previousImagePath);
+        const publicId = user.image.split('/').pop().split('.')[0]; // Extract public ID
+        await cloudinary.v2.uploader.destroy(`profile_pictures/${publicId}`);
       } catch (unlinkError) {
-        console.error("Error deleting old profile image:", unlinkError);
+        console.error("Error deleting old Cloudinary profile image:", unlinkError);
       }
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate a unique filename using timestamp
-    const timestamp = Date.now();
-    const fileExt = file.name.split('.').pop();       // Extract file extension
-    const uniqueFileName = `profile_${timestamp}.${fileExt}`;
+    // Upload new profile image to Cloudinary
+    const uploadResponse = await cloudinary.v2.uploader.upload(`data:image/jpeg;base64,${buffer.toString('base64')}`, {
+      folder: 'profile_pictures',
+    });
 
-    // Define the path to save the file
-    const profilePath = `public/profiles/${uniqueFileName}`;
-    await writeFile(profilePath, buffer);
-
-    user.image = process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/profiles/" + uniqueFileName;
+    // Update user's profile image URL
+    user.image = uploadResponse.secure_url;
 
     await user.save();
 
