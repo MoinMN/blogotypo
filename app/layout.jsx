@@ -1,5 +1,6 @@
 import "@styles/globals.css";
 import AuthProvider from "@context/AuthProvider";
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
   title: "BlogoTypo",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
 
         <AuthProvider>
           {children}
+          <Analytics />
         </AuthProvider>
 
         <script src="https://kit.fontawesome.com/93f8c5dee5.js" crossOrigin="anonymous"></script>
