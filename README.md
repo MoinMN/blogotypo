@@ -142,7 +142,7 @@ Contributions are welcome!
 
 ## 📜 License
 
-**Blogotypo** is licensed under the **MIT License**. See the full [LICENSE](https://yourblogotypourl.com/license) for details.
+**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://yourblogotypourl.com/view/docs/license) for details.
 
 ---
 
