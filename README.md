@@ -1,4 +1,4 @@
-# 🚀 Blogotypo - A Modern Next.js Blogging Platform
+![Screenshot 2025-02-08 225527](https://github.com/user-attachments/assets/655e820c-dd54-4827-b155-17be59395ebb)# 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
 ![Blogotypo](https://blogotypo.vercel.app/assets/images/favicon.jpg)
 
@@ -127,7 +127,7 @@ Now, open **http://localhost:3000** in your browser.
 
 | **Homepage**                                         | **Blog Editor**                                          | **Admin Dashboard**                                        |
 | ---------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
-| ![Home](https://your-url.com/assets/images/home.png) | ![Editor](https://your-url.com/assets/images/editor.png) | ![Dashboard](https://your-url.com/assets/images/admin.png) |
+| ![Home Page](https://github.com/user-attachments/assets/1b63331e-d2ec-40cf-bac0-3d6e1d59247f) | ![Blog Editor](https://github.com/user-attachments/assets/2df6ab64-4078-4593-99c4-8bde89ee1027) | ![Admin Dashboard](https://github.com/user-attachments/assets/27de586d-ee37-477d-b7a9-8bee3832e432) |
 
 ---
 
