@@ -122,7 +122,7 @@ Now, open **http://localhost:3000** in your browser.
 
 ### 📜 **Legal & Privacy Features**
 
-- **Terms & Conditions, Privacy Policy, and License Pages**
+- **[Terms & Conditions](https://blogotypo.vercel.app/view/docs/term-and-conditions), [Privacy Policy](https://blogotypo.vercel.app/view/docs/privacy-policy), and [License](https://blogotypo.vercel.app/view/docs/license) Pages**
 - **GDPR-Compliant User Data Handling**
 
 ---
