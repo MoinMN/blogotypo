@@ -1,7 +1,7 @@
 import Blog from "@models/blog";
 import User from "@models/user";
+import cloudinary from "@utils/cloudinary";
 import connectMongoDB from "@utils/database";
-import { unlink } from "fs/promises";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -31,19 +31,18 @@ export async function DELETE(req) {
 
     if (!blog) return NextResponse.json({ msg: 'Blog not found!' }, { status: 404 });
 
-    // Extract the thumbnail image filename
+    // Delete thumbnail image from Cloudinary
     if (blog.thumbnail_image) {
-      const filename = blog.thumbnail_image.split("/").pop(); // Extract filename from URL
-      const filePath = `public/thumbnail_images/${filename}`;
-
       try {
-        await unlink(filePath); // Delete the file
-      } catch (err) {
-        console.error("Error deleting file:", err); // Handle file not found error
+        // Extract public_id from Cloudinary image URL
+        const publicId = blog.thumbnail_image.split("/").pop().split(".")[0];
+        await cloudinary.v2.uploader.destroy(publicId);
+      } catch (error) {
+        console.error("Error deleting blog thumbnail from Cloudinary:", error);
       }
     }
 
-    // Proceed with deletion
+    // Proceed with blog deletion
     await Blog.findByIdAndDelete(blogId);
 
     return NextResponse.json({ msg: 'Blog Deleted Successfully!' }, { status: 200 });
