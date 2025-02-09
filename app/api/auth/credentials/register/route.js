@@ -2,7 +2,7 @@ import User from "@models/user";
 import OTPModel from "@models/OTP";
 import connectMongoDB from "@utils/database";
 import bcrypt from "bcrypt";
-import { welcomeNewUserMail } from "@app/api/auth/send-mail/new-user/route";
+import { welcomeNewUserMail } from "@app/api/auth/send-mail/welcomeNewUserMail";
 import { NextResponse } from "@node_modules/next/server";
 
 export async function POST(req) {

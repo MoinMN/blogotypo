@@ -1,4 +1,4 @@
-import { sendOTPMail } from "@app/api/auth/send-mail/otp-verification/route";
+import { sendOTPMail } from "@app/api/auth/send-mail/sendOTPMail";
 import OTPModel from "@models/OTP";
 import { NextResponse } from "@node_modules/next/server";
 import connectMongoDB from "@utils/database";

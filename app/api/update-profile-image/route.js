@@ -2,7 +2,6 @@ import User from '@models/user';
 import connectMongoDB from '@utils/database';
 import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
-import path from 'path';
 
 export async function POST(req) {
   try {
