@@ -45,7 +45,7 @@ export async function POST(req) {
 
     if (user) {
       // Send welcome email
-      welcomeNewUserMail(user.email, user.name);
+      await welcomeNewUserMail(user.email, user.name);
 
       // Delete OTP after successful registration
       await OTPModel.deleteOne({ email });

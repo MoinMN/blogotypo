@@ -20,7 +20,7 @@ export async function POST(req) {
     );
 
     // Send OTP to email
-    sendOTPMail(email, otp);
+    await sendOTPMail(email, otp);
 
     return NextResponse.json({ msg: "OTP sent successfully!" }, { status: 200 });
   } catch (error) {
