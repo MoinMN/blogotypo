@@ -72,8 +72,14 @@ const PublishBlog = () => {
 
   const handleSubmitBlog = async (e) => {
     e.preventDefault();
-    if (!blogData?.title || !blogData?.content || blogData?.categories.length === 0 || !blogData?.thumbnail_image instanceof File) {
+    if (!blogData?.title || !blogData?.content || !blogData?.thumbnail_image instanceof File) {
       setAlertData((prev) => ({ ...prev, header: "All Fields Required!", variant: 'danger' }));
+      setShowAlert(true);
+      return;
+    }
+
+    if (blogData?.categories.length === 0) {
+      setAlertData((prev) => ({ ...prev, header: 'Ensure you press "Enter" after each category!', variant: 'warning' }));
       setShowAlert(true);
       return;
     }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import Spinner from 'react-bootstrap/Spinner';
@@ -23,19 +22,13 @@ const Register = () => {
     { name: 'confirm_password', type: 'password', placeholder: 'John_Password' },
   ];
 
-  const router = useRouter();
-
   // store user data
-  const [userData, setUserData] = useState({
-    role: 'user',
-    otp: Math.floor(100000 + Math.random() * 900000),
-  });
+  const [userData, setUserData] = useState({});
   // input error
   const [error, setError] = useState({});
   // detect otp verification
   const [startOtpVerification, setStartOtpVerification] = useState(false);
-  // email is verified
-  const [isVerified, setIsVerified] = useState(false);
+
   // alert
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({
@@ -79,22 +72,20 @@ const Register = () => {
     if (!startOtpVerification) {
       // otp verify route
       try {
-        const response = await fetch('/api/send-mail/otp-verification', {
+        const response = await fetch('/api/auth/otp/generate', {
           method: 'POST',
           'Content-Type': 'application/json',
-          body: JSON.stringify({ to: userData?.email, otp: userData?.otp })
+          body: JSON.stringify({ email: userData?.email })
         });
+        const data = await response.json();
 
-        // otp send alert
-        response.text().then((text) => {
-          if (response.ok) {
-            setAlertData((prev) => ({ ...prev, header: text, variant: 'success' }));
-            // starting otp verification 
-            setStartOtpVerification(true);
-          } else {
-            setAlertData((prev) => ({ ...prev, header: text, variant: 'danger' }));
-          }
-        });
+        if (response.ok) {
+          setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'success' }));
+          // starting otp verification 
+          setStartOtpVerification(true);
+        } else {
+          setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'danger' }));
+        }
       } catch (error) {
         setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: 'danger' }));
         console.log(error);
@@ -104,42 +95,6 @@ const Register = () => {
       }
     }
   }
-
-  useEffect(() => {
-    const createUser = async () => {
-      if (isVerified) {
-        // user register route
-        try {
-          const response = await fetch('/api/auth/credentials/register', {
-            method: 'POST',
-            'Content-Type': 'application/json',
-            body: JSON.stringify(userData),
-          });
-
-          response.text().then(text => {
-            if (response.ok) {
-              router.push('/user/login');
-            } else {
-              setAlertData((prev) => ({ ...prev, header: text, variant: 'danger' }));
-              setShowAlert(true);
-              if (response.status === 400) {
-                setStartOtpVerification(false);
-              }
-            }
-          });
-        } catch (error) {
-          console.log(error);
-          setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: 'danger' }));
-          setShowAlert(true);
-        }
-      }
-    }
-    createUser();
-
-    // if isVerified changed
-  }, [isVerified]);
-
-
 
   return (
     <>
@@ -151,28 +106,27 @@ const Register = () => {
               Sign Up
             </h3>
             <div className="grid sm:grid-cols-2 gap-3 md:gap-6 md:py-4 max-md:py-2 w-full">
-              {
-                userInputs?.map((input, index) => (
-                  <div className='flex flex-col' key={index}>
-                    <label htmlFor={input.name}>
-                      {input.name.split('_').map(a => (a.charAt(0).toUpperCase() + a.slice(1))).join(' ')}:
+              {userInputs?.map((input, index) => (
+                <div className='flex flex-col' key={index}>
+                  <label htmlFor={input.name}>
+                    {input.name.split('_').map(a => (a.charAt(0).toUpperCase() + a.slice(1))).join(' ')}:
+                  </label>
+                  {error[input.name] && (
+                    <label className='text-red-700'>
+                      {error[input.name]}
                     </label>
-                    {error[input.name] && (
-                      <label className='text-red-700'>
-                        {error[input.name]}
-                      </label>
-                    )}
-                    <input
-                      autoComplete={input.name}
-                      id={input.name}
-                      type={input.type}
-                      name={input.name}
-                      onChange={handleUserDataChange}
-                      className='shadow-md bg-theme_1 outline-none p-2 rounded-md text-gray-600'
-                      placeholder={input.placeholder}
-                    />
-                  </div>
-                ))
+                  )}
+                  <input
+                    autoComplete={input.name}
+                    id={input.name}
+                    type={input.type}
+                    name={input.name}
+                    onChange={handleUserDataChange}
+                    className='shadow-md bg-theme_1 outline-none p-2 rounded-md text-gray-600'
+                    placeholder={input.placeholder}
+                  />
+                </div>
+              ))
               }
             </div>
 
@@ -237,9 +191,8 @@ const Register = () => {
         {/* otp input box */}
         {startOtpVerification
           ? <OtpInputBox
-            actualOtp={userData?.otp}
-            setIsVerified={setIsVerified}
-            email={userData?.email}
+            userData={userData}
+            setUserData={setUserData}
           />
           : ''
         }

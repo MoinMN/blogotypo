@@ -22,7 +22,7 @@ export async function GET(req) {
       .populate('creator', '_id name email')
       .select('_id title thumbnail_image categories date viewedBy reviews');
 
-    return NextResponse.json({ data: blogs }, { status: 200 });
+    return NextResponse.json({ data: blogs.reverse() }, { status: 200 });
   } catch (error) {
     console.log('Error while fetching blogs ', error);
     return NextResponse.json({ msg: 'Internal Server Error!' }, { status: 500 });

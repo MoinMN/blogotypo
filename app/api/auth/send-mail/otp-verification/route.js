@@ -1,13 +1,7 @@
 import nodemailer from 'nodemailer';
 
-export async function POST(req) {
+export async function sendOTPMail(to, otp) {
   try {
-    const { to, otp } = await req.json();
-
-    if (!to || !otp) {
-      return new Response("Receiver or OTP doesn't received!", { status: 404, });
-    }
-
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -89,10 +83,7 @@ export async function POST(req) {
 </html>
 `,
     });
-
-    return new Response('Email sent successfully!', { status: 200, });
   } catch (error) {
     console.error(error);
-    return new Response('Error sending email!', { status: 500 });
   }
 }

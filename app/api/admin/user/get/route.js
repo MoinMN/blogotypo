@@ -19,7 +19,7 @@ export async function GET(req) {
 
     const users = await User.find({ role: 'user' }).select("_id name email provider image top_creator createdAt");
 
-    return NextResponse.json({ data: users }, { status: 200 });
+    return NextResponse.json({ data: users.reverse() }, { status: 200 });
   } catch (error) {
     console.log('Error while fetching users ', error);
     return NextResponse.json({ msg: 'Internal Server Error!' }, { status: 500 });

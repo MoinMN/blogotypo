@@ -24,7 +24,7 @@ const BlogSchema = new Schema({
   },
   date: {
     type: Date,
-    default: Date.now
+    default: () => new Date(Date.now() + 5.5 * 60 * 60 * 1000) // for IST time
   },
   reviews: [{
     user: {
@@ -43,7 +43,7 @@ const BlogSchema = new Schema({
     },
     date: {
       type: Date,
-      default: Date.now,
+      default: () => new Date(Date.now() + 5.5 * 60 * 60 * 1000) // for IST time
     }
   }],
   viewedBy: [{

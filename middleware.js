@@ -17,7 +17,6 @@ const protectedPaths = [
 
 const publicApiPaths = [
   '/api/auth',
-  '/api/send-mail',
   '/api/blog/get',
   '/api/blog/recommend',
   '/api/count'

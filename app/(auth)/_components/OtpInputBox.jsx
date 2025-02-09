@@ -1,9 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import Spinner from 'react-bootstrap/Spinner';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Alert from '@components/Alert';
 
-const OtpInputBox = ({ actualOtp, setIsVerified, email }) => {
+const OtpInputBox = ({ userData, setUserData }) => {
+  const router = useRouter();
+
   // for masked email
   const [maskedEmail, setMaskedEmail] = useState("");
 
@@ -78,21 +85,37 @@ const OtpInputBox = ({ actualOtp, setIsVerified, email }) => {
 
     // collect all number in one var
     const userOtp = Number(otpInputValues?.otpInput1 + otpInputValues?.otpInput2 + otpInputValues?.otpInput3 + otpInputValues?.otpInput4 + otpInputValues?.otpInput5 + otpInputValues?.otpInput6);
+    setUserData((prev) => ({ ...prev, otp: userOtp }));
 
-    // if not matched
-    if (userOtp !== actualOtp) {
-      setAlertData((prev) => ({ ...prev, header: 'OTP Not Matched!', variant: 'danger' }))
+    try {
+      // above setUserData is not sending updated otp
+      const updatedUserData = { ...userData, otp: userOtp };
+      const response = await fetch('/api/auth/credentials/register', {
+        method: 'POST',
+        'Content-Type': 'application/json',
+        body: JSON.stringify(updatedUserData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        router.push('/user/login');
+        setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'success' }));
+      } else {
+        setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'danger' }));
+      }
+    } catch (error) {
+      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: 'danger' }));
+      console.log(error);
+    } finally {
       setShowAlert(true);
       setIsSubmitting(false);
-      return;
-    } else {
-      setIsVerified(true);    // set verified true finally
     }
   }
 
   // masked email function resturn masked email
   const handleEmailMasked = () => {
-    const [name, domain] = email.split("@");
+    const [name, domain] = userData?.email?.split("@");
     if (name.length <= 2) return `****@${domain}`;
     return `${name.slice(0, 2)}****@${domain}`;
   }
@@ -144,9 +167,15 @@ const OtpInputBox = ({ actualOtp, setIsVerified, email }) => {
 
         <button
           type='submit'
+          disabled={isSubmitting}
           className={`w-fit px-8 py-2 md:px-10 outline-none rounded-md shadow-md bg-theme_1 transition-all duration-300 ease-in-out ${isSubmitting ? 'cursor-not-allowed text-gray-500 bg-theme_1/50' : ''}`}
         >
-          {isSubmitting ? 'Submit...' : 'Submit'}
+          {isSubmitting
+            ? (<>
+              <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" /> Submitting...
+            </>)
+            : 'Submit'
+          }
         </button>
       </form>
     </>

@@ -5,7 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectMongoDB from '@utils/database';
 import User from '@models/user';
 import bcrypt from 'bcrypt';
-import { welcomeNewUserMail } from '@app/api/send-mail/new-user/route';
+import { welcomeNewUserMail } from '@app/api/auth/send-mail/new-user/route';
 
 const handler = NextAuth({
   providers: [
