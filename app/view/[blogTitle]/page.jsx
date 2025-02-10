@@ -16,6 +16,7 @@ import BlogSkeleton from "@components/Skeletons/BlogSkeleton";
 import RecommendSideBox from "@components/RecommendSideBox";
 import CommentBox from '@components/CommentBox';
 import LoginPopup from '@app/_components/LoginPopup';
+import useMetadata from '@hooks/metadata';
 
 const ViewPublicBlog = ({ params }) => {
   const { data: session } = useSession();
@@ -31,6 +32,9 @@ const ViewPublicBlog = ({ params }) => {
   const [topRatedBlogs, setTopRatedBlogs] = useState([]);
 
   const [showSkeleton, setShowSkeleton] = useState(true);
+
+  // set title for page
+  useMetadata(`${blogData?.title} - Blogotypo`, blogData?.title, blogData?.thumbnail_image);
 
   // fetch blog from blog title
   const fetchBlogData = async () => {

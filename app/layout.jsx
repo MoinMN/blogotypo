@@ -6,9 +6,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 export const metadata = {
   title: "BlogoTypo",
   description: "Blogotypo is Blogging platform. Anyone from anywhere can create account and post their blogs for free.",
-  icons: {
-    icon: '/assets/icons/favicon.ico',
-  }
 };
 
 export default function RootLayout({ children }) {

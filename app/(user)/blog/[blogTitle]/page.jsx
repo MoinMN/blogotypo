@@ -9,7 +9,7 @@ const UserBlog = ({ params }) => {
   const [blogData, setBlogData] = useState({});
 
   // set title for page
-  useMetadata(`${blogData?.title} - Blogotypo`, `${blogData?.title} see the blog now on blogotypo`);
+  useMetadata(`${blogData?.title} - Blogotypo`, blogData?.title, blogData?.thumbnail_image);
 
   // fetch blog from blog title
   const fetchBlogData = async () => {
