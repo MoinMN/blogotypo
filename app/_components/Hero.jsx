@@ -88,7 +88,7 @@ const Hero = () => {
               hidden: { rotateY: -180, opacity: 0 },
               visible: { rotateY: 0, opacity: 1, transition: { duration: 1, delay: 1.1, ease: "easeOut" } },
             }}
-            onClick={() => router.push('/user/dashboard')}
+            onClick={() => router.push('/dashboard')}
             className="relative overflow-hidden transition-all duration-500 group md:px-6 max-md:px-4 md:py-3 max-md:py-1.5 bg-[#8785FF] text-white text-base md:text-lg font-semibold rounded-lg shadow-lg"
           >
             <span className="absolute inset-0 bg-[#6b68d6] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700" />
