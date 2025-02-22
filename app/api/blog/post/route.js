@@ -4,6 +4,7 @@ import User from '@models/user';
 import connectMongoDB from '@utils/database';
 import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
+import requestGoogleIndexing from '@app/api/googleIndexing';
 
 export async function POST(req) {
   try {
@@ -57,6 +58,9 @@ export async function POST(req) {
     });
 
     if (!blog) return new Response("Failed to save blog data!", { status: 400 });
+
+    // trigger google indexing
+    await requestGoogleIndexing(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/" + encodeURIComponent(title.split(' ').join('-')));
 
     return new Response("Blog Created Successfully!", { status: 201 });
   } catch (error) {
