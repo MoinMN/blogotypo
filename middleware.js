@@ -19,7 +19,8 @@ const publicApiPaths = [
   '/api/auth',
   '/api/blog/get',
   '/api/blog/recommend',
-  '/api/count'
+  '/api/count',
+  '/api/googleIndexing/indexing'
 ]
 
 export async function middleware(req) {
