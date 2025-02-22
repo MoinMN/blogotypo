@@ -6,12 +6,22 @@ const requestGoogleIndexing = async (blogUrl) => {
       body: JSON.stringify({ url: blogUrl }),
     });
 
-    const data = await response.json();
-    console.log("Google Indexing Response:", data);
+    if (!response.ok) {
+      const errorText = await response.text(); // Try getting the error message
+      throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      console.log("Google Indexing Response:", data);
+    } else {
+      throw new Error("Invalid JSON response from API");
+    }
+
   } catch (error) {
     console.error("Failed to request indexing:", error);
   }
 };
-
 
 export default requestGoogleIndexing;
