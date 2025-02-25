@@ -48,17 +48,17 @@ const Footer = () => {
           </h5>
           <ul className="text-xs md:text-sm flex flex-col gap-2 pl-0 list-none">
             <li className="">
-              <Link href='/view/docs/term-and-conditions' target="_blank" className="text-gray-600 no-underline">
+              <Link href='/docs/term-and-conditions' target="_blank" className="text-gray-600 no-underline">
                 Term & Conditions
               </Link>
             </li>
             <li className="">
-              <Link href='/view/docs/privacy-policy' target="_blank" className="text-gray-600 no-underline">
+              <Link href='/docs/privacy-policy' target="_blank" className="text-gray-600 no-underline">
                 Privacy Policy
               </Link>
             </li>
             <li className="">
-              <Link href='/view/docs/license' target="_blank" className="text-gray-600 no-underline">
+              <Link href='/docs/license' target="_blank" className="text-gray-600 no-underline">
                 License
               </Link>
             </li>
@@ -72,7 +72,7 @@ const Footer = () => {
           </h5>
           <ul className="text-xs md:text-sm flex flex-col gap-2 pl-0 list-none">
             <li className="">
-              <Link href='/view/docs/faq' target="_blank" className="text-gray-600 no-underline">
+              <Link href='/docs/faq' target="_blank" className="text-gray-600 no-underline">
                 FAQ
               </Link>
             </li>

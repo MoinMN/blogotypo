@@ -1,17 +1,12 @@
 import { google } from "googleapis";
-import { NextResponse } from "next/server";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  const { url } = req.body;
-  if (!url) {
-    return res.status(400).json({ error: "URL is required" });
-  }
-
+export async function POST(req) {
   try {
+    const { url } = await req.json();
+    if (!url) {
+      return Response.json({ error: "URL is required" }, { status: 400 });
+    }
+
     const SCOPES = ["https://www.googleapis.com/auth/indexing"];
 
     // Load service account credentials from environment variables
@@ -21,9 +16,8 @@ export default async function handler(req, res) {
     });
 
     const client = await auth.getClient();
-    const accessToken = await client.getAccessToken(); // ✅ Extract correctly
+    const accessToken = await client.getAccessToken();
 
-    // Google Indexing API Endpoint
     const indexingUrl = "https://indexing.googleapis.com/v3/urlNotifications:publish";
 
     const response = await fetch(indexingUrl, {
@@ -37,13 +31,13 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Indexing request failed: ${response.status} - ${errorText}`);
+      return Response.json({ error: `Indexing request failed: ${response.status} - ${errorText}` }, { status: response.status });
     }
 
     const data = await response.json();
-    return res.status(200).json({ success: true, message: "Indexing request sent", data });
+    return Response.json({ success: true, message: "Indexing request sent", data }, { status: 200 });
   } catch (error) {
     console.error("Google Indexing Error:", error);
-    return res.status(500).json({ error: "Failed to request indexing", details: error.message });
+    return Response.json({ error: "Failed to request indexing", details: error.message }, { status: 500 });
   }
 }

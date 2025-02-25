@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import SkeletonBox from "@components/Skeletons/Skeleton";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { data: session } = useSession();
+  const router = useRouter();
   const isAdmin = usePathname().split('/').includes('admin');
 
   // for show pop up
@@ -30,7 +31,7 @@ const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
     return () => document.removeEventListener("keydown", handleEscapePress);
   }, []);
-  
+
   return (
     <nav className={`${isAdmin ? 'bg-purple-400' : 'bg-theme_4'} text-theme_1 flex justify-between items-center max-md:px-1 md:px-4 w-full shadow-md z-50 top-0 sticky`}>
       <div className="md:mx-6 max-md:mx-3 flex justify-center items-center max-md:gap-6 md:gap-14 max-md:py-3 md:py-6">
@@ -59,22 +60,34 @@ const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
           onClick={() => setIsProfileOpen(!isProfileOpen)}
           className="flex items-center justify-center gap-3 cursor-pointer"
         >
-          <span className="hidden sm:block text-base md:text-lg font-semibold montserrat_alternates_font">
-            {showSkeleton ? (
-              <SkeletonBox width={100} />
-            ) : (
-              session?.user?.name && `Hey, ${session?.user.name}!`
-            )}
-          </span>
-          {showSkeleton ?
-            <SkeletonBox circle={true} width={40} height={40} className="shadow-lg" />
-            : <img
-              src={session?.user.image}
-              alt="Profile Image"
-              className="rounded-full border-2 shadow-lg w-10 h-10 md:w-14 md:h-14"
-            />
+          {session?.user
+            ? <>
+              <span className="hidden sm:block text-base md:text-lg font-semibold montserrat_alternates_font">
+                Hey, {session?.user.name}!
+              </span>
+              <img
+                src={session?.user.image}
+                alt="Profile Image"
+                className="rounded-full border-2 shadow-lg w-10 h-10 md:w-14 md:h-14"
+              />
+            </>
+            : <>
+              <button
+                onClick={() => router.push('/user/register')}
+                className="bg-slate-50 hover:bg-slate-300 text-blue-500 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
+              >
+                Sign Up
+              </button>
+              <button
+                onClick={() => router.push('/user/login')}
+                className="bg-blue-700 hover:bg-blue-900 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
+              >
+                Log In
+              </button>
+            </>
           }
         </div>
+
         {isProfileOpen &&
           <div className="absolute right-4 top-16 md:top-20 mt-1 bg-white flex flex-col gap-2 shadow-md rounded-lg w-36 md:w-44 md:p-4 max-md:p-2 z-30">
             <Link href={`${session?.user?.role === 'admin' ? '/admin' : ''}/profile`} className="no-underline">
@@ -93,7 +106,8 @@ const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
           </div>
         }
       </div>
-    </nav >
+
+    </nav>
   )
 }
 

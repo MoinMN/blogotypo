@@ -89,14 +89,20 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
 
   const handlePostReview = async (e) => {
     e.preventDefault();
-    setIsReviewSubmitting(true);
 
     if (!reviewData.review || reviewData.star === 0) {
       setAlertData((prev) => ({ ...prev, header: "All field required!", variant: "danger" }));
       setShowAlert(true);
-      setIsReviewSubmitting(false);
       return;
     }
+
+    if (!session?.user) {
+      setAlertData((prev) => ({ ...prev, header: "Please login first!", variant: "danger" }));
+      setShowAlert(true);
+      return;
+    }
+
+    setIsReviewSubmitting(true);
 
     try {
       const response = await fetch(`/api/blog/review/post?blogId=${blogData._id}`, {

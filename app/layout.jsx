@@ -4,12 +4,12 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata = {
-  title: "Best Blogging Platform - Blogotypo",
+  title: "Blogotypo - Best Blogging Platform",
   description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
   keywords: "Blog, Blogging, Write, Share, Blogotypo",
   metadataBase: new URL("https://blogotypo.moinnaik.bio"),
   openGraph: {
-    title: "Best Blogging Platform - Blogotypo",
+    title: "Blogotypo - Best Blogging Platform",
     description: "Create, share, and explore blogs on Blogotypo.",
     url: "https://blogotypo.moinnaik.bio",
     siteName: "Blogotypo",
@@ -25,7 +25,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Best Blogging Platform - Blogotypo",
+    title: "Blogotypo - Best Blogging Platform",
     description: "Create, share, and explore blogs on Blogotypo.",
     images: ["https://blogotypo.moinnaik.bio/opengraph-image.jpg"],
   },

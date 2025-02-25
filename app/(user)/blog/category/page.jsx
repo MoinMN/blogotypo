@@ -184,7 +184,7 @@ const CategoryBlogs = () => {
                     alt="Category image"
                     layout="fill"
                     objectFit="cover"
-                    className="opacity-60 group-hover:opacity-45 transition-opacity duration-300 ease-in-out"
+                    className="opacity-60 group-hover:scale-110 group-hover:opacity-45 transition-all duration-300 ease-in-out"
                   />
 
                   {/* Overlay Content */}

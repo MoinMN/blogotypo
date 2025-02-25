@@ -3,13 +3,10 @@ import { getToken } from 'next-auth/jwt';
 
 const protectedPaths = [
   // user's
-  '/dashboard',
   '/profile',
   '/my-blogs',
   '/publish-blog',
   '/contact',
-  '/blog',
-  '/docs',
 
   // admin's
   '/admin',
@@ -18,6 +15,7 @@ const protectedPaths = [
 const publicApiPaths = [
   '/api/auth',
   '/api/blog/get',
+  '/api/blog/search',
   '/api/blog/recommend',
   '/api/count',
   '/api/googleIndexing/indexing'
@@ -39,10 +37,6 @@ export async function middleware(req) {
     if (token.role === 'user' && pathname.startsWith('/admin')) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
-
-    // if (token.role === 'admin' && !pathname.startsWith('/admin') && !pathname.startsWith('/api')) {
-    //   return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-    // }
   } else {
     // Allow unauthenticated access to `/admin/login`
     if (pathname === '/admin/login') {
@@ -74,16 +68,11 @@ export async function middleware(req) {
 export const config = {
   matcher: [
     // user's
-    '/dashboard',
     '/profile',
-    '/blog/search',
-    '/blog/category',
     '/my-blogs',
     '/publish-blog',
     '/contact',
     '/blog/:path*',
-    '/docs/:path*',
-
 
     // admin's
     '/admin/:path*',
