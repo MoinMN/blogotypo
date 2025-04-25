@@ -13,7 +13,7 @@ const OTPSchema = new Schema({
   expiresAt: {
     type: Date,
     required: true,
-    default: () => new Date(Date.now() + 5.5 * 60 * 60 * 1000 + 5 * 60 * 1000), // Convert to IST & add 5 min expiration
+    default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }), // Convert to IST & add 5 min expiration
     index: { expires: "5m" }, // Automatically delete after 5 mins
   },
 }, { timestamps: true }); // Adds createdAt & updatedAt

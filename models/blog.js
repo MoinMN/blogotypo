@@ -43,7 +43,7 @@ const BlogSchema = new Schema({
     },
     date: {
       type: Date,
-      default: () => new Date(Date.now() + 5.5 * 60 * 60 * 1000) // for IST time
+      default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }), // for IST time
     }
   }],
   viewedBy: [{

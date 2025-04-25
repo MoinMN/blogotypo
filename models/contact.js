@@ -14,7 +14,7 @@ const ContactSchema = new Schema({
   },
   postedOn: {
     type: Date,
-    default: Date.now,
+    default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
   }
 });
 
