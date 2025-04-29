@@ -22,12 +22,12 @@ const handler = NextAuth({
       credentials: {
         email: { label: "Email", type: "text", placeholder: "Email" },
         password: { label: "Password", type: "password", placeholder: "Password" },
-        role: { label: "Role", type: "role", placeholder: "role" },
+        // role: { label: "Role", type: "role", placeholder: "role" },
       },
       async authorize(credentials) {
         await connectMongoDB();
 
-        const user = await User.findOne({ email: credentials.email, role: credentials.role });
+        const user = await User.findOne({ email: credentials.email });
 
         if (user) {
           const passwordMatched = await bcrypt.compare(credentials.password, user.password);

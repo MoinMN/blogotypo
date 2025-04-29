@@ -13,6 +13,7 @@ import TableSkeleton from '@components/Skeletons/TableSkeleton';
 import PaginationBlogs from '@components/PaginationBlogs';
 import { formatDateForAdmin } from '@components/FormatDate';
 import useMetadata from '@hooks/metadata';
+import { exportBlogsToExcel, exportBlogsToPDF } from '@utils/exportdata';
 
 const AdminBlogs = () => {
   // set title for page
@@ -141,9 +142,27 @@ const AdminBlogs = () => {
     <>
       <div className="">
 
-        <h3 className="montserrat_alternates_font font-bold text-lg md:text-2xl lg:text-3xl">
-          Blogs
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="montserrat_alternates_font font-bold text-lg md:text-2xl lg:text-3xl">
+            Blogs
+          </h3>
+          <span className="">
+            Export to{` `}
+            <button
+              className='text-blue-500 underline'
+              onClick={() => exportBlogsToExcel(blogs, "cpms_blogs")}
+            >
+              Excel
+            </button>
+            {` , `}
+            <button
+              className='text-blue-500 underline'
+              onClick={() => exportBlogsToPDF(blogs, "cpms_blogs")}
+            >
+              PDF
+            </button>
+          </span>
+        </div>
 
         {/* Search box */}
         <form

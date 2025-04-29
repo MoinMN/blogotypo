@@ -12,6 +12,7 @@ import TableSkeleton from '@components/Skeletons/TableSkeleton';
 import PaginationBlogs from '@components/PaginationBlogs';
 import { formatDateForAdmin } from '@components/FormatDate';
 import useMetadata from '@hooks/metadata';
+import { exportUsersContactsToExcel, exportUsersContactsToPDF } from '@utils/exportdata';
 
 const AdminContacts = () => {
   // set title for page
@@ -134,15 +135,35 @@ const AdminContacts = () => {
 
   useEffect(() => {
     fetchContacts();
+
   }, []);
 
   return (
     <>
       <div className="">
 
-        <h3 className="montserrat_alternates_font font-bold text-lg md:text-2xl lg:text-3xl">
-          Contact Requests
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="montserrat_alternates_font font-bold text-lg md:text-2xl lg:text-3xl">
+            Contact Requests
+          </h3>
+
+          <span className="">
+            Export to{` `}
+            <button
+              className='text-blue-500 underline'
+              onClick={() => exportUsersContactsToExcel(contacts, "cpms_contacts", "CPMS Contacts")}
+            >
+              Excel
+            </button>
+            {` , `}
+            <button
+              className='text-blue-500 underline'
+              onClick={() => exportUsersContactsToPDF(contacts, "cpms_contacts", "CPMS Contacts")}
+            >
+              PDF
+            </button>
+          </span>
+        </div>
 
         {/* Search box */}
         <form
