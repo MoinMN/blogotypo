@@ -1,4 +1,5 @@
 import { Schema, model, models } from "mongoose";
+import getISTTime from '@lib/time-ist';
 
 const OTPSchema = new Schema({
   email: {
@@ -13,7 +14,7 @@ const OTPSchema = new Schema({
   expiresAt: {
     type: Date,
     required: true,
-    default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }), // Convert to IST & add 5 min expiration
+    default: getISTTime,
     index: { expires: "5m" }, // Automatically delete after 5 mins
   },
 }, { timestamps: true }); // Adds createdAt & updatedAt

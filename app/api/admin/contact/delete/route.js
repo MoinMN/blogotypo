@@ -1,4 +1,4 @@
-import Blog from "@models/blog";
+import Contact from "@models/contact";
 import User from "@models/user";
 import connectMongoDB from "@utils/database";
 import mongoose from "mongoose";
@@ -26,8 +26,7 @@ export async function DELETE(req) {
       return NextResponse.json({ msg: 'Invalid Contact Id!' }, { status: 402 });
     }
 
-    await Blog.findByIdAndDelete(contactId);
-
+    await Contact.findByIdAndDelete(contactId);
     return NextResponse.json({ msg: 'Contact Detail Deleted Successfully!' }, { status: 200 });
   } catch (error) {
     console.log('Error while deleting contact detail', error);

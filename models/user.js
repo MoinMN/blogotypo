@@ -1,4 +1,5 @@
 import { Schema, model, models } from 'mongoose';
+import getISTTime from '@lib/time-ist';
 
 const UserSchema = new Schema({
   email: {
@@ -31,7 +32,7 @@ const UserSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }), // for IST time
+    default: getISTTime,
   },
   otp: {
     type: Number,

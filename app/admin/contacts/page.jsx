@@ -101,7 +101,7 @@ const AdminContacts = () => {
     setModalData({
       title: 'Confirmation',
       body: `Do you really want to delete contact detail?`,
-      actionBtn: 'delete',
+      actionBtn: 'Delete',
       actionBtnVariant: 'danger',
       confirmAction: () => handleConfirmDelete(contactId)
     });

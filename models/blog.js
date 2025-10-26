@@ -1,4 +1,5 @@
 import { Schema, model, models } from 'mongoose';
+import getISTTime from '@lib/time-ist';
 
 const BlogSchema = new Schema({
   creator: {
@@ -24,7 +25,7 @@ const BlogSchema = new Schema({
   },
   date: {
     type: Date,
-    default: () => new Date(Date.now() + 5.5 * 60 * 60 * 1000) // for IST time
+    default: getISTTime, // for IST time
   },
   reviews: [{
     user: {
