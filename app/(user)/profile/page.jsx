@@ -10,10 +10,10 @@ import useMetadata from '@hooks/metadata';
 
 
 const Profile = () => {
-  // set title for page
-  useMetadata('Profile - Blogotypo', `User Profile`);
-
   const { data: session, update } = useSession();
+
+  // set title for page
+  useMetadata(session?.user?.name ? `${session.user.name} Profile - Blogotypo` : "Blogotypo", `User Profile`);
 
   const [userData, setUserData] = useState({});
   const [passwords, setPasswords] = useState({
@@ -33,7 +33,8 @@ const Profile = () => {
 
   // show skeleton
   const [showSkeleton, setShowSkeleton] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProfileSubmitting, setIsProfileSubmitting] = useState(false);
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
 
   // fetch user data
   useEffect(() => {
@@ -87,13 +88,13 @@ const Profile = () => {
 
   // update personal details
   const handlePersonalDataSubmit = async () => {
-    setIsSubmitting(true);
+    setIsProfileSubmitting(true);
 
     try {
       if (!userData?.name || !userData?.email) {
         setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Name & Email Required!' }));
         setShowAlert(true);
-        setIsSubmitting(false);
+        setIsProfileSubmitting(false);
         return;
       }
 
@@ -105,7 +106,7 @@ const Profile = () => {
 
       if (!response.ok) {
         setAlertData((prev) => ({ ...prev, variant: 'danger', header: response?.statusText }));
-        setIsSubmitting(false);
+        setIsProfileSubmitting(false);
         return;
       }
 
@@ -115,7 +116,7 @@ const Profile = () => {
       setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to update profile!' }));
     } finally {
       setShowAlert(true);
-      setIsSubmitting(false);
+      setIsProfileSubmitting(false);
     }
   }
 
@@ -126,19 +127,19 @@ const Profile = () => {
 
   // password update
   const handleUpdatePassword = async () => {
-    setIsSubmitting(true);
+    setIsPasswordSubmitting(true);
 
     if (!passwords?.new_password || !passwords?.confirm_password) {
       setAlertData((prev) => ({ ...prev, header: "All Fields Required!", variant: "danger" }));
       setShowAlert(true);
-      setIsSubmitting(false);
+      setIsPasswordSubmitting(false);
       return;
     }
 
     if (passwords?.new_password !== passwords?.confirm_password) {
       setAlertData((prev) => ({ ...prev, header: "New Password & Confirm Password Mismatched", variant: "danger" }));
       setShowAlert(true);
-      setIsSubmitting(false);
+      setIsPasswordSubmitting(false);
       return;
     }
 
@@ -162,7 +163,7 @@ const Profile = () => {
       setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to update password!' }));
     } finally {
       setShowAlert(true);
-      setIsSubmitting(false);
+      setIsPasswordSubmitting(false);
     }
   }
 
@@ -243,10 +244,10 @@ const Profile = () => {
                   />
                   : <button
                     onClick={handlePersonalDataSubmit}
-                    disabled={isSubmitting}
-                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
+                    disabled={isProfileSubmitting}
+                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isProfileSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
                   >
-                    {isSubmitting ? 'Saving...' : 'Save'}
+                    {isProfileSubmitting ? 'Saving...' : 'Save'}
                   </button>
                 }
               </div>
@@ -338,15 +339,14 @@ const Profile = () => {
                   : <button
                     type="submit"
                     onClick={handleUpdatePassword}
-                    disabled={isSubmitting}
-                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
+                    disabled={isPasswordSubmitting}
+                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isPasswordSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
                   >
-                    {isSubmitting ? 'Saving...' : 'Save'}
+                    {isPasswordSubmitting ? 'Saving...' : 'Save'}
                   </button>
                 }
               </div>
             </div>
-
           </div>
         </div>
       </div>

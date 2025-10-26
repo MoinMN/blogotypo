@@ -7,20 +7,12 @@ import SkeletonBox from "@components/Skeletons/Skeleton";
 import { usePathname, useRouter } from "next/navigation";
 
 const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const isAdmin = usePathname().split('/').includes('admin');
 
   // for show pop up
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  // show skeleton
-  const [showSkeleton, setShowSkeleton] = useState(true);
-
-  useEffect(() => {
-    if (session) {
-      setShowSkeleton(false);
-    }
-  }, [session]);
 
   useEffect(() => {
     const handleEscapePress = (e) => {
@@ -60,31 +52,40 @@ const Nav = ({ isSidebarOpen, setIsSidebarOpen }) => {
           onClick={() => setIsProfileOpen(!isProfileOpen)}
           className="flex items-center justify-center gap-3 cursor-pointer"
         >
-          {session?.user
-            ? <>
-              <span className="hidden sm:block text-base md:text-lg font-semibold montserrat_alternates_font">
-                Hey, {session?.user.name}!
-              </span>
-              <img
-                src={session?.user.image}
-                alt="Profile Image"
-                className="rounded-full border-2 shadow-lg w-10 h-10 md:w-14 md:h-14"
-              />
-            </>
-            : <>
-              <button
-                onClick={() => router.push('/user/register')}
-                className="bg-slate-50 hover:bg-slate-300 text-blue-500 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
-              >
-                Sign Up
-              </button>
-              <button
-                onClick={() => router.push('/user/login')}
-                className="bg-blue-700 hover:bg-blue-900 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
-              >
-                Log In
-              </button>
-            </>
+          {status === "loading"
+            ?
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block">
+                <SkeletonBox width={120} height={20} />
+              </div>
+              <SkeletonBox width={40} height={40} circle={true} />
+            </div>
+
+            : session?.user
+              ? <>
+                <span className="hidden sm:block text-base md:text-lg font-semibold montserrat_alternates_font">
+                  Hey, {session?.user.name}!
+                </span>
+                <img
+                  src={session?.user.image}
+                  alt="Profile Image"
+                  className="rounded-full border-2 shadow-lg w-10 h-10 md:w-14 md:h-14"
+                />
+              </>
+              : <>
+                <button
+                  onClick={() => router.push('/user/register')}
+                  className="bg-slate-50 hover:bg-slate-300 text-blue-500 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
+                >
+                  Sign Up
+                </button>
+                <button
+                  onClick={() => router.push('/user/login')}
+                  className="bg-blue-700 hover:bg-blue-900 md:px-6 max-md:px-3 md:py-1.5 max-md:py-1 shadow-md rounded-md transition-all duration-200 ease-in-out"
+                >
+                  Log In
+                </button>
+              </>
           }
         </div>
 

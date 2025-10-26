@@ -1,6 +1,6 @@
 import SkeletonBox from './Skeleton';
 
-const UserDashboardSkeleton = () => {
+export const UserDashboardHeroSkeleton = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Hero content */}
@@ -16,16 +16,30 @@ const UserDashboardSkeleton = () => {
         </div>
       </div>
 
+      <div className="flex flex-col gap-4">
+        {/* Trending */}
+        {[...Array(2)].map((_, index) => (
+          <div key={index} className="my-1">
+            <SkeletonBox baseColor='#f3f3f3' highlightColor='#e0e0e0' height={30} width={200} />
+            <SkeletonBox baseColor='#f3f3f3' highlightColor='#e0e0e0' height={200} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+export const UserDashboardOtherSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-4">
       {/* Trending */}
-      {[...Array(5)].map((_, index) => (
+      {[...Array(3)].map((_, index) => (
         <div key={index} className="my-1">
           <SkeletonBox baseColor='#f3f3f3' highlightColor='#e0e0e0' height={30} width={200} />
           <SkeletonBox baseColor='#f3f3f3' highlightColor='#e0e0e0' height={200} />
         </div>
       ))}
-
     </div>
   );
 }
-
-export default UserDashboardSkeleton;

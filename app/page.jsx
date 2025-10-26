@@ -18,10 +18,11 @@ const Home = () => {
 
   const fetchPopularBlogs = async () => {
     try {
-      const response = await fetch(`/api/blog/recommend?blogLimit=10`, { method: "GET" });
+      const response = await fetch(`/api/blog/recommend/popular?blogLimit=10`, { method: "GET" });
       const data = await response.json();
+      
       if (response.ok) {
-        setPopularBlogs(data?.trendingBlogs);
+        setPopularBlogs(data);
       }
     } catch (error) {
       console.log('error while fetch popular blogs', error);

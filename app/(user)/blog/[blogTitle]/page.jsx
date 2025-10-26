@@ -4,12 +4,15 @@ import ViewBlog from "@components/ViewBlog";
 import useMetadata from "@hooks/metadata";
 import { useEffect, useState } from "react";
 
-
 const UserBlog = ({ params }) => {
   const [blogData, setBlogData] = useState({});
 
   // set title for page
-  useMetadata(`${blogData?.title} - Blogotypo`, blogData?.title, blogData?.thumbnail_image);
+  useMetadata(
+    blogData?.title ? `${blogData.title} - Blogotypo` : "Blogotypo",
+    blogData?.title || "Blogotypo",
+    blogData?.thumbnail_image
+  );
 
   // fetch blog from blog title
   const fetchBlogData = async () => {
@@ -32,7 +35,7 @@ const UserBlog = ({ params }) => {
 
   useEffect(() => {
     fetchBlogData();
-  }, [params]);
+  }, []);
 
   return (
     <>

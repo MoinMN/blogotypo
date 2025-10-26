@@ -10,7 +10,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import HorizontalBlogList from "@components/HorizontalBlogList";
-import UserDashboardSkeleton from "@components/Skeletons/UserDashboardSkeleton";
+import { UserDashboardHeroSkeleton, UserDashboardOtherSkeleton } from "@components/Skeletons/UserDashboardSkeleton";
 import useMetadata from "@hooks/metadata";
 
 const UserDashboard = () => {
@@ -26,31 +26,45 @@ const UserDashboard = () => {
   // for slider track index
   const [carouselIndex, setCarouselIndex] = useState(0);
 
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showHeroSkeleton, setShowHeroSkeleton] = useState(true);
+  const [showOtherSkeleton, setShowOtherSkeleton] = useState(true);
 
   // fecth other blog then main blog
-  const fetchDifferentBlogs = async () => {
+  const fetchHeroBlogs = async () => {
     const blogLimit = 15;
     try {
-      const response =
-        await fetch(`/api/blog/recommend?blogLimit=${blogLimit}`, { method: "GET" });
-      const data = await response.json();
+      const reqTrending = await fetch(`/api/blog/recommend/popular?blogLimit=${blogLimit}`);
+      const reqTopRated = await fetch(`/api/blog/recommend/top-rated?blogLimit=${blogLimit}`);
 
-      setLatestBlogs(data.latestBlogs);
-      setTrendingBlogs(data.trendingBlogs);
-      setTopRatedBlogs(data.topRatedBlogs);
-      setTopCreatorBlogs(data.topCreatorBlogs);
-      setBlogsByCategory(data.blogsByCategory);
-
+      setTrendingBlogs(await reqTrending.json());
+      setTopRatedBlogs(await reqTopRated.json());
     } catch (error) {
       console.log('error fetching recommended blogs', error);
     } finally {
-      setShowSkeleton(false);
+      setShowHeroSkeleton(false);
+    }
+  }
+
+  const fetchOtherBlogs = async () => {
+    const blogLimit = 15;
+    try {
+      const reqLatest = await fetch(`/api/blog/recommend/latest?blogLimit=${blogLimit}`);
+      const reqTopCreator = await fetch(`/api/blog/recommend/top-creator?blogLimit=${blogLimit}`);
+      const reqCategory = await fetch(`/api/blog/recommend/category?blogLimit=${blogLimit}&blogCategoryLimit=5`);
+
+      setLatestBlogs(await reqLatest.json());
+      setTopCreatorBlogs(await reqTopCreator.json());
+      setBlogsByCategory(await reqCategory.json());
+    } catch (error) {
+      console.log('error fetching recommended blogs', error);
+    } finally {
+      setShowOtherSkeleton(false);
     }
   }
 
   useEffect(() => {
-    fetchDifferentBlogs();
+    fetchHeroBlogs();
+    fetchOtherBlogs();
   }, []);
 
   // Animation Variants
@@ -66,11 +80,12 @@ const UserDashboard = () => {
 
   return (
     <>
-      {showSkeleton
-        ? <UserDashboardSkeleton />
-        :
-        <div className="flex flex-col gap-4">
-          {/* hero content */}
+      <div className="flex flex-col gap-4">
+        {/* hero content */}
+
+        {showHeroSkeleton
+          ? <UserDashboardHeroSkeleton />
+          :
           <motion.div
             className="grid md:grid-cols-7 gap-3"
             initial={{ opacity: 0, y: 20 }}
@@ -93,6 +108,7 @@ const UserDashboard = () => {
                         layout="fill"
                         objectFit="cover"
                         alt={trend.title}
+                        priority={true}
                         className="rounded-xl shadow-md"
                       />
                       <span className="absolute top-4 left-4 bg-black text-white md:px-3 max-md:px-1.5 md:py-1 max-md:py-0.5 rounded-lg text-xs md:text-sm animate-pulse">
@@ -132,6 +148,7 @@ const UserDashboard = () => {
                       layout="fill"
                       objectFit="cover"
                       alt={topRated.title}
+                      priority={true}
                       className="absolute inset-0 rounded-xl shadow-md transition-transform duration-300 ease-in-out group-hover:scale-105"
                     />
                     <h3 className="absolute -bottom-2 group-hover:scale-105 rounded-xl left-0 right-0 z-10 p-3 bg-gradient-to-t from-black via-transparent to-transparent text-white text-lg lg:text-2xl transition-all duration-300 ease-in-out">
@@ -145,69 +162,75 @@ const UserDashboard = () => {
               ))}
             </div>
           </motion.div>
+        }
 
-          <div className="flex flex-col gap-4">
-            {/* trending */}
-            <motion.div
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <HorizontalBlogList header={"Trending 🔥"} list={trendingBlogs} />
-            </motion.div>
 
-            {/* top rated */}
-            <motion.div
-              variants={fadeInLeft}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <HorizontalBlogList header={"Top Rated ⭐"} list={topRatedBlogs} />
-            </motion.div>
+        <div className="flex flex-col gap-4">
+          {/* trending */}
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <HorizontalBlogList header={"Trending 🔥"} list={trendingBlogs} />
+          </motion.div>
 
-            {/* latest */}
-            <motion.div
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <HorizontalBlogList header={"Latest 🕔"} list={latestBlogs} />
-            </motion.div>
+          {/* top rated */}
+          <motion.div
+            variants={fadeInLeft}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <HorizontalBlogList header={"Top Rated ⭐"} list={topRatedBlogs} />
+          </motion.div>
 
-            {/* from top creator */}
-            {topCreatorBlogs.length !== 0 && (
+          {showOtherSkeleton
+            ? <UserDashboardOtherSkeleton />
+            : <>
+              {/* latest */}
               <motion.div
-                variants={fadeInLeft}
+                variants={fadeInUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
               >
-                <HorizontalBlogList header={"Verified Creator 👑"} list={topCreatorBlogs} />
+                <HorizontalBlogList header={"Latest 🕔"} list={latestBlogs} />
               </motion.div>
-            )}
 
-            {Object.entries(blogsByCategory).map(([category, blogs], index) => (
-              blogs.length > 5 && (
+              {/* from top creator */}
+              {topCreatorBlogs.length !== 0 && (
                 <motion.div
-                  key={category}
-                  variants={index % 2 === 0 ? fadeInUp : fadeInLeft}
+                  variants={fadeInLeft}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
                 >
-                  <HorizontalBlogList
-                    header={`Category: ${category.charAt(0).toUpperCase() + category.slice(1)}`}
-                    list={blogs}
-                  />
+                  <HorizontalBlogList header={"Verified Creator 👑"} list={topCreatorBlogs} />
                 </motion.div>
-              )
-            ))}
-          </div>
+              )}
+
+              {Array.isArray(blogsByCategory) &&
+                blogsByCategory.map((item, index) => (
+                  <motion.div
+                    key={item.category}
+                    variants={index % 2 === 0 ? fadeInUp : fadeInLeft}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                  >
+                    <HorizontalBlogList
+                      header={`Category: ${item.category.charAt(0).toUpperCase() + item.category.slice(1)}`}
+                      list={item.blogs}
+                    />
+                  </motion.div>
+                ))
+              }
+            </>
+          }
         </div>
-      }
+      </div>
     </>
   );
 }

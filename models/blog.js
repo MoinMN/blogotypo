@@ -52,6 +52,10 @@ const BlogSchema = new Schema({
   }],
 });
 
+BlogSchema.index({ date: -1 });
+BlogSchema.index({ categories: 1 });
+BlogSchema.index({ creator: 1 });
+
 const Blog = models.Blog || model('Blog', BlogSchema);
 
 export default Blog;

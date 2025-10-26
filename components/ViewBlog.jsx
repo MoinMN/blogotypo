@@ -68,17 +68,32 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
     if (Object.keys(blogData).length === 0) return;
 
     try {
-      const response =
-        await fetch(`/api/blog/recommend?blogId=${blogData?._id}`,
+      const reqLatest =
+        await fetch(`/api/blog/recommend/latest?blogId=${blogData?._id}`,
           { method: "GET" }
         );
-      const data = await response.json();
+      const reqTrending =
+        await fetch(`/api/blog/recommend/popular?blogId=${blogData?._id}`,
+          { method: "GET" }
+        );
+      const reqRelated =
+        await fetch(`/api/blog/recommend/related?blogId=${blogData?._id}`,
+          { method: "GET" }
+        );
+      const reqUserTop =
+        await fetch(`/api/blog/recommend/user-blog?blogId=${blogData?._id}&userId=${blogData?.creator?._id}`,
+          { method: "GET" }
+        );
+      const reqTopRated =
+        await fetch(`/api/blog/recommend/top-rated?blogId=${blogData?._id}`,
+          { method: "GET" }
+        );
 
-      setLatestBlogs(data.latestBlogs);
-      setTrendingBlogs(data.trendingBlogs);
-      setRelatedBlogs(data.relatedBlogs);
-      setUserTopBlogs(data.userTopBlogs);
-      setTopRatedBlogs(data.topRatedBlogs);
+      setLatestBlogs(await reqLatest.json());
+      setTrendingBlogs(await reqTrending.json());
+      setRelatedBlogs(await reqRelated.json());
+      setUserTopBlogs(await reqUserTop.json());
+      setTopRatedBlogs(await reqTopRated.json());
 
     } catch (error) {
       console.log('error fetching recommended blogs', error);
@@ -178,320 +193,309 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
     fetchOtherBlogs();
   }, [blogData]);
 
+  if (showSkeleton) return <BlogSkeleton />;
+
   return (
     <>
-      {showSkeleton
-        ? <BlogSkeleton />
-        : <>
-          <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="">
+          {/* title  */}
+          <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
+            {blogData?.title}
+          </h1>
+          <div className="flex justify-between">
+            {/* author name  */}
+            <span className="font-semibold text-sm md:text-base">
+              {`By ${blogData?.creator?.name}`}
+            </span>
             <div className="">
-              {/* title  */}
-              <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
-                {blogData?.title}
-              </h1>
-              <div className="flex justify-between">
-                {/* author name  */}
-                <span className="font-semibold text-sm md:text-base">
-                  {`By ${blogData?.creator?.name}`}
-                </span>
-                <div className="">
-                  {/* date  */}
-                  <span className="text-gray-500 text-xs md:text-sm italic">
-                    {formatDateForBlog(blogData?.date)}
-                  </span>
+              {/* date  */}
+              <span className="text-gray-500 text-xs md:text-sm italic">
+                {formatDateForBlog(blogData?.date)}
+              </span>
 
-                  {/* show only for admin & creator of post  */}
-                  {(session?.user?.role === 'admin' || session?.user?.id === blogData?.creator || session?.user?.id === blogData?.creator?._id) && (
-                    <div className='flex gap-2 flex-wrap items-center justify-end'>
-                      {session?.user?.role !== 'admin' &&
-                        <button
-                          onClick={() => handleEditBlog(blogData._id)}
-                          className="md:px-4 max-md:px-2 py-0.5 text-xs md:text-sm rounded-md shadow-md text-white bg-green-500 hover:bg-green-700 transition-all duration-300 ease-in-out"
-                        >
-                          Edit
-                        </button>
-                      }
-                      <button
-                        onClick={() => handleConfirmationDeleteBlog(blogData._id, blogData.title)}
-                        className="md:px-4 max-md:px-2 py-0.5 text-xs md:text-sm rounded-md shadow-md text-white bg-red-500 hover:bg-red-700 transition-all duration-300 ease-in-out"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
+              {/* show only for admin & creator of post  */}
+              {(session?.user?.role === 'admin' || session?.user?.id === blogData?.creator || session?.user?.id === blogData?.creator?._id) && (
+                <div className='flex gap-2 flex-wrap items-center justify-end'>
+                  {session?.user?.role !== 'admin' &&
+                    <button
+                      onClick={() => handleEditBlog(blogData._id)}
+                      className="md:px-4 max-md:px-2 py-0.5 text-xs md:text-sm rounded-md shadow-md text-white bg-green-500 hover:bg-green-700 transition-all duration-300 ease-in-out"
+                    >
+                      Edit
+                    </button>
+                  }
+                  <button
+                    onClick={() => handleConfirmationDeleteBlog(blogData._id, blogData.title)}
+                    className="md:px-4 max-md:px-2 py-0.5 text-xs md:text-sm rounded-md shadow-md text-white bg-red-500 hover:bg-red-700 transition-all duration-300 ease-in-out"
+                  >
+                    Delete
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
+          </div>
+        </div>
 
-            <div className="flex gap-2 text-xs md:text-sm">
-              {/* categories  */}
-              {blogData?.categories?.map((category, inx) => (
-                <span key={inx} className="bg-theme_4 text-white hover:bg-theme_5 rounded-md md:py-1 max-md:py-0.5 md:px-2 max-md:px-1 cursor-pointer transition-all duration-300 ease-in-out">{category}</span>
-              ))}
-            </div>
+        <div className="flex gap-2 text-xs md:text-sm">
+          {/* categories  */}
+          {blogData?.categories?.map((category, inx) => (
+            <span key={inx} className="bg-theme_4 text-white hover:bg-theme_5 rounded-md md:py-1 max-md:py-0.5 md:px-2 max-md:px-1 cursor-pointer transition-all duration-300 ease-in-out">{category}</span>
+          ))}
+        </div>
 
-            <div className="grid lg:grid-cols-3 lg:gap-4">
-              <div className="lg:col-span-2 flex flex-col gap-4">
-                {/* Thumbnail Images  */}
-                <img
-                  src={blogData?.thumbnail_image}
-                  alt="Thumbnail Image"
-                  className="w-full h-80 md:h-[30rem] rounded-md shadow-md"
+        <div className="grid lg:grid-cols-3 lg:gap-4">
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            {/* Thumbnail Images  */}
+            <img
+              src={blogData?.thumbnail_image}
+              alt="Thumbnail Image"
+              className="w-full h-80 md:h-[30rem] rounded-md shadow-md"
+            />
+            {/* main content  */}
+            <p className="" dangerouslySetInnerHTML={{ __html: blogData?.content }} />
+          </div>
+
+          {/* sidebar box recommendation */}
+          <div className="lg:col-span-1 lg:pl-4 lg:flex lg:flex-col lg:gap-4 hidden">
+            {[
+              { header: 'Latest', blogs: latestBlogs },
+              { header: 'Related', blogs: relatedBlogs },
+              { header: 'Trending', blogs: trendingBlogs },
+              { header: 'Popular from this author', blogs: userTopBlogs },
+              { header: 'Top Rated', blogs: topRatedBlogs }
+            ]
+              .filter(item => Array.isArray(item.blogs) && item.blogs.length > 0)
+              .map((item, index) => (
+                <RecommendSideBox
+                  key={`${item.header}-${index}`}
+                  header={item.header}
+                  blogs={item.blogs}
                 />
-                {/* main content  */}
-                <p className="" dangerouslySetInnerHTML={{ __html: blogData?.content }} />
-              </div>
+              ))
+            }
+          </div>
+        </div>
 
-              {/* sidebar box recommendation */}
-              <div className="lg:col-span-1 lg:pl-4 lg:flex lg:flex-col lg:gap-4 hidden">
-                {latestBlogs?.length !== 0 &&
-                  // latest box 
-                  <RecommendSideBox header='Latest' blogs={latestBlogs} />
-                }
-                {relatedBlogs?.length !== 0 &&
-                  // related box 
-                  <RecommendSideBox header='Related' blogs={relatedBlogs} />
-                }
-                {trendingBlogs?.length !== 0 &&
-                  // trending box  
-                  <RecommendSideBox header='Trending' blogs={trendingBlogs} />
-                }
-                {userTopBlogs?.length !== 0 &&
-                  //  user top box  
-                  <RecommendSideBox header='Popular from this author' blogs={userTopBlogs} />
-                }
-                {topRatedBlogs?.length !== 0 &&
-                  //  top rated box  
-                  <RecommendSideBox header='Top Rated' blogs={topRatedBlogs} />
-                }
-              </div>
-            </div>
+        <hr className="border-2 border-gray-500 rounded-md" />
 
-            <hr className="border-2 border-gray-500 rounded-md" />
+        {/* share via apps */}
+        <div className="">
+          <span className="font-semibold text-lg md:text-xl">Share: </span>
+          <div className="flex space-x-4 text-4xl md:text-5xl mt-2">
+            {/* WhatsApp */}
+            <OverlayTrigger overlay={<Tooltip id="whatsapp">Share via whatsapp</Tooltip>}>
+              <Link
+                href={`https://wa.me/?text=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-500 hover:underline hover:text-green-600 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-brands fa-square-whatsapp" />
+              </Link>
+            </OverlayTrigger>
 
-            {/* share via apps */}
-            <div className="">
-              <span className="font-semibold text-lg md:text-xl">Share: </span>
-              <div className="flex space-x-4 text-4xl md:text-5xl mt-2">
-                {/* WhatsApp */}
-                <OverlayTrigger overlay={<Tooltip id="whatsapp">Share via whatsapp</Tooltip>}>
-                  <Link
-                    href={`https://wa.me/?text=${encodeURIComponent(currentUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-500 hover:underline hover:text-green-600 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-brands fa-square-whatsapp" />
-                  </Link>
-                </OverlayTrigger>
+            {/* Instagram */}
+            <OverlayTrigger overlay={<Tooltip id="instagram">Share via instagram</Tooltip>}>
+              <Link
+                href={`https://www.instagram.com/direct/new/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-pink-600 hover:underline hover:text-pink-700 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-brands fa-square-instagram" />
+              </Link>
+            </OverlayTrigger>
 
-                {/* Instagram */}
-                <OverlayTrigger overlay={<Tooltip id="instagram">Share via instagram</Tooltip>}>
-                  <Link
-                    href={`https://www.instagram.com/direct/new/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-pink-600 hover:underline hover:text-pink-700 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-brands fa-square-instagram" />
-                  </Link>
-                </OverlayTrigger>
+            {/* Facebook */}
+            <OverlayTrigger overlay={<Tooltip id="facebook">Share via facebook</Tooltip>}>
+              <Link
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline hover:text-blue-600 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-brands fa-square-facebook" />
+              </Link>
+            </OverlayTrigger>
 
-                {/* Facebook */}
-                <OverlayTrigger overlay={<Tooltip id="facebook">Share via facebook</Tooltip>}>
-                  <Link
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline hover:text-blue-600 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-brands fa-square-facebook" />
-                  </Link>
-                </OverlayTrigger>
+            {/* Twitter */}
+            <OverlayTrigger overlay={<Tooltip id="twitter">Share via twitter</Tooltip>}>
+              <Link
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sky-400 hover:underline hover:text-blue-400 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-brands fa-square-twitter" />
+              </Link>
+            </OverlayTrigger>
 
-                {/* Twitter */}
-                <OverlayTrigger overlay={<Tooltip id="twitter">Share via twitter</Tooltip>}>
-                  <Link
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sky-400 hover:underline hover:text-blue-400 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-brands fa-square-twitter" />
-                  </Link>
-                </OverlayTrigger>
+            {/* LinkedIn */}
+            <OverlayTrigger overlay={<Tooltip id="linkedin">Share via linkedin</Tooltip>}>
+              <Link
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 hover:underline hover:text-blue-800 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-brands fa-linkedin" />
+              </Link>
+            </OverlayTrigger>
 
-                {/* LinkedIn */}
-                <OverlayTrigger overlay={<Tooltip id="linkedin">Share via linkedin</Tooltip>}>
-                  <Link
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-700 hover:underline hover:text-blue-800 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-brands fa-linkedin" />
-                  </Link>
-                </OverlayTrigger>
+            {/* Email */}
+            <OverlayTrigger overlay={<Tooltip id="mail">Share via mail</Tooltip>}>
+              <Link
+                href={`mailto:?subject=Check this out&body=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-700 hover:underline hover:text-gray-900 transition-all duration-150 ease-in-out"
+              >
+                <i className="fa-solid fa-envelope" />
+              </Link>
+            </OverlayTrigger>
+          </div>
+        </div>
 
-                {/* Email */}
-                <OverlayTrigger overlay={<Tooltip id="mail">Share via mail</Tooltip>}>
-                  <Link
-                    href={`mailto:?subject=Check this out&body=${encodeURIComponent(currentUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-700 hover:underline hover:text-gray-900 transition-all duration-150 ease-in-out"
-                  >
-                    <i className="fa-solid fa-envelope" />
-                  </Link>
-                </OverlayTrigger>
-              </div>
-            </div>
+        <hr className="border-2 border-gray-500 rounded-md" />
 
-            <hr className="border-2 border-gray-500 rounded-md" />
+        {/* reviews  */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Review title */}
+          <h5 className="text-xl md:text-2xl montserrat_alternates_font font-semibold">
+            Reviews
+          </h5>
 
-            {/* reviews  */}
-            <motion.div
+          <div className="flex flex-col gap-4">
+            {/* Review Form */}
+            <motion.form
+              onSubmit={handlePostReview}
+              className="w-full flex flex-col gap-4 my-2 text-sm md:text-base"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {/* Review title */}
-              <h5 className="text-xl md:text-2xl montserrat_alternates_font font-semibold">
-                Reviews
-              </h5>
-
-              <div className="flex flex-col gap-4">
-                {/* Review Form */}
-                <motion.form
-                  onSubmit={handlePostReview}
-                  className="w-full flex flex-col gap-4 my-2 text-sm md:text-base"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {/* Rating stars */}
-                  <span className="text-3xl md:text-4xl text-yellow-400 flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <OverlayTrigger key={star} overlay={<Tooltip id={`rating-${star}`}>{star}</Tooltip>}>
-                        <motion.i
-                          className={`fa-star cursor-pointer ${reviewData.star >= star ? "fa-solid" : "fa-regular"}`}
-                          onClick={() => setReviewData((prev) => ({ ...prev, star }))}
-                          whileTap={{ scale: 1.2 }}
-                          transition={{ type: "spring", stiffness: 200 }}
-                        />
-                      </OverlayTrigger>
-                    ))}
-                  </span>
-
-                  {/* Review textarea */}
-                  <motion.div
-                    className="flex gap-2"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                  >
-                    <textarea
-                      name="review"
-                      id="review"
-                      placeholder="Start Typing..."
-                      className="outline-none px-2 py-1 rounded-lg w-full shadow-md text-gray-500"
-                      value={reviewData.review}
-                      onChange={(e) => setReviewData((prev) => ({ ...prev, review: e.target.value }))}
+              {/* Rating stars */}
+              <span className="text-3xl md:text-4xl text-yellow-400 flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <OverlayTrigger key={star} overlay={<Tooltip id={`rating-${star}`}>{star}</Tooltip>}>
+                    <motion.i
+                      className={`fa-star cursor-pointer ${reviewData.star >= star ? "fa-solid" : "fa-regular"}`}
+                      onClick={() => setReviewData((prev) => ({ ...prev, star }))}
+                      whileTap={{ scale: 1.2 }}
+                      transition={{ type: "spring", stiffness: 200 }}
                     />
-                    <motion.button
-                      type="submit"
-                      className={`${isReviewSubmitting ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer opacity-100'} bg-blue-500 hover:bg-blue-700 text-white px-4 flex justify-center items-center gap-1 rounded-lg transition-all duration-300 ease-in-out shadow-md`}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={isReviewSubmitting}
-                    >
-                      {isReviewSubmitting
-                        ? (<>
-                          <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" /> Posting...
-                        </>) : 'Post'
-                      }
-                    </motion.button>
-                  </motion.div>
-                </motion.form>
+                  </OverlayTrigger>
+                ))}
+              </span>
 
-                {/* Reviews List with AnimatePresence for Exit Animation */}
-                <motion.div
-                  className="flex flex-col gap-3"
-                  initial="hidden"
-                  animate="visible"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
-                  }}
+              {/* Review textarea */}
+              <motion.div
+                className="flex gap-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <textarea
+                  name="review"
+                  id="review"
+                  placeholder="Start Typing..."
+                  className="outline-none px-2 py-1 rounded-lg w-full shadow-md text-gray-500"
+                  value={reviewData.review}
+                  onChange={(e) => setReviewData((prev) => ({ ...prev, review: e.target.value }))}
+                />
+                <motion.button
+                  type="submit"
+                  className={`${isReviewSubmitting ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer opacity-100'} bg-blue-500 hover:bg-blue-700 text-white px-4 flex justify-center items-center gap-1 rounded-lg transition-all duration-300 ease-in-out shadow-md`}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={isReviewSubmitting}
                 >
-                  <AnimatePresence>
-                    <div className="grid md:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base">
-                      {blogData?.reviews
-                        ?.slice(0, showAllReviews ? blogData?.reviews?.length : initialReviewsToShow)
-                        ?.map((review, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}  // Exit animation when removed
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                          >
-                            <CommentBox review={review} />
-                          </motion.div>
-                        ))
-                      }
-                    </div>
-                  </AnimatePresence>
+                  {isReviewSubmitting
+                    ? (<>
+                      <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" /> Posting...
+                    </>) : 'Post'
+                  }
+                </motion.button>
+              </motion.div>
+            </motion.form>
 
-                  {/* View More/Less Button */}
-                  {blogData?.reviews?.length > initialReviewsToShow && (
-                    <motion.span
-                      onClick={() => setShowAllReviews((prev) => !prev)}
-                      className="cursor-pointer py-2 text-blue-500"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4, delay: 0.5 }}
-                      exit={{ opacity: 0 }}
-                    >
+            {/* Reviews List with AnimatePresence for Exit Animation */}
+            <motion.div
+              className="flex flex-col gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+              }}
+            >
+              <AnimatePresence>
+                <div className="grid md:grid-cols-2 gap-2 md:gap-4 text-sm md:text-base">
+                  {blogData?.reviews
+                    ?.slice(0, showAllReviews ? blogData?.reviews?.length : initialReviewsToShow)
+                    ?.map((review, index) => (
                       <motion.div
-                        initial={{ x: 0 }}
-                        animate={{ x: [0, 10, 0] }}  // Add a small bounce animation
-                        transition={{ duration: 0.5 }}
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}  // Exit animation when removed
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
-                        {showAllReviews ? "View Less" : "View All"}
+                        <CommentBox review={review} />
                       </motion.div>
-                    </motion.span>
-                  )}
-                </motion.div>
-              </div>
+                    ))
+                  }
+                </div>
+              </AnimatePresence>
+
+              {/* View More/Less Button */}
+              {blogData?.reviews?.length > initialReviewsToShow && (
+                <motion.span
+                  onClick={() => setShowAllReviews((prev) => !prev)}
+                  className="cursor-pointer py-2 text-blue-500"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.5 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    initial={{ x: 0 }}
+                    animate={{ x: [0, 10, 0] }}  // Add a small bounce animation
+                    transition={{ duration: 0.5 }}
+                  >
+                    {showAllReviews ? "View Less" : "View All"}
+                  </motion.div>
+                </motion.span>
+              )}
             </motion.div>
-
-            {/* Sidebar box recommendation (moved to bottom for max-lg) */}
-            <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {latestBlogs?.length !== 0 &&
-                // latest box 
-                <RecommendSideBox header='Latest' blogs={latestBlogs} />
-              }
-              {relatedBlogs?.length !== 0 &&
-                // related box 
-                <RecommendSideBox header='Related' blogs={relatedBlogs} />
-              }
-              {trendingBlogs?.length !== 0 &&
-                // trending box  
-                <RecommendSideBox header='Trending' blogs={trendingBlogs} />
-              }
-              {userTopBlogs?.length !== 0 &&
-                //  user top box  
-                <RecommendSideBox header='Popular from this author' blogs={userTopBlogs} />
-              }
-              {topRatedBlogs?.length !== 0 &&
-                //  top rated box  
-                <RecommendSideBox header='Top Rated' blogs={topRatedBlogs} />
-              }
-            </div>
-
           </div>
-        </>
-      }
+        </motion.div>
+
+        {/* Sidebar box recommendation (moved to bottom for max-lg) */}
+        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { header: 'Latest', blogs: latestBlogs },
+            { header: 'Related', blogs: relatedBlogs },
+            { header: 'Trending', blogs: trendingBlogs },
+            { header: 'Popular from this author', blogs: userTopBlogs },
+            { header: 'Top Rated', blogs: topRatedBlogs }
+          ]
+            .filter(item => Array.isArray(item.blogs) && item.blogs.length > 0)
+            .map((item, index) => (
+              <RecommendSideBox
+                key={`${item.header}-${index}`}
+                header={item.header}
+                blogs={item.blogs}
+              />
+            ))
+          }
+        </div>
+
+      </div>
 
 
       <ModalBox
