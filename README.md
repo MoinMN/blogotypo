@@ -43,31 +43,34 @@
 | **Chart.js + React Chart.js 2** | Graphical blog statistics          |
 | **Framer Motion**               | Smooth animations                  |
 | **Bootstrap & Tailwind CSS**    | Responsive UI design               |
+| **Docker & Docker Compose**     | Containerization & Orchestration   |
 | **Vercel**                      | Hosting & Deployment               |
 
 ---
 
 ## 🚀 Installation & Setup
 
-### **1️⃣ Clone the Repository**
+### **Option 1: Local Development (Standard Setup)**
+
+#### **1️⃣ Clone the Repository**
 
 ```bash
 git clone https://github.com/MoinMN/blogotypo.git
 cd blogotypo
 ```
 
-### **2️⃣ Install Dependencies**
+#### **2️⃣ Install Dependencies**
 
 ```bash
 npm install
 ```
 
-### **3️⃣ Set Up Environment Variables**
+#### **3️⃣ Set Up Environment Variables**
 
 Create a `.env` file and add the following:
 
 ```env
-NEXT_PUBLIC_NEXTAUTH_URL=your-vercel-url
+NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:3000
 MONGODB_URI=your-mongodb-uri
 NEXTAUTH_SECRET=your-nextauth-secret
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -82,13 +85,143 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-### **4️⃣ Run the Development Server**
+#### **4️⃣ Run the Development Server**
 
 ```bash
 npm run dev
 ```
 
 Now, open **http://localhost:3000** in your browser.
+
+---
+
+### **Option 2: Docker Setup (Recommended for Production) 🐳**
+
+Docker makes it easy to run Blogotypo with **zero configuration**. The setup includes:
+- **Blogotypo Next.js App** (Port 3000)
+- **MongoDB Database** (Port 27017)
+- **Automatic health checks**
+- **Persistent data storage**
+
+#### **Prerequisites**
+
+- **Docker** installed ([Get Docker](https://docs.docker.com/get-docker/))
+- **Docker Compose** installed ([Get Docker Compose](https://docs.docker.com/compose/install/))
+
+#### **1️⃣ Clone the Repository**
+
+```bash
+git clone https://github.com/MoinMN/blogotypo.git
+cd blogotypo
+```
+
+#### **2️⃣ Set Up Environment Variables**
+
+Create a `.env` file with the following configuration:
+
+```env
+# Next.js & NextAuth
+NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+
+# MongoDB (Docker)
+MONGODB_URI=mongodb://admin:admin@mongodb:27017/Blogotypo?authSource=admin
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# SMTP Configuration
+SMTP_HOST=your_smtp_host
+SMTP_USER=your_smtp_email_id
+SMTP_PASS=your_smtp_password
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+> **📝 Note:** The MongoDB URI for Docker uses `mongodb://admin:admin@mongodb:27017/Blogotypo?authSource=admin` where `mongodb` is the service name defined in `docker-compose.yaml`.
+
+#### **3️⃣ Build and Run with Docker Compose**
+
+```bash
+# Build and start all services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (⚠️ deletes all data)
+docker compose down -v
+```
+
+#### **4️⃣ Access the Application**
+
+- **Blogotypo App:** http://localhost:3000
+- **MongoDB:** `localhost:27017` (username: `admin`, password: `admin`)
+
+#### **5️⃣ Useful Docker Commands**
+
+```bash
+# Rebuild containers after code changes
+docker compose up -d --build
+
+# View running containers
+docker compose ps
+
+# Access container shell
+docker exec -it blogotypo-app sh
+
+# View MongoDB logs
+docker compose logs mongodb
+
+# Restart services
+docker compose restart
+
+# Stop specific service
+docker compose stop blogotypo
+```
+
+---
+
+## 🐳 Docker Configuration Details
+
+### **Docker Architecture**
+
+The application uses a **multi-stage Docker build** for optimization:
+
+1. **Builder Stage**: Installs dependencies and builds Next.js
+2. **Runner Stage**: Creates a minimal production image with only necessary files
+
+### **Services**
+
+| Service | Container Name | Port | Description |
+|---------|---------------|------|-------------|
+| **blogotypo** | `blogotypo-app` | 3000 | Next.js application |
+| **mongodb** | `blogotypo-db` | 27017 | MongoDB database |
+
+### **Volumes**
+
+- `mongo-data`: Persistent storage for MongoDB data (survives container restarts)
+
+### **Networks**
+
+- `blogotypo-network`: Bridge network for inter-container communication
+
+### **Health Checks**
+
+Both services include health checks to ensure reliability:
+- **Blogotypo**: Checks `/api/health` endpoint every 30s
+- **MongoDB**: Runs `mongosh` ping every 10s
 
 ---
 
@@ -137,11 +270,28 @@ Now, open **http://localhost:3000** in your browser.
 
 ## 🚀 Deployment
 
+### **Vercel Deployment**
+
 Deployed on **Vercel**. To deploy your own version:
 
 ```bash
 vercel deploy
 ```
+
+### **Docker Deployment (VPS/Cloud)**
+
+To deploy on a VPS or cloud server:
+
+1. **Install Docker and Docker Compose** on your server
+2. **Clone the repository** and set up `.env` file
+3. **Run Docker Compose:**
+
+```bash
+docker compose up -d
+```
+
+4. **Configure reverse proxy** (Nginx/Caddy) for HTTPS
+5. **Update OAuth redirect URLs** in Google/GitHub console
 
 ---
 
@@ -154,6 +304,32 @@ Contributions are welcome!
 3. **Commit your changes** (`git commit -m "Added a new feature"`)
 4. **Push to the branch** (`git push origin feature/my-feature`)
 5. **Submit a pull request**
+
+---
+
+## 🐛 Troubleshooting
+
+### **Docker Issues**
+
+**Problem:** Port 3000 or 27017 already in use
+```bash
+# Find and kill the process using the port
+lsof -ti:3000 | xargs kill -9
+lsof -ti:27017 | xargs kill -9
+```
+
+**Problem:** MongoDB connection failed
+- Ensure MongoDB service is healthy: `docker-compose ps`
+- Check MongoDB logs: `docker-compose logs mongodb`
+- Verify `MONGODB_URI` in `.env` matches Docker Compose configuration
+
+**Problem:** Changes not reflected after rebuild
+```bash
+# Clear Docker cache and rebuild
+docker-compose down
+docker system prune -a
+docker-compose up -d --build
+```
 
 ---
 
@@ -172,3 +348,11 @@ Contributions are welcome!
 ---
 
 ⭐ **Star this repo if you found it useful!** ⭐
+
+---
+
+## 📊 Project Stats
+
+![GitHub stars](https://img.shields.io/github/stars/MoinMN/blogotypo?style=social)
+![GitHub forks](https://img.shields.io/github/forks/MoinMN/blogotypo?style=social)
+![License](https://img.shields.io/badge/license-Custom-blue.svg)
