@@ -18,10 +18,6 @@ export async function GET(req) {
 
     const session = await getServerSession(req);
 
-    // if (!session || !session?.user) {
-    //   return NextResponse.json({ msg: 'Unauthorized!' }, { status: 401 });
-    // }
-
     // userId retrive don't forget to use as "userId._id"
     const userId = await User.findOne({ email: session?.user.email }).select("_id");
 
@@ -52,7 +48,7 @@ export async function GET(req) {
         blog.reviews.sort((a, b) => b.user.top_creator - a.user.top_creator);
       }
 
-      return NextResponse.json({ data: blog }, { status: 200 });
+      return NextResponse.json(blog, { status: 200 });
     }
     // for edit blog
     else if (blogId) {
@@ -79,7 +75,7 @@ export async function GET(req) {
         return NextResponse.json({ msg: "Blog not found!" }, { status: 404 });
       }
 
-      return NextResponse.json({ data: blogsByUser }, { status: 200 });
+      return NextResponse.json(blogsByUser, { status: 200 });
 
     }
   } catch (error) {

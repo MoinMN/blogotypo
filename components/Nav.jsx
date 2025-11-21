@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import SkeletonBox from "@components/Skeletons/Skeleton";
 import { usePathname, useRouter } from "next/navigation";
 

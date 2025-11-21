@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import User from "@models/user";
 import cloudinary from "@utils/cloudinary";
 
-
 export async function DELETE(req) {
   try {
     await connectMongoDB();

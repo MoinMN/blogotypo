@@ -38,10 +38,24 @@ export async function POST(req) {
     }
 
     blog.reviews.push(newReview);
-
     await blog.save();
 
-    return NextResponse.json({ msg: "Comment added successfully!" }, { status: 200 });
+    // RE-FETCH LATEST REVIEW WITH POPULATE
+    const updatedBlog = await Blog.findById(blogId)
+      .populate({
+        path: 'creator',
+        model: 'User',
+        select: "_id email name image"
+      })
+      .populate({
+        path: 'reviews.user',
+        model: 'User',
+        select: "_id email name image top_creator"
+      });
+
+    const latestReview = updatedBlog.reviews[updatedBlog.reviews.length - 1];
+
+    return NextResponse.json({ review: latestReview, msg: "Comment added successfully!" }, { status: 200 });
   } catch (error) {
     console.log('error while posting comments ', error);
     return NextResponse.json({ msg: "Internal Server Error!" }, { status: 500 });

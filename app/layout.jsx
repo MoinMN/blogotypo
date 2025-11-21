@@ -1,4 +1,5 @@
 import "@styles/globals.css";
+import ReduxProvider from "@redux/provider";
 import AuthProvider from "@context/AuthProvider";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -39,9 +40,11 @@ export default function RootLayout({ children }) {
       <body className="roboto_font bg-theme_1" cz-shortcut-listen="true">
 
         <AuthProvider>
-          {children}
-          <Analytics />
-          <SpeedInsights />
+          <ReduxProvider>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+          </ReduxProvider>
         </AuthProvider>
 
         <script src="https://kit.fontawesome.com/93f8c5dee5.js" crossOrigin="anonymous"></script>

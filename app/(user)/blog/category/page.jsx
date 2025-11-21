@@ -125,7 +125,7 @@ const CategoryBlogs = () => {
     },
     {
       name: 'automotive',
-      image: "https://www.lifology.com/wp-content/uploads/2022/08/Automobile-Industry.jpeg"
+      image: "https://images.unsplash.com/photo-1539799139339-50c5fe1e2b1b?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     }
   ];
 
@@ -163,7 +163,6 @@ const CategoryBlogs = () => {
   return (
     <>
       <div className="">
-
         {!categoryType
           ?
           <div className="">
@@ -200,9 +199,19 @@ const CategoryBlogs = () => {
           </div>
           :
           <div className="">
-            <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
-              Category: {categoryType}
-            </h1>
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center justify-center gap-1 rounded-lg px-3 py-2 border border-gray-300 hover:bg-[#3D52A0] hover:text-white hover:border-gray-400 transition duration-200"
+              >
+                <i className="fa-solid fa-arrow-left text-lg"></i>
+                {" "}Back
+              </button>
+
+              <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
+                Category: {categoryType}
+              </h1>
+            </div>
 
             <div className="grid max-md:my-3 md:my-6 max-md:ml-0 md:ml-4 max-md:gap-2 md:gap-4">
 
@@ -223,7 +232,6 @@ const CategoryBlogs = () => {
                     setShowModal={setShowModal}
                   />
                 ))}
-
             </div>
 
             {/* Pagination */}
@@ -242,9 +250,7 @@ const CategoryBlogs = () => {
             }
           </div>
         }
-
       </div>
-
 
       <AlertBox
         show={showAlert}

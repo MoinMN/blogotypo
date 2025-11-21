@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -18,21 +18,15 @@ import CommentBox from "./CommentBox";
 import AlertBox from "./Alert";
 import ModalBox from "./Modal";
 import BlogSkeleton from "./Skeletons/BlogSkeleton";
+import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
+import { addReviewToBlog, removeBlogCache } from "@redux/slices/blog/blog.slice";
 
-
-const ViewBlog = ({ blogData, fetchBlogData }) => {
+const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
   const { data: session } = useSession();
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-
-  const [latestBlogs, setLatestBlogs] = useState([]);
-  const [trendingBlogs, setTrendingBlogs] = useState([]);
-  const [relatedBlogs, setRelatedBlogs] = useState([]);
-  const [userTopBlogs, setUserTopBlogs] = useState([]);
-  const [topRatedBlogs, setTopRatedBlogs] = useState([]);
-
-  const [showSkeleton, setShowSkeleton] = useState(true);
 
   const [isReviewSubmitting, setIsReviewSubmitting] = useState(false);
 
@@ -64,44 +58,6 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
     header: '',
   });
 
-  const fetchOtherBlogs = async () => {
-    if (Object.keys(blogData).length === 0) return;
-
-    try {
-      const reqLatest =
-        await fetch(`/api/blog/recommend/latest?blogId=${blogData?._id}`,
-          { method: "GET" }
-        );
-      const reqTrending =
-        await fetch(`/api/blog/recommend/popular?blogId=${blogData?._id}`,
-          { method: "GET" }
-        );
-      const reqRelated =
-        await fetch(`/api/blog/recommend/related?blogId=${blogData?._id}`,
-          { method: "GET" }
-        );
-      const reqUserTop =
-        await fetch(`/api/blog/recommend/user-blog?blogId=${blogData?._id}&userId=${blogData?.creator?._id}`,
-          { method: "GET" }
-        );
-      const reqTopRated =
-        await fetch(`/api/blog/recommend/top-rated?blogId=${blogData?._id}`,
-          { method: "GET" }
-        );
-
-      setLatestBlogs(await reqLatest.json());
-      setTrendingBlogs(await reqTrending.json());
-      setRelatedBlogs(await reqRelated.json());
-      setUserTopBlogs(await reqUserTop.json());
-      setTopRatedBlogs(await reqTopRated.json());
-
-    } catch (error) {
-      console.log('error fetching recommended blogs', error);
-    } finally {
-      setShowSkeleton(false);
-    }
-  }
-
   const handlePostReview = async (e) => {
     e.preventDefault();
 
@@ -128,10 +84,10 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
       const data = await response.json();
 
       if (response.ok) {
+        dispatch(addReviewToBlog({ blogTitle, review: data?.review }));
+
         setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
         setReviewData({ review: '', star: 0 });
-        // update blogs
-        fetchBlogData();
         setIsReviewSubmitting(false);
         return;
       }
@@ -171,6 +127,8 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
       const text = await response.text();
 
       if (response.ok) {
+        dispatch(removeBlogCache({ blogTitle }));
+
         setAlertData((prev) => ({ ...prev, header: text, variant: "success" }));
         router.push(session.user.role === 'user' ? '/my-blogs' : '/admin/blogs');
       } else
@@ -189,11 +147,7 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
     router.push('/publish-blog?blogId=' + blogId);
   }
 
-  useEffect(() => {
-    fetchOtherBlogs();
-  }, [blogData]);
-
-  if (showSkeleton) return <BlogSkeleton />;
+  if (loading) return <BlogSkeleton />;
 
   return (
     <>
@@ -259,11 +213,11 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
           {/* sidebar box recommendation */}
           <div className="lg:col-span-1 lg:pl-4 lg:flex lg:flex-col lg:gap-4 hidden">
             {[
-              { header: 'Latest', blogs: latestBlogs },
-              { header: 'Related', blogs: relatedBlogs },
-              { header: 'Trending', blogs: trendingBlogs },
-              { header: 'Popular from this author', blogs: userTopBlogs },
-              { header: 'Top Rated', blogs: topRatedBlogs }
+              { header: 'Latest', blogs: recommendBlogs?.latestBlogs },
+              { header: 'Related', blogs: recommendBlogs?.relatedBlogs },
+              { header: 'Trending', blogs: recommendBlogs?.trendingBlogs },
+              { header: 'Popular from this author', blogs: recommendBlogs?.userTopBlogs },
+              { header: 'Top Rated', blogs: recommendBlogs?.topRatedBlogs }
             ]
               .filter(item => Array.isArray(item.blogs) && item.blogs.length > 0)
               .map((item, index) => (
@@ -445,7 +399,7 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
                         exit={{ opacity: 0, y: -10 }}  // Exit animation when removed
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
-                        <CommentBox review={review} />
+                        <CommentBox blogTitle={blogTitle} review={review} />
                       </motion.div>
                     ))
                   }
@@ -478,11 +432,11 @@ const ViewBlog = ({ blogData, fetchBlogData }) => {
         {/* Sidebar box recommendation (moved to bottom for max-lg) */}
         <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { header: 'Latest', blogs: latestBlogs },
-            { header: 'Related', blogs: relatedBlogs },
-            { header: 'Trending', blogs: trendingBlogs },
-            { header: 'Popular from this author', blogs: userTopBlogs },
-            { header: 'Top Rated', blogs: topRatedBlogs }
+            { header: 'Latest', blogs: recommendBlogs?.latestBlogs },
+            { header: 'Related', blogs: recommendBlogs?.relatedBlogs },
+            { header: 'Trending', blogs: recommendBlogs?.trendingBlogs },
+            { header: 'Popular from this author', blogs: recommendBlogs?.userTopBlogs },
+            { header: 'Top Rated', blogs: recommendBlogs?.topRatedBlogs }
           ]
             .filter(item => Array.isArray(item.blogs) && item.blogs.length > 0)
             .map((item, index) => (

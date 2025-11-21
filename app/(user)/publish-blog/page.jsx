@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import AlertBox from '@components/Alert';
 import useMetadata from '@hooks/metadata';
+import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
+import { addMyBlogCache, updateMyBlogCache } from '@redux/slices/blog/myblogs.slice';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
@@ -20,6 +22,8 @@ const PublishBlog = () => {
   const router = useRouter();
   // for edit blog search params 
   const blogIdFromParams = useSearchParams().get('blogId');
+
+  const dispatch = useDispatch();
 
   // for form submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,11 +106,18 @@ const PublishBlog = () => {
         body: formData
       });
 
-      const text = await response.text();
+      const result = await response.json();
+      
       if (response.ok) {
+        if (blogIdFromParams) {
+          dispatch(updateMyBlogCache(result?.updatedBlog));
+        } else {
+          dispatch(addMyBlogCache(result?.newBlog));
+        }
+
         router.push('/my-blogs');
       } else {
-        setAlertData((prev) => ({ ...prev, header: text, variant: "danger" }));
+        setAlertData((prev) => ({ ...prev, header: result?.msg, variant: "danger" }));
         setShowAlert(true);
         setIsSubmitting(false);
       }

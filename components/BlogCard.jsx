@@ -9,11 +9,15 @@ import { formatDateForBlog } from "./FormatDate"
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
+import { deleteMyBlogCache } from '@redux/slices/blog/myblogs.slice';
 
 
 const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, setShowModal, setModalData, setAlertData, fetchBlogs }) => {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const dispatch = useDispatch();
 
   // copy link to clipboard
   const handleCopyLink = (blogTitle) => {
@@ -71,8 +75,9 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
       const text = await response.text();
 
       if (response.ok) {
+        dispatch(deleteMyBlogCache(blogId));
+
         setAlertData((prev) => ({ ...prev, header: text, variant: "success" }));
-        fetchBlogs();
       } else
         setAlertData((prev) => ({ ...prev, header: text, variant: "danger" }));
     } catch (error) {

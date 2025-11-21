@@ -10,11 +10,15 @@ import BlogCard from "@components/BlogCard";
 import useMetadata from "@hooks/metadata";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useDispatch, useSelector } from "@node_modules/react-redux/dist/react-redux";
+import { fetchMyBlogs } from "@redux/slices/blog/myblogs.slice";
 
 
 const MyBlogs = () => {
   // set title for page
   useMetadata('My Blogs - Blogotypo', 'Blogotypo is Blogging platform. Anyone from anywhere can create account and post their blogs for free.');
+
+  const dispatch = useDispatch();
 
   const [blogList, setBlogList] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
@@ -68,29 +72,43 @@ const MyBlogs = () => {
 
   // for share btn
   const [copiedLinkTitle, setCopiedLinkTitle] = useState('');
-  // skeleton
-  const [showSkeleton, setShowSkeleton] = useState(true);
 
   // fecth blogs
-  const fetchBlogs = async () => {
-    try {
-      const response = await fetch(`/api/blog/get`, { method: 'GET' });
-      const data = await response.json();
+  // const fetchBlogs = async () => {
+  //   try {
+  //     const response = await fetch(`/api/blog/get`, { method: 'GET' });
+  //     const data = await response.json();
 
-      if (!response.ok) {
-        setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "danger" }));
-        setShowAlert(true);
-        return;
-      }
-      setBlogList(data.data);
-      setFilteredBlogs(data.data);
-      setPaginatedBlogs(data.data.slice(0, itemsPerPage)); // Initial page data
-    } catch (error) {
-      console.log('Error while fetching blogs: ', error);
-    } finally {
-      setShowSkeleton(false);
+  //     if (!response.ok) {
+  //       setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "danger" }));
+  //       setShowAlert(true);
+  //       return;
+  //     }
+  //     setBlogList(data.data);
+  //     setFilteredBlogs(data.data);
+  //     setPaginatedBlogs(data.data.slice(0, itemsPerPage)); // Initial page data
+  //   } catch (error) {
+  //     console.log('Error while fetching blogs: ', error);
+  //   } finally {
+  //     setShowSkeleton(false);
+  //   }
+  // }
+
+  const { myBlogs, myBlogsCacheLoading, myBlogsCacheError, myBlogsCacheLoaded } = useSelector((state) => state.myBlogs);
+
+  useEffect(() => {
+    if (!myBlogsCacheLoaded) {
+      dispatch(fetchMyBlogs());
     }
-  }
+  }, [myBlogsCacheLoaded]);
+
+  useEffect(() => {
+    if (myBlogs.length !== 0) {
+      setBlogList(myBlogs);
+      setFilteredBlogs(myBlogs);
+      setPaginatedBlogs(myBlogs.slice(0, itemsPerPage));
+    }
+  }, [myBlogs]);
 
   const filterBlogs = () => {
     const lowerSearch = search.toLowerCase();
@@ -166,18 +184,13 @@ const MyBlogs = () => {
     setIsSearching(false);
   };
 
-
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
   useEffect(() => {
     setPaginatedBlogs(filteredBlogs.slice(0, itemsPerPage));
   }, [itemsPerPage, filteredBlogs]);
 
   return (
     <>
-      {showSkeleton ? (
+      {myBlogsCacheLoading ? (
         <MyBlogSkeleton />
       ) : (
         <>
@@ -304,7 +317,7 @@ const MyBlogs = () => {
                         blog={blog}
                         copiedLinkTitle={copiedLinkTitle}
                         setCopiedLinkTitle={setCopiedLinkTitle}
-                        fetchBlogs={fetchBlogs}
+                        // fetchBlogs={fetchBlogs}
                         setAlertData={setAlertData}
                         setShowAlert={setShowAlert}
                         setModalData={setModalData}
