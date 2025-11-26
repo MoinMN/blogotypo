@@ -79,15 +79,16 @@ const dashboardRecommendSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDashboardRecommendBlog.pending, (state) => {
-        state.dashboardRecommendBlogLoading = true;
-        state.dashboardRecommendBlogError = null;
-      })
-      .addCase(fetchDashboardRecommendBlog.fulfilled, (state, action) => {
-        state.dashboardRecommendBlogLoading = false;
-
-        // Stores ALL 5 responses
-        state.trendingBlogs = action.payload.trendingBlogs;
+    .addCase(fetchDashboardRecommendBlog.pending, (state) => {
+      state.dashboardRecommendBlogLoading = true;
+      state.dashboardRecommendBlogError = null;
+      state.dashboardRecommendBlogCacheLoaded = false;
+    })
+    .addCase(fetchDashboardRecommendBlog.fulfilled, (state, action) => {
+      state.dashboardRecommendBlogLoading = false;
+      
+      // Stores ALL 5 responses
+      state.trendingBlogs = action.payload.trendingBlogs;
         state.topRatedBlogs = action.payload.topRatedBlogs;
         state.latestBlogs = action.payload.latestBlogs;
         state.topCreatorBlogs = action.payload.topCreatorBlogs;
@@ -97,6 +98,7 @@ const dashboardRecommendSlice = createSlice({
       .addCase(fetchDashboardRecommendBlog.rejected, (state, action) => {
         state.dashboardRecommendBlogLoading = false;
         state.dashboardRecommendBlogError = action.payload || "Something went wrong.";
+        state.dashboardRecommendBlogCacheLoaded = false;
       });
   },
 });
