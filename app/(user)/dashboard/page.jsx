@@ -8,18 +8,18 @@ import Link from "next/link";
 
 import {
   UserDashboardHeroSkeleton,
-  UserDashboardOtherSkeleton
+  UserDashboardOtherSkeleton,
 } from "@components/Skeletons/UserDashboardSkeleton";
 import { fetchDashboardRecommendBlog } from "@redux/slices/blog/dashboard.recommend.slice";
 import HorizontalBlogList from "@components/HorizontalBlogList";
 import { useDispatch, useSelector } from "react-redux";
-import Carousel from 'react-bootstrap/Carousel';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Carousel from "react-bootstrap/Carousel";
+import "bootstrap/dist/css/bootstrap.min.css";
 import useMetadata from "@hooks/metadata";
 
 const UserDashboard = () => {
   // set title for page
-  useMetadata('Dashboard - Blogotypo', 'My all blogs that are publish by me');
+  useMetadata("Dashboard - Blogotypo", "My all blogs that are publish by me");
 
   const dispatch = useDispatch();
   const {
@@ -30,7 +30,7 @@ const UserDashboard = () => {
     categoryBlogs,
     dashboardRecommendBlogLoading,
     dashboardRecommendBlogError,
-    dashboardRecommendBlogCacheLoaded
+    dashboardRecommendBlogCacheLoaded,
   } = useSelector((state) => state.dashboardRecommendBlog);
 
   // for slider track index
@@ -40,7 +40,7 @@ const UserDashboard = () => {
     if (!dashboardRecommendBlogCacheLoaded) {
       dispatch(fetchDashboardRecommendBlog(null));
     }
-  }, [dashboardRecommendBlogCacheLoaded]);
+  }, []);
 
   // Animation Variants
   const fadeInUp = {
@@ -55,14 +55,15 @@ const UserDashboard = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {dashboardRecommendBlogLoading ?
+      {dashboardRecommendBlogLoading ? (
         <>
           <UserDashboardHeroSkeleton />
           <UserDashboardOtherSkeleton />
         </>
-        : (<>
+      ) : (
+        <>
           {/* hero content */}
-          < motion.div
+          <motion.div
             className="grid md:grid-cols-7 gap-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -77,7 +78,11 @@ const UserDashboard = () => {
             >
               {trendingBlogs?.slice(0, 5).map((trend, index) => (
                 <Carousel.Item key={index}>
-                  <Link href={`/blog/${encodeURIComponent(trend?.title?.split(' ').join('-'))}`}>
+                  <Link
+                    href={`/blog/${encodeURIComponent(
+                      trend?.title?.split(" ").join("-")
+                    )}`}
+                  >
                     <div className="relative w-full h-[300px] md:h-[500px]">
                       <Image
                         src={trend.thumbnail_image}
@@ -93,11 +98,16 @@ const UserDashboard = () => {
                     </div>
                     <Carousel.Caption>
                       <h3 className="text-3xl md:text-6xl">
-                        {trend?.title?.length > 60 ? `${trend.title.substr(0, 60)}...` : trend.title}
+                        {trend?.title?.length > 60
+                          ? `${trend.title.substr(0, 60)}...`
+                          : trend.title}
                       </h3>
                       <div className="flex justify-center items-center gap-2 text-xs md:text-sm">
                         {trend?.categories?.map((cate, inx) => (
-                          <span key={inx} className="bg-white text-black md:px-2 max-md:px-1 md:py-1 max-md:py-0.5 rounded-md">
+                          <span
+                            key={inx}
+                            className="bg-white text-black md:px-2 max-md:px-1 md:py-1 max-md:py-0.5 rounded-md"
+                          >
                             {cate}
                           </span>
                         ))}
@@ -118,7 +128,11 @@ const UserDashboard = () => {
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   className="relative w-full h-[150px] group"
                 >
-                  <Link href={`/blog/${encodeURIComponent(topRated?.title?.split(' ').join('-'))}`}>
+                  <Link
+                    href={`/blog/${encodeURIComponent(
+                      topRated?.title?.split(" ").join("-")
+                    )}`}
+                  >
                     <Image
                       src={topRated.thumbnail_image}
                       layout="fill"
@@ -128,7 +142,9 @@ const UserDashboard = () => {
                       className="absolute inset-0 rounded-xl shadow-md transition-transform duration-300 ease-in-out group-hover:scale-105"
                     />
                     <h3 className="absolute -bottom-2 group-hover:scale-105 rounded-xl left-0 right-0 z-10 p-3 bg-gradient-to-t from-black via-transparent to-transparent text-white text-lg lg:text-2xl transition-all duration-300 ease-in-out">
-                      {topRated?.title?.length > 60 ? `${topRated.title.substr(0, 60)}...` : topRated.title}
+                      {topRated?.title?.length > 60
+                        ? `${topRated.title.substr(0, 60)}...`
+                        : topRated.title}
                     </h3>
                     <span className="absolute top-2 left-2 bg-black text-white rounded-lg md:px-3 max-md:px-1.5 md:py-1 max-md:py-0.5 text-xs transition-all duration-300 ease-in-out">
                       Top Rated ⭐
@@ -157,7 +173,10 @@ const UserDashboard = () => {
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <HorizontalBlogList header={"Top Rated ⭐"} list={topRatedBlogs} />
+              <HorizontalBlogList
+                header={"Top Rated ⭐"}
+                list={topRatedBlogs}
+              />
             </motion.div>
 
             {/* latest */}
@@ -178,7 +197,10 @@ const UserDashboard = () => {
                 whileInView="visible"
                 viewport={{ once: true }}
               >
-                <HorizontalBlogList header={"Verified Creator 👑"} list={topCreatorBlogs} />
+                <HorizontalBlogList
+                  header={"Verified Creator 👑"}
+                  list={topCreatorBlogs}
+                />
               </motion.div>
             )}
 
@@ -192,17 +214,19 @@ const UserDashboard = () => {
                   viewport={{ once: true }}
                 >
                   <HorizontalBlogList
-                    header={`Category: ${item.category.charAt(0).toUpperCase() + item.category.slice(1)}`}
+                    header={`Category: ${
+                      item.category.charAt(0).toUpperCase() +
+                      item.category.slice(1)
+                    }`}
                     list={item.blogs}
                   />
                 </motion.div>
-              ))
-            }
+              ))}
           </div>
-        </>)
-      }
+        </>
+      )}
     </div>
   );
-}
+};
 
-export default UserDashboard
+export default UserDashboard;

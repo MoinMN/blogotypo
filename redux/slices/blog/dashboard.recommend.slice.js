@@ -5,7 +5,7 @@ export const fetchDashboardRecommendBlog = createAsyncThunk(
   "dashboardRecommendBlog/fetchAll",
   async (argBlogLimit, { rejectWithValue }) => {
     try {
-      const blogLimit = argBlogLimit | process.env.NEXT_PUBLIC_BLOG_LIMIT;
+      const blogLimit = argBlogLimit || process.env.NEXT_PUBLIC_BLOG_LIMIT;
       const blogCategoryLimit = 5;
 
       const [
