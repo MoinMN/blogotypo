@@ -1,25 +1,28 @@
 "use client";
 
-import AlertBox from '@components/Alert';
-import BlogCard from '@components/BlogCard';
-import ModalBox from '@components/Modal';
-import PaginationBlogs from '@components/PaginationBlogs';
-import { BlogBoxSkeleton } from '@components/Skeletons/MyBlogSkeleton';
-import useMetadata from '@hooks/metadata';
+import AlertBox from "@components/Alert";
+import BlogCard from "@components/BlogCard";
+import ModalBox from "@components/Modal";
+import PaginationBlogs from "@components/PaginationBlogs";
+import { BlogBoxSkeleton } from "@components/Skeletons/MyBlogSkeleton";
+import useMetadata from "@hooks/metadata";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 
 const SearchBlogs = () => {
   // set title for page
-  useMetadata(`Search Blogs - Blogotypo`, `Search blogs from title, category, author name or content with advanced filtering system`);
+  useMetadata(
+    `Search Blogs - Blogotypo`,
+    `Search blogs from title, category, author name or content with advanced filtering system`
+  );
   // store filtered blogs
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   // for search text
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   // store search from where
-  const [searchFrom, setSearchFrom] = useState('all');
+  const [searchFrom, setSearchFrom] = useState("all");
   // data interval
   const [dateInterval, setDateInterval] = useState("all");
   const [sortOption, setSortOption] = useState("date-desc");
@@ -50,36 +53,40 @@ const SearchBlogs = () => {
   // alert
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({
-    variant: '',
+    variant: "",
     dismissible: true,
-    header: '',
+    header: "",
   });
 
   // modal
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
+    title: "",
+    body: "",
+    actionBtn: "",
+    actionBtnVariant: "",
+    confirmAction: () => {},
   });
 
   // for share btn
-  const [copiedLinkTitle, setCopiedLinkTitle] = useState('');
+  const [copiedLinkTitle, setCopiedLinkTitle] = useState("");
   // skeleton
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   // search blogs
-  const handleSearchBlogs = async (e, blogLimit = "no-limit") => { // if not set then default
-    setIsSearching(true);     // set true isSearching
-    setShowSkeleton(true);   // set skeleton true
+  const handleSearchBlogs = async (e, blogLimit = "no-limit") => {
+    // if not set then default
+    setIsSearching(true); // set true isSearching
+    setShowSkeleton(true); // set skeleton true
 
     // has this function is called when user delete their own blog
     if (e) e.preventDefault();
 
     try {
-      const response = await fetch(`/api/blog/search?text=${search.trim()}&from=${searchFrom}&blogLimit=${blogLimit}`, { method: 'GET' });
+      const response = await fetch(
+        `/api/blog/search?text=${search.trim()}&from=${searchFrom}&blogLimit=${blogLimit}`,
+        { method: "GET" }
+      );
       const data = await response.json();
 
       const fetchedBlogs = data?.data || [];
@@ -87,18 +94,26 @@ const SearchBlogs = () => {
       filterBlogs(fetchedBlogs);
 
       if (!response?.ok) {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+        setAlertData((prev) => ({
+          ...prev,
+          header: data.msg,
+          variant: "danger",
+        }));
         setShowAlert(true);
       }
     } catch (error) {
-      console.log('error while searching blogs', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error", variant: "danger" }));
+      console.log("error while searching blogs", error);
+      setAlertData((prev) => ({
+        ...prev,
+        header: "Internal Server Error",
+        variant: "danger",
+      }));
       setShowAlert(true);
     } finally {
-      setIsSearching(false);    // set isSearching false
-      setShowSkeleton(false);   // set skeleton false
+      setIsSearching(false); // set isSearching false
+      setShowSkeleton(false); // set skeleton false
     }
-  }
+  };
 
   // if any filters is added in search this will run after searching
   const filterBlogs = (fetchedBlogs) => {
@@ -106,7 +121,7 @@ const SearchBlogs = () => {
     // console.log(blogsData);
     // Filter blogs based on the search query and selected filters
     let filtered = fetchedBlogs.filter((blog) => {
-      if (searchFrom === 'all') {
+      if (searchFrom === "all") {
         return (
           blog.title.toLowerCase().includes(lowerSearch) ||
           blog.content.toLowerCase().includes(lowerSearch) ||
@@ -114,15 +129,15 @@ const SearchBlogs = () => {
         );
       }
 
-      if (searchFrom === 'title') {
+      if (searchFrom === "title") {
         return blog.title.toLowerCase().includes(lowerSearch);
       }
 
-      if (searchFrom === 'category') {
+      if (searchFrom === "category") {
         return blog.categories.includes(lowerSearch);
       }
 
-      if (searchFrom === 'content') {
+      if (searchFrom === "content") {
         return blog.content.toLowerCase().includes(lowerSearch);
       }
 
@@ -133,18 +148,24 @@ const SearchBlogs = () => {
     const currentDate = new Date();
     switch (dateInterval) {
       case "today":
-        filtered = filtered.filter(blog => {
+        filtered = filtered.filter((blog) => {
           const blogDate = new Date(blog.date);
           return blogDate.toDateString() === currentDate.toDateString();
         });
         break;
       case "week":
-        const oneWeekAgo = new Date(currentDate.setDate(currentDate.getDate() - 7));
-        filtered = filtered.filter(blog => new Date(blog.date) >= oneWeekAgo);
+        const oneWeekAgo = new Date(
+          currentDate.setDate(currentDate.getDate() - 7)
+        );
+        filtered = filtered.filter((blog) => new Date(blog.date) >= oneWeekAgo);
         break;
       case "month":
-        const oneMonthAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
-        filtered = filtered.filter(blog => new Date(blog.date) >= oneMonthAgo);
+        const oneMonthAgo = new Date(
+          currentDate.setMonth(currentDate.getMonth() - 1)
+        );
+        filtered = filtered.filter(
+          (blog) => new Date(blog.date) >= oneMonthAgo
+        );
         break;
       default:
         // All time
@@ -175,6 +196,17 @@ const SearchBlogs = () => {
     setIsSearching(false);
   };
 
+  // debounce search
+  useEffect(() => {
+    if (!search.trim()) return;
+
+    const timer = setTimeout(() => {
+      handleSearchBlogs();
+    }, 500); // 500ms debounce time
+
+    return () => clearTimeout(timer);
+  }, [search, searchFrom]);
+
   useEffect(() => {
     setPaginatedBlogs(filteredBlogs.slice(0, itemsPerPage));
   }, [itemsPerPage, filteredBlogs]);
@@ -195,7 +227,7 @@ const SearchBlogs = () => {
             className="text-blue-500 underline text-sm md:text-base cursor-pointer select-none"
             onClick={() => setShowAdvancedFilter((prev) => !prev)}
           >
-            {showAdvancedFilter ? 'Hide' : 'Show'} Advanced Filter
+            {showAdvancedFilter ? "Hide" : "Show"} Advanced Filter
           </span>
         </div>
 
@@ -210,7 +242,9 @@ const SearchBlogs = () => {
             >
               {/* Sort By Dropdown */}
               <div className="flex items-center">
-                <label htmlFor="sortBy" className="mr-2 text-gray-600">Sort By:</label>
+                <label htmlFor="sortBy" className="mr-2 text-gray-600">
+                  Sort By:
+                </label>
                 <select
                   id="sortBy"
                   className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
@@ -225,7 +259,9 @@ const SearchBlogs = () => {
 
               {/* Date Interval Select */}
               <div className="flex items-center">
-                <label htmlFor="dateInterval" className="mr-2 text-gray-600">Date Interval:</label>
+                <label htmlFor="dateInterval" className="mr-2 text-gray-600">
+                  Date Interval:
+                </label>
                 <select
                   id="dateInterval"
                   className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
@@ -240,7 +276,9 @@ const SearchBlogs = () => {
 
               {/* Items per page select */}
               <div className="flex items-center">
-                <label htmlFor="blogsPerPage" className="mr-2 text-gray-600">Blogs Per Page:</label>
+                <label htmlFor="blogsPerPage" className="mr-2 text-gray-600">
+                  Blogs Per Page:
+                </label>
                 <select
                   id="blogsPerPage"
                   className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
@@ -258,12 +296,11 @@ const SearchBlogs = () => {
           )}
         </AnimatePresence>
 
-
         <div className="flex flex-col md:my-4 max-md:my-2">
-
           {/* search box  */}
           <form
-            onSubmit={handleSearchBlogs}
+            // onSubmit={handleSearchBlogs}
+            onSubmit={(e) => e.preventDefault()}
             className="bg-white w-full flex max-sm:flex-col rounded-lg md:px-4 md:py-3 max-md:px-2 max-md:py-2 text-gray-600 border border-gray-300 shadow-md text-base md:text-lg"
           >
             <input
@@ -279,7 +316,7 @@ const SearchBlogs = () => {
               <select
                 name="whereToSearch"
                 id="whereToSearch"
-                className="cursor-pointer md:px-4 md:py-2 max-md:px-2 max-md:py-1 transition-all w-full sm:w-auto sm:mr-2 max-sm:mb-2 outline-none sm:border-x border-gray-400 bg-transparent"
+                className="cursor-pointer md:px-4 md:py-2 max-md:px-2 max-md:py-1 transition-all w-full sm:w-auto sm:mr-2 max-sm:mb-2 outline-none sm:border-l border-gray-400 bg-transparent"
                 defaultValue="all"
                 onChange={(e) => setSearchFrom(e.target.value)}
               >
@@ -289,7 +326,7 @@ const SearchBlogs = () => {
                 <option value="content">Content</option>
                 <option value="author">Author</option>
               </select>
-              <button
+              {/* <button
                 type="submit"
                 className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isSearching ? 'cursor-not-allowed bg-theme_2' : 'bg-theme_4 hover:bg-theme_5'}`}
                 disabled={isSearching}
@@ -298,49 +335,45 @@ const SearchBlogs = () => {
                 <span className="">
                   {isSearching ? 'Searching...' : 'Search'}
                 </span>
-              </button>
+               </button> */}
             </div>
           </form>
 
           {/* result blogs  */}
           <div className="grid max-md:my-3 md:my-6 max-md:ml-0 md:ml-4 max-md:gap-2 md:gap-4">
-
             {showSkeleton
-              ? [...Array(2)].map((_, index) => (
-                <BlogBoxSkeleton key={index} />
-              ))
-              : paginatedBlogs?.map(blog => (
-                <BlogCard
-                  key={blog?._id}
-                  blog={blog}
-                  copiedLinkTitle={copiedLinkTitle}
-                  setCopiedLinkTitle={setCopiedLinkTitle}
-                  fetchBlogs={handleSearchBlogs}
-                  setAlertData={setAlertData}
-                  setShowAlert={setShowAlert}
-                  setModalData={setModalData}
-                  setShowModal={setShowModal}
-                />
-              ))}
-
+              ? [...Array(2)].map((_, index) => <BlogBoxSkeleton key={index} />)
+              : paginatedBlogs?.map((blog) => (
+                  <BlogCard
+                    key={blog?._id}
+                    blog={blog}
+                    copiedLinkTitle={copiedLinkTitle}
+                    setCopiedLinkTitle={setCopiedLinkTitle}
+                    fetchBlogs={handleSearchBlogs}
+                    setAlertData={setAlertData}
+                    setShowAlert={setShowAlert}
+                    setModalData={setModalData}
+                    setShowModal={setShowModal}
+                  />
+                ))}
           </div>
         </div>
 
         {/* Pagination */}
-        {filteredBlogs.length !== 0
-          ? <PaginationBlogs
+        {filteredBlogs.length !== 0 ? (
+          <PaginationBlogs
             entireData={filteredBlogs}
             itemsPerPage={itemsPerPage}
-            onPageChange={setPaginatedBlogs}   // retrive filtered blogs
+            onPageChange={setPaginatedBlogs} // retrive filtered blogs
           />
-          : <div className="flex h-56 justify-center items-center">
+        ) : (
+          <div className="flex h-56 justify-center items-center">
             <h3 className="caveat_font text-3xl md:text-5xl text-center font-semibold">
               No Blog Found!
             </h3>
           </div>
-        }
-      </div >
-
+        )}
+      </div>
 
       <AlertBox
         show={showAlert}
@@ -361,7 +394,7 @@ const SearchBlogs = () => {
         confirmAction={modalData.confirmAction}
       />
     </>
-  )
-}
+  );
+};
 
-export default SearchBlogs
+export default SearchBlogs;

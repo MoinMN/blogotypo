@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import Navbar from "./_components/Navbar";
 import Hero from "./_components/Hero";
@@ -11,25 +11,25 @@ import WhyBlogotypo from "./_components/WhyBlogotypo";
 
 import Footer from "@components/Footer";
 import HomeLoading from "./_components/Loading";
+import ExploreSkeleton from "@components/Skeletons/ExploreSkeleton";
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [popularBlogs, setPopularBlogs] = useState([]);
 
   const fetchPopularBlogs = async () => {
     try {
-      const response = await fetch(`/api/blog/recommend/popular?blogLimit=10`, { method: "GET" });
+      const response = await fetch(`/api/blog/recommend/popular?blogLimit=10`, {
+        method: "GET",
+      });
       const data = await response.json();
-      
+
       if (response.ok) {
         setPopularBlogs(data);
       }
     } catch (error) {
-      console.log('error while fetch popular blogs', error);
-    } finally {
-      setIsLoading(false);
+      console.log("error while fetch popular blogs", error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchPopularBlogs();
@@ -37,20 +37,17 @@ const Home = () => {
 
   return (
     <>
-      {isLoading
-        ? <HomeLoading />
-        : <>
-          <Navbar />
-          <Hero />
-          <AboutUs />
-          <Features />
-          <Explore popularBlogs={popularBlogs} />
-          <WhyBlogotypo />
-          <Footer />
-        </>
-      }
+      <Navbar />
+      <Hero />
+      <AboutUs />
+      <Features />
+      <Suspense fallback={<ExploreSkeleton />}>
+        <Explore popularBlogs={popularBlogs} />
+      </Suspense>
+      <WhyBlogotypo />
+      <Footer />
     </>
-  )
-}
+  );
+};
 
 export default Home;

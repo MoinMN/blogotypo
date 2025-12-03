@@ -10,7 +10,6 @@ import React from 'react';
 const UserBlog = ({ params }) => {
   const dispatch = useDispatch();
 
-
   const unwrappedParams = React.use(params);
   const blogTitle = useMemo(() => {
     return unwrappedParams?.blogTitle?.trim()?.split(" ")?.join("-") || "";

@@ -13,7 +13,7 @@ import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 import { deleteMyBlogCache } from '@redux/slices/blog/myblogs.slice';
 
 
-const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, setShowModal, setModalData, setAlertData, fetchBlogs }) => {
+const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, setShowModal, setModalData, setAlertData }) => {
   const { data: session } = useSession();
   const router = useRouter();
 
