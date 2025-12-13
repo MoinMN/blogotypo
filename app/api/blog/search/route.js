@@ -1,3 +1,4 @@
+import "@models/user";
 import Blog from "@models/blog";
 import { NextResponse } from "next/server";
 import connectMongoDB from "@utils/database";
@@ -16,7 +17,6 @@ export async function GET(req) {
 
     if (search) {
       const regex = new RegExp(search, "i"); // Case-insensitive search
-
       if (searchFrom === "title") {
         query.title = regex;
       } else if (searchFrom === "content") {

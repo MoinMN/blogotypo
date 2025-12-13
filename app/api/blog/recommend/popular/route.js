@@ -1,3 +1,4 @@
+import "@models/user";
 import Blog from "@models/blog";
 import { NextResponse } from "@node_modules/next/server";
 import connectMongoDB from "@utils/database";
