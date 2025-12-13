@@ -1,10 +1,10 @@
 # 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
-<img src="https://blogotypo.vercel.app/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
+<img src="https://blogotypo.moinnaik.bio/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
 
 ## 🌍 Live Demo
 
-🔗 **[Visit Blogotypo](https://blogotypo.vercel.app)** (Deployed on Vercel)
+🔗 **[Visit Blogotypo](https://blogotypo.moinnaik.bio)** (Deployed on Vercel)
 
 ---
 
@@ -36,6 +36,7 @@
 | **Next.js**                     | Frontend & Backend                 |
 | **MongoDB + Mongoose**          | Database for storing blogs & users |
 | **NextAuth.js**                 | Authentication (Google & GitHub)   |
+| **Redux & Redux Toolkit**       | State management & global state    |
 | **Jodit Editor**                | Rich text editor for writing blogs |
 | **Cloudinary**                  | Upload & store images              |
 | **bcrypt**                      | Secure password hashing            |
@@ -243,6 +244,13 @@ Both services include health checks to ensure reliability:
 - **Verified Users System**
 - **Users Can Request Account Deletion**
 
+### 📊 **State Management**
+
+- **Redux & Redux Toolkit for global state management**
+- **Centralized store for user, blog, and app state**
+- **Async thunks for API calls and side effects**
+- **Persistent state management for enhanced UX**
+
 ### 🛠 **Admin Features**
 
 - **Manage Users (Delete & Set Verified Status)**
@@ -255,7 +263,7 @@ Both services include health checks to ensure reliability:
 
 ### 📜 **Legal & Privacy Features**
 
-- **[Terms & Conditions](https://blogotypo.vercel.app/view/docs/term-and-conditions), [Privacy Policy](https://blogotypo.vercel.app/view/docs/privacy-policy), and [License](https://blogotypo.vercel.app/view/docs/license) Pages**
+- **[Terms & Conditions](https://blogotypo.moinnaik.bio/docs/term-and-conditions), [Privacy Policy](https://blogotypo.moinnaik.bio/docs/privacy-policy), and [License](https://blogotypo.moinnaik.bio/docs/license) Pages**
 - **GDPR-Compliant User Data Handling**
 
 ---
@@ -335,14 +343,14 @@ docker-compose up -d --build
 
 ## 📜 License
 
-**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://blogotypo.vercel.app/view/docs/license) for details.
+**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://blogotypo.moinnaik.bio/docs/license) for details.
 
 ---
 
 ## 🛠 Need Help?
 
 📧 **Contact:** [crichit45@gmail.com](mailto:crichit45@gmail.com)  
-🌐 **Website:** [https://blogotypo.vercel.app](https://blogotypo.vercel.app)  
+🌐 **Website:** [https://blogotypo.moinnaik.bio](https://blogotypo.moinnaik.bio)  
 📣 **Follow us on Socials:** [Twitter](https://x.com/MoinMN5) | [LinkedIn](https://www.linkedin.com/in/moinnaik/) | [Instagram](https://instagram.com/im_moin45)
 
 ---
