@@ -12,7 +12,7 @@ const Footer = () => {
       <div className="flex max-sm:justify-center sm:justify-between items-center flex-wrap gap-3 mb-3">
         <div className="flex gap-4 items-center">
           <Image
-            src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/assets/icons/favicon.ico'}
+            src='/assets/icons/favicon.ico'
             width={60}
             height={60}
             alt="Blogotypo"

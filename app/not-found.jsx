@@ -33,7 +33,7 @@ export default function NotFound() {
 
       <div className="">
         <Image
-          src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/assets/images/404.jpg'}
+          src='/assets/images/404.jpg'
           width={500}
           height={500}
         />

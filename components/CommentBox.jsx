@@ -111,7 +111,7 @@ const CommentBox = ({ review, blogTitle }) => {
                     }
                   >
                     <Image
-                      src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/assets/images/star.png'}
+                      src='/assets/images/star.png'
                       width={30}
                       height={30}
                       alt="Verified User"

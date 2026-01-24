@@ -107,7 +107,7 @@ const AdminLogin = () => {
           className="absolute top-0 left-0 w-full h-full object-cover"
         >
           <source
-            src={process.env.NEXT_PUBLIC_NEXTAUTH_URL + '/assets/videos/background.mp4'}
+            src='/assets/videos/background.mp4'
             type="video/mp4"
           />
           Your browser does not support the video tag.

@@ -94,7 +94,7 @@ const AboutUs = () => {
           className="relative mx-auto w-40 h-40 md:w-64 md:h-64 col-span-1"
         >
           <Image
-            src={process?.env.NEXT_PUBLIC_NEXTAUTH_URL + "/assets/images/avatar.jpg"}
+            src="/assets/images/avatar.jpg"
             fill
             alt="Avatar Image"
             className="w-40 h-40 md:w-64 md:h-64 border border-black drop-shadow-[4px_4px_3px_gray] object-contain shadow-md rounded-md"
