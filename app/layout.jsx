@@ -5,12 +5,15 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import ScrollToTop from "@components/ScrollToTop";
 
+export const viewport = {
+  themeColor: "#7c3aed",
+};
+
 export const metadata = {
   title: "Blogotypo - Best Blogging Platform",
   description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
   keywords: "Blog, Blogging, Write, Share, Blogotypo",
   manifest: "/manifest.json",
-  themeColor: "#7c3aed",
   metadataBase: new URL("https://blogotypo.moinnaik.bio"),
   openGraph: {
     title: "Blogotypo - Best Blogging Platform",
