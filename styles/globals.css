@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Montserrat+Alternates:wght@400;600;700;800&family=Pixelify+Sans:wght@400..700&family=Playfair:opsz,wght@5..1200,300..900&family=Playwrite+IN:wght@100..400&family=Roboto:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Montserrat+Alternates:wght@400;600;700;800&family=Pixelify+Sans:wght@400..700&family=Playfair+Display:wght@300..900&family=Playwrite+IN:wght@100..400&family=Roboto:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 /* ============= Google Fonts ================ */
 
 .playfair_font {
-  font-family: "Playfair", serif;
+  font-family: "Playfair Display", serif;
   font-optical-sizing: auto;
   /* font-weight: 300 to 900; */
   font-style: normal;
@@ -15,7 +15,7 @@
 }
 
 .roboto_font {
-  font-family: "Roboto", serif;
+  font-family: "Roboto", sans-serif;
   font-optical-sizing: auto;
   /* font-weight: 100 to 900; */
   font-style: normal;
@@ -23,7 +23,7 @@
 }
 
 .montserrat_alternates_font {
-  font-family: "Montserrat Alternates", serif;
+  font-family: "Montserrat Alternates", sans-serif;
   /* font-weight: 400 to 800; */
   font-style: normal;
 }
@@ -36,18 +36,19 @@
 }
 
 .caveat_font {
-  font-family: "Caveat", serif;
+  font-family: "Caveat", cursive;
   font-optical-sizing: auto;
   /* font-weight: 400 to 700; */
   font-style: normal;
 }
 
 .pixelify_sans_font {
-  font-family: "Pixelify Sans", serif;
+  font-family: "Pixelify Sans", sans-serif;
   font-optical-sizing: auto;
   /* font-weight: 400 to 700; */
   font-style: normal;
 }
+
 /* ============= Google Fonts ================ */
 
 /* Hide scrollbar for Webkit browsers (Chrome, Safari) */

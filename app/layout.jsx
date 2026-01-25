@@ -3,11 +3,14 @@ import ReduxProvider from "@redux/provider";
 import AuthProvider from "@context/AuthProvider";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import ScrollToTop from "@components/ScrollToTop";
 
 export const metadata = {
   title: "Blogotypo - Best Blogging Platform",
   description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
   keywords: "Blog, Blogging, Write, Share, Blogotypo",
+  manifest: "/manifest.json",
+  themeColor: "#7c3aed",
   metadataBase: new URL("https://blogotypo.moinnaik.bio"),
   openGraph: {
     title: "Blogotypo - Best Blogging Platform",
@@ -33,7 +36,6 @@ export const metadata = {
   robots: "index, follow",
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -42,6 +44,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <ReduxProvider>
             {children}
+            <ScrollToTop />
             <Analytics />
             <SpeedInsights />
           </ReduxProvider>
