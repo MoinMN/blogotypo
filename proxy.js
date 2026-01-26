@@ -6,7 +6,6 @@ const protectedPaths = [
   '/profile',
   '/my-blogs',
   '/publish-blog',
-  '/contact',
 
   // admin's
   '/admin',
@@ -18,6 +17,7 @@ const publicApiPaths = [
   '/api/blog/search',
   '/api/blog/recommend',
   '/api/count',
+  '/api/user/contact',
   '/api/googleIndexing/indexing'
 ]
 

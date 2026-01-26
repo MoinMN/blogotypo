@@ -10,7 +10,7 @@ import Explore from "./_components/Explore";
 import WhyBlogotypo from "./_components/WhyBlogotypo";
 
 import Footer from "@components/Footer";
-import HomeLoading from "./_components/Loading";
+// import HomeLoading from "./_components/Loading";
 import ExploreSkeleton from "@components/Skeletons/ExploreSkeleton";
 
 const Home = () => {

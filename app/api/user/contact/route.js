@@ -1,32 +1,48 @@
-
 import { NextResponse } from "next/server";
 import connectMongoDB from "@utils/database";
-import { getServerSession } from "next-auth";
 import Contact from "@models/contact";
-import User from "@models/user";
 
 export async function POST(req) {
   try {
     await connectMongoDB();
-    const session = await getServerSession(req);
-    const { message, subject } = await req.json();
 
-    if (!session && !session.user.email) {
-      return NextResponse.json({ msg: 'Unauthorized!' }, { status: 401 });
+    const { name, email, subject, message } = await req.json();
+
+    // Basic check (fast fail)
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { msg: "All fields are required" },
+        { status: 400 }
+      );
     }
 
-    if (!message || !subject) {
-      return NextResponse.json({ msg: 'Data Not Received!' }, { status: 404 });
-    }
+    await Contact.create({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      subject: subject.trim(),
+      message: message.trim(),
+    });
 
-    const userId = await User.findOne({ email: session?.user?.email }).select('_id');
-
-    await Contact.create({ user: userId, subject: subject, message: message });
-
-    return NextResponse.json({ msg: 'Form Submitted Successfully!' }, { status: 200 });
-
+    return NextResponse.json(
+      { msg: "Form submitted successfully" },
+      { status: 201 }
+    );
   } catch (error) {
-    console.log('error while fetching blogs', error);
-    return NextResponse.json({ msg: "Internal Server Error!" }, { status: 500 });
+    if (error.name === "ValidationError") {
+      const errorMessage = Object.values(error.errors)
+        .map(err => err.message)
+        .join("\n"); // 👈 new line per error
+
+      return NextResponse.json(
+        { msg: errorMessage },
+        { status: 400 }
+      );
+    }
+
+    console.error("Contact API error:", error);
+    return NextResponse.json(
+      { msg: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

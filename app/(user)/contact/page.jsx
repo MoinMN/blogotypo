@@ -4,21 +4,21 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import AlertBox from '@components/Alert';
 import ModalBox from '@components/Modal';
 import useMetadata from '@hooks/metadata';
+import { useSession } from 'next-auth/react';
 
 
 const ContactUs = () => {
   // set title for page
   useMetadata(`Contact Us - Blogotypo`, `Contact with developer for any help, support or query`);
 
-  const [contactForm, setContactForm] = useState({
-    subject: '',
-    message: '',
-  });
+  const { data: session, status } = useSession();
+
+  const [contactForm, setContactForm] = useState(null);
 
   // alert
   const [showAlert, setShowAlert] = useState(false);
@@ -68,7 +68,7 @@ const ContactUs = () => {
       const data = await response.json();
       if (response?.ok) {
         setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "success" }));
-        setContactForm({ subject: '', message: '', });
+        setContactForm(null);
         return;
       }
 
@@ -82,6 +82,20 @@ const ContactUs = () => {
     }
   }
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      setContactForm((prev) => ({ ...prev, email: session?.user?.email }));
+    }
+  }, [status]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-purple-600 rounded-full" />
+      </div>
+    );
+  }
+
   return (
     <>
       <form onSubmit={handleConfirmation} className='flex flex-col gap-4 items-start'>
@@ -90,6 +104,32 @@ const ContactUs = () => {
         </h3>
 
         <div className="flex flex-col gap-4 w-full">
+          <FloatingLabel
+            controlId="name"
+            label="Name"
+            className='shadow-md'
+          >
+            <Form.Control
+              type="text"
+              placeholder="Name"
+              value={contactForm?.name}
+              onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </FloatingLabel>
+          {status !== "authenticated" &&
+            <FloatingLabel
+              controlId="email"
+              label="Email"
+              className='shadow-md'
+            >
+              <Form.Control
+                type="text"
+                placeholder="Email"
+                value={contactForm?.email}
+                onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
+              />
+            </FloatingLabel>
+          }
           <FloatingLabel
             controlId="subject"
             label="Subject"
