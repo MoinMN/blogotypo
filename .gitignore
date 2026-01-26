@@ -41,3 +41,19 @@ yarn-error.log*
 next-env.d.ts
 
 package-lock.json
+
+# Android / Gradle (Bubblewrap)
+twa-android/.gradle/
+twa-android/build/
+twa-android/app/build/
+
+# Signing keys (NEVER COMMIT)
+twa-android/*.keystore*
+
+# Generated artifacts
+twa-android/*.apk
+twa-android/*.aab
+twa-android/*.idsig
+
+# Local files
+twa-android/manifest-checksum.txt
