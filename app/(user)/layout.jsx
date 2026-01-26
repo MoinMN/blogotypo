@@ -6,65 +6,66 @@ import Sidebar from "./_components/Sidebar";
 import Footer from "@components/Footer";
 
 const UserLayout = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(false);
-
   const sidebarRef = useRef(null);
   const navRef = useRef(null);
 
+  // ✅ decide initial state safely
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth >= 1024;
+  });
 
-  // Load sidebar state from localStorage only after hydration
+  const [isHydrated, setIsHydrated] = useState(false);
+
   useEffect(() => {
     setIsHydrated(true);
+
+    // ✅ read localStorage AFTER hydration
     const storedState = localStorage.getItem("sidebarOpen");
-    setIsSidebarOpen(storedState !== null ? JSON.parse(storedState) : true);
+    if (storedState !== null) {
+      setIsSidebarOpen(JSON.parse(storedState));
+    }
   }, []);
 
   const setSidebarAsPerDevice = () => {
-    if (window.innerWidth >= 1024) setIsSidebarOpen(true);
-    else setIsSidebarOpen(false);
+    setIsSidebarOpen(window.innerWidth >= 1024);
   };
 
+  // ✅ resize only reacts, not initializes
   useEffect(() => {
-
     window.addEventListener("resize", setSidebarAsPerDevice);
-    setSidebarAsPerDevice(); // Call once on mount
-
-    return () => window.removeEventListener("resize", setSidebarAsPerDevice);
+    return () =>
+      window.removeEventListener("resize", setSidebarAsPerDevice);
   }, []);
 
   useEffect(() => {
-    if (isSidebarOpen !== null) {
-      localStorage.setItem("sidebarOpen", JSON.stringify(isSidebarOpen));
-    }
+    localStorage.setItem(
+      "sidebarOpen",
+      JSON.stringify(isSidebarOpen)
+    );
   }, [isSidebarOpen]);
 
+  // click outside
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || !isSidebarOpen) return;
 
     const handleClickOutside = (e) => {
-      if (!isSidebarOpen) return;
+      if (
+        sidebarRef.current?.contains(e.target) ||
+        navRef.current?.contains(e.target)
+      )
+        return;
 
-      const clickedInsideSidebar =
-        sidebarRef.current?.contains(e.target);
-      const clickedInsideNav =
-        navRef.current?.contains(e.target);
-
-      if (!clickedInsideSidebar && !clickedInsideNav) {
-        setSidebarAsPerDevice();
-      }
+      setSidebarAsPerDevice();
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
+    return () =>
       document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isSidebarOpen, isHydrated]);
+  }, [isHydrated, isSidebarOpen]);
 
-
-  // Prevent rendering until hydration is complete
-  if (!isHydrated || isSidebarOpen === null) return null;
+  // ✅ block render until hydration
+  if (!isHydrated) return null;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -74,26 +75,28 @@ const UserLayout = ({ children }) => {
         setIsSidebarOpen={setIsSidebarOpen}
       />
 
-      {/* Sidebar with transition */}
       <div
         ref={sidebarRef}
-        className={`${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} fixed left-0 top-0 h-screen bg-theme_5 w-48 md:w-64 shadow-lg transition-all duration-300 ease-in-out z-40`}
+        className={`${isSidebarOpen
+          ? "translate-x-0"
+          : "-translate-x-full"
+          } fixed left-0 top-0 h-screen bg-theme_5 w-48 md:w-64 shadow-lg transition-all duration-300 ease-in-out z-40`}
       >
         <Sidebar setSidebarAsPerDevice={setSidebarAsPerDevice} />
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-grow">
         <div
-          className={`${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"} min-h-fit md:p-6 max-md:p-3 transition-all duration-300 ease-in-out`}
+          className={`${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
+            } md:p-6 max-md:p-3 transition-all duration-300 ease-in-out`}
         >
           {children}
         </div>
       </div>
 
-      {/* Footer */}
       <div
-        className={`${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"} mt-auto transition-all duration-300 ease-in-out`}
+        className={`${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
+          } mt-auto transition-all duration-300 ease-in-out`}
       >
         <Footer />
       </div>
