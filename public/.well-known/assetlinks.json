@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.im_moin.blogotypo",
+      "sha256_cert_fingerprints": [
+        "1F:ED:15:B9:3E:24:1E:21:F1:8A:81:04:42:94:6D:36:AF:4A:3C:55:49:72:81:3F:D9:1A:26:31:CF:5A:79:51"
+      ]
+    }
+  }
+]
