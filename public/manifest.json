@@ -4,8 +4,6 @@
   "description": "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
   "orientation": "portrait",
   "icons": [
     {

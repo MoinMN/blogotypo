@@ -5,6 +5,13 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import ScrollToTop from "@components/ScrollToTop";
 
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
 export const metadata = {
   title: "Blogotypo - Best Blogging Platform",
   description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
