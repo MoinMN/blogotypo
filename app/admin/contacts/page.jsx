@@ -219,11 +219,11 @@ const AdminContacts = () => {
                     <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="p-2 text-center align-middle">{index + 1 + "."}</td>
                       <td className="p-2 text-center align-middle">
-                        {contact?.user?.name}
+                        {contact?.name}
                       </td>
                       <td className="p-2 text-center align-middle">
                         <Link href={`mailto:${contact.user?.email}`} target='_blank' className='no-underline hover:underline'>
-                          {contact?.user?.email}
+                          {contact?.email}
                         </Link>
                       </td>
                       <td className="p-2 text-center align-middle">
