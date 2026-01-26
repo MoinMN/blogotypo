@@ -3,7 +3,7 @@
   "host": "blogotypo.moinnaik.bio",
   "name": "Blogotypo",
   "launcherName": "Blogotypo",
-  "display": "fullscreen",
+  "display": "standalone",
   "themeColor": "#FFFFFF",
   "themeColorDark": "#000000",
   "navigationColor": "#000000",
