@@ -1,13 +1,17 @@
+import User from "@models/user";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import Contact from "@models/contact";
 import connectMongoDB from "@utils/database";
+
 
 export async function GET(req) {
   try {
     await connectMongoDB();
 
     const session = await getServerSession(req);
+
+    const requestedUser = await User.findOne({ email: session.user.email }).select('role');
 
     // admin role required
     if (requestedUser.role !== 'admin') {
