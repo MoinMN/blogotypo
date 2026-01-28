@@ -58,8 +58,11 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
     header: '',
   });
 
+  const [showSafetyAlert, setShowSafetyAlert] = useState(false);
+  const [safetyAccepted, setSafetyAccepted] = useState(false);
+
   const handlePostReview = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     if (!reviewData.review || reviewData.star === 0) {
       setAlertData((prev) => ({ ...prev, header: "All field required!", variant: "danger" }));
@@ -146,6 +149,17 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
   const handleEditBlog = (blogId) => {
     router.push('/publish-blog?blogId=' + blogId);
   }
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+
+    if (!safetyAccepted) {
+      setShowSafetyAlert(true);
+      return;
+    }
+
+    handlePostReview(e);
+  };
 
   if (loading) return <BlogSkeleton />;
 
@@ -327,7 +341,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
           <div className="flex flex-col gap-4">
             {/* Review Form */}
             <motion.form
-              onSubmit={handlePostReview}
+              onSubmit={handleReviewSubmit}
               className="w-full flex flex-col gap-4 my-2 text-sm md:text-base"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -347,6 +361,58 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
                 ))}
               </span>
 
+              {/* alert  */}
+              {showSafetyAlert && (
+                <AnimatePresence>
+                  <motion.div
+                    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <motion.div
+                      className="bg-white rounded-xl p-5 max-w-md w-full shadow-lg"
+                      initial={{ scale: 0.9, y: 20 }}
+                      animate={{ scale: 1, y: 0 }}
+                      exit={{ scale: 0.9, y: 20 }}
+                    >
+                      <h4 className="text-lg font-semibold mb-2">
+                        Stay Safe Online
+                      </h4>
+
+                      <p className="text-sm text-gray-600 mb-3">
+                        Please remember:
+                      </p>
+
+                      <ul className="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                        <li>Do not share personal information</li>
+                        <li>Do not share phone numbers or addresses</li>
+                        <li>Be respectful and careful when interacting online</li>
+                      </ul>
+
+                      <div className="flex justify-end gap-2 mt-4">
+                        <button
+                          onClick={() => setShowSafetyAlert(false)}
+                          className="px-4 py-1 text-sm rounded-md bg-gray-200"
+                        >
+                          Cancel
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setSafetyAccepted(true);
+                            setShowSafetyAlert(false);
+                          }}
+                          className="px-4 py-1 text-sm rounded-md bg-blue-500 text-white"
+                        >
+                          I Understand
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+
               {/* Review textarea */}
               <motion.div
                 className="flex gap-2"
@@ -360,7 +426,10 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
                   placeholder="Start Typing..."
                   className="outline-none px-2 py-1 rounded-lg w-full shadow-md text-gray-500"
                   value={reviewData.review}
-                  onChange={(e) => setReviewData((prev) => ({ ...prev, review: e.target.value }))}
+                  onChange={(e) => {
+                    setReviewData((prev) => ({ ...prev, review: e.target.value }))
+                    // setSafetyDismissed(false);
+                  }}
                 />
                 <motion.button
                   type="submit"
@@ -448,7 +517,6 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             ))
           }
         </div>
-
       </div>
 
 
@@ -470,7 +538,6 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
         header={alertData?.header}
         position={"top-right-with-space"}
       />
-
     </>
   )
 }
