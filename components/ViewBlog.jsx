@@ -365,13 +365,13 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
               {showSafetyAlert && (
                 <AnimatePresence>
                   <motion.div
-                    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4"
+                    className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-2 md:px-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
                     <motion.div
-                      className="bg-white rounded-xl p-5 max-w-md w-full shadow-lg"
+                      className="bg-white rounded-xl p-3 md:p-5 max-w-md w-full shadow-lg"
                       initial={{ scale: 0.9, y: 20 }}
                       animate={{ scale: 1, y: 0 }}
                       exit={{ scale: 0.9, y: 20 }}
