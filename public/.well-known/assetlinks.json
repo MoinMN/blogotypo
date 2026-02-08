@@ -7,7 +7,8 @@
       "namespace": "android_app",
       "package_name": "com.im_moin.blogotypo",
       "sha256_cert_fingerprints": [
-        "1F:ED:15:B9:3E:24:1E:21:F1:8A:81:04:42:94:6D:36:AF:4A:3C:55:49:72:81:3F:D9:1A:26:31:CF:5A:79:51"
+        "1F:ED:15:B9:3E:24:1E:21:F1:8A:81:04:42:94:6D:36:AF:4A:3C:55:49:72:81:3F:D9:1A:26:31:CF:5A:79:51",
+        "BF:B3:82:DD:57:5F:95:EB:DA:F3:4B:C0:33:F1:76:8C:85:7D:A9:BC:DA:9F:7B:18:71:9C:DE:68:E8:76:D0:FC"
       ]
     }
   }
