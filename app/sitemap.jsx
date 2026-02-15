@@ -2,13 +2,13 @@ import Blog from "@models/blog";
 import connectMongoDB from "@utils/database";
 
 export default async function sitemap() {
-
+  const baseUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
   await connectMongoDB();
 
   const blogs = await Blog.find().select("title updatedAt");
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/${encodeURIComponent(blog?.title?.split(" ").join("-"))}`,
+    url: `${baseUrl}/blog/${encodeURIComponent(blog?.title?.split(" ").join("-"))}`,
     lastModified: blog.updatedAt || new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
@@ -16,7 +16,7 @@ export default async function sitemap() {
 
   return [
     {
-      url: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
