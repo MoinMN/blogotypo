@@ -73,28 +73,7 @@ const MyBlogs = () => {
   // for share btn
   const [copiedLinkTitle, setCopiedLinkTitle] = useState('');
 
-  // fecth blogs
-  // const fetchBlogs = async () => {
-  //   try {
-  //     const response = await fetch(`/api/blog/get`, { method: 'GET' });
-  //     const data = await response.json();
-
-  //     if (!response.ok) {
-  //       setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "danger" }));
-  //       setShowAlert(true);
-  //       return;
-  //     }
-  //     setBlogList(data.data);
-  //     setFilteredBlogs(data.data);
-  //     setPaginatedBlogs(data.data.slice(0, itemsPerPage)); // Initial page data
-  //   } catch (error) {
-  //     console.log('Error while fetching blogs: ', error);
-  //   } finally {
-  //     setShowSkeleton(false);
-  //   }
-  // }
-
-  const { myBlogs, myBlogsCacheLoading, myBlogsCacheError, myBlogsCacheLoaded } = useSelector((state) => state.myBlogs);
+  const { myBlogs, myBlogsCacheLoading, myBlogsCacheLoaded } = useSelector((state) => state.myBlogs);
 
   useEffect(() => {
     if (!myBlogsCacheLoaded) {
