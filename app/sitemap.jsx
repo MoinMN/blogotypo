@@ -1,9 +1,11 @@
+import Blog from "@models/blog";
+import connectMongoDB from "@utils/database";
+
 export default async function sitemap() {
-  // Fetch blogs
-  const blogRes = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/blog/getall`, {
-    next: { revalidate: 3600 },
-  });
-  const blogs = await blogRes.json();
+
+  await connectMongoDB();
+
+  const blogs = await Blog.find().select("title updatedAt");
 
   const blogUrls = blogs.map((blog) => ({
     url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/${encodeURIComponent(blog?.title?.split(" ").join("-"))}`,
@@ -16,6 +18,8 @@ export default async function sitemap() {
     {
       url: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
       lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1,
     },
     ...blogUrls,
   ];
