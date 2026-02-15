@@ -21,6 +21,27 @@ export default async function sitemap() {
       changeFrequency: "daily",
       priority: 1,
     },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/docs/faq`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/docs/license`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/docs/privacy-policy`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/docs/term-and-conditions`,
+      lastModified: new Date(),
+    },
     ...blogUrls,
   ];
 }
