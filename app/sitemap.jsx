@@ -6,7 +6,7 @@ export default async function sitemap() {
   const blogs = await blogRes.json();
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/${blog.title.trim()?.split(" ")?.join("-")}`,
+    url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/${encodeURIComponent(blog?.title?.split(" ").join("-"))}`,
     lastModified: blog.updatedAt || new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
