@@ -17,15 +17,15 @@ export const metadata = {
   description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
   keywords: "Blog, Blogging, Write, Share, Blogotypo",
   manifest: "/manifest.json",
-  metadataBase: new URL("https://blogotypo.moinnaik.bio"),
+  metadataBase: new URL("https://blogotypo.moinnaik.in"),
   openGraph: {
     title: "Blogotypo - Best Blogging Platform",
     description: "Create, share, and explore blogs on Blogotypo.",
-    url: "https://blogotypo.moinnaik.bio",
+    url: "https://blogotypo.moinnaik.in",
     siteName: "Blogotypo",
     images: [
       {
-        url: "https://blogotypo.moinnaik.bio/opengraph-image.jpg",
+        url: "https://blogotypo.moinnaik.in/opengraph-image.jpg",
         width: 1200,
         height: 630,
         alt: "Blogotypo Open Graph Image",
@@ -37,7 +37,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Blogotypo - Best Blogging Platform",
     description: "Create, share, and explore blogs on Blogotypo.",
-    images: ["https://blogotypo.moinnaik.bio/opengraph-image.jpg"],
+    images: ["https://blogotypo.moinnaik.in/opengraph-image.jpg"],
   },
   robots: "index, follow",
 };

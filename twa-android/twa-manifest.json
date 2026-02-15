@@ -1,6 +1,6 @@
 {
   "packageId": "com.im_moin.blogotypo",
-  "host": "blogotypo.moinnaik.bio",
+  "host": "blogotypo.moinnaik.in",
   "name": "Blogotypo",
   "launcherName": "Blogotypo",
   "display": "standalone",
@@ -13,8 +13,8 @@
   "backgroundColor": "#FFFFFF",
   "enableNotifications": true,
   "startUrl": "/dashboard",
-  "iconUrl": "https://blogotypo.moinnaik.bio/assets/icons/icon-512.png",
-  "maskableIconUrl": "https://blogotypo.moinnaik.bio/assets/icons/maskable-icon.png",
+  "iconUrl": "https://blogotypo.moinnaik.in/assets/icons/icon-512.png",
+  "maskableIconUrl": "https://blogotypo.moinnaik.in/assets/icons/maskable-icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "/home/ubuntu/Blogotypo_bubblewrap/android.keystore",
@@ -24,7 +24,7 @@
   "appVersionCode": 1,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://blogotypo.moinnaik.bio/manifest.json",
+  "webManifestUrl": "https://blogotypo.moinnaik.in/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -33,7 +33,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://blogotypo.moinnaik.bio/",
+  "fullScopeUrl": "https://blogotypo.moinnaik.in/",
   "minSdkVersion": 21,
   "orientation": "portrait",
   "fingerprints": [],

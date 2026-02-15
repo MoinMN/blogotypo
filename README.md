@@ -1,10 +1,10 @@
 # 🚀 Blogotypo - A Modern Next.js Blogging Platform
 
-<img src="https://blogotypo.moinnaik.bio/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
+<img src="https://blogotypo.moinnaik.in/assets/images/favicon.jpg" alt="Blogotypo" width="150" height="150">
 
 ## 🌍 Live Demo
 
-🔗 **[Visit Blogotypo](https://blogotypo.moinnaik.bio)** (Deployed on Vercel)
+🔗 **[Visit Blogotypo](https://blogotypo.moinnaik.in)** (Deployed on Vercel)
 
 ---
 
@@ -263,7 +263,7 @@ Both services include health checks to ensure reliability:
 
 ### 📜 **Legal & Privacy Features**
 
-- **[Terms & Conditions](https://blogotypo.moinnaik.bio/docs/term-and-conditions), [Privacy Policy](https://blogotypo.moinnaik.bio/docs/privacy-policy), and [License](https://blogotypo.moinnaik.bio/docs/license) Pages**
+- **[Terms & Conditions](https://blogotypo.moinnaik.in/docs/term-and-conditions), [Privacy Policy](https://blogotypo.moinnaik.in/docs/privacy-policy), and [License](https://blogotypo.moinnaik.in/docs/license) Pages**
 - **GDPR-Compliant User Data Handling**
 
 ---
@@ -343,14 +343,14 @@ docker-compose up -d --build
 
 ## 📜 License
 
-**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://blogotypo.moinnaik.bio/docs/license) for details.
+**Blogotypo** is licensed under its own **custom license**. See the full [LICENSE](https://blogotypo.moinnaik.in/docs/license) for details.
 
 ---
 
 ## 🛠 Need Help?
 
-📧 **Contact:** [crichit45@gmail.com](mailto:crichit45@gmail.com)  
-🌐 **Website:** [https://blogotypo.moinnaik.bio](https://blogotypo.moinnaik.bio)  
+📧 **Contact:** [pixelmint.mail@gmail.com](mailto:pixelmint.mail@gmail.com)  
+🌐 **Website:** [https://blogotypo.moinnaik.in](https://blogotypo.moinnaik.in)  
 📣 **Follow us on Socials:** [Twitter](https://x.com/MoinMN5) | [LinkedIn](https://www.linkedin.com/in/moinnaik/) | [Instagram](https://instagram.com/im_moin45)
 
 ---
