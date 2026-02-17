@@ -1,15 +1,18 @@
 import Blog from "@models/blog";
 import connectMongoDB from "@utils/database";
 
+export const revalidate = 60; // 1 hour  3600
+
 export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
+
   await connectMongoDB();
 
   const blogs = await Blog.find().select("slug updatedAt");
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${baseUrl}/blog/${blog?.slug}`,
-    lastModified: blog?.updatedAt || new Date(),
+    url: `${baseUrl}/blog/${blog.slug}`,
+    lastModified: blog.updatedAt || new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
   }));
