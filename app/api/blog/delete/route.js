@@ -38,11 +38,18 @@ export async function DELETE(req) {
     // Delete thumbnail image from Cloudinary if it exists
     if (blog.thumbnail_image) {
       try {
-        // Extract Cloudinary public_id from the URL
-        const publicId = blog.thumbnail_image.split("/").pop().split(".")[0];
+        const urlParts = blog.thumbnail_image.split("/");
+        const uploadIndex = urlParts.findIndex((part) => part === "upload");
+
+        const publicIdWithVersion = urlParts
+          .slice(uploadIndex + 1)
+          .join("/");
+
+        const publicId = publicIdWithVersion.replace(/^v\d+\//, "").replace(/\.[^/.]+$/, "");
+
         await cloudinary.v2.uploader.destroy(publicId);
       } catch (error) {
-        console.error("Error deleting blog thumbnail from Cloudinary:", error);
+        console.error("Error deleting blog thumbnail:", error);
       }
     }
 

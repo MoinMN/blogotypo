@@ -61,7 +61,7 @@ export async function POST(req) {
       return NextResponse.json({ msg: "Failed to save blog data!" }, { status: 400 });
     }
 
-    await requestGoogleIndexing(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/blog/" + slug);
+    // await requestGoogleIndexing(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/blog/" + slug);
 
     return NextResponse.json({ msg: "Blog Created Successfully!", newBlog }, { status: 201 });
   } catch (error) {
