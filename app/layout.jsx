@@ -1,6 +1,7 @@
 import "@styles/globals.css";
 import ReduxProvider from "@redux/provider";
 import AuthProvider from "@context/AuthProvider";
+import { UIProvider } from "@/context/UIContext";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import ScrollToTop from "@components/ScrollToTop";
@@ -49,7 +50,9 @@ export default function RootLayout({ children }) {
 
         <AuthProvider>
           <ReduxProvider>
-            {children}
+            <UIProvider>
+              {children}
+            </UIProvider>
             <ScrollToTop />
             <Analytics />
             <SpeedInsights />

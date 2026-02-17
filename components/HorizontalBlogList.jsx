@@ -60,7 +60,7 @@ const HorizontalBlogList = ({ list, header }) => {
         >
           {list?.map((abc, index) => (
             <Link
-              href={`/blog/${encodeURIComponent(abc?.title?.split(" ").join("-"))}`}
+              href={`/blog/${abc?.slug}`}
               className="relative w-[130px] h-[120px] md:w-[300px] md:h-[200px] flex-shrink-0 transition-all duration-300 ease-in-out bg-black rounded-xl shadow-md hover:shadow-lg group"
               key={index}
             >

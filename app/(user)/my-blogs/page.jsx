@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import AlertBox from "@components/Alert";
-import ModalBox from "@components/Modal";
 import PaginationBlogs from "@components/PaginationBlogs";
 import MyBlogSkeleton from "@components/Skeletons/MyBlogSkeleton";
 import BlogCard from "@components/BlogCard";
@@ -28,7 +26,6 @@ const MyBlogs = () => {
   const [dateInterval, setDateInterval] = useState("all");
   const [sortOption, setSortOption] = useState("date-desc");
 
-
   // track searching process
   const [isSearching, setIsSearching] = useState(false);
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
@@ -51,24 +48,6 @@ const MyBlogs = () => {
       localStorage.setItem("itemsPerPage", itemsPerPage);
     }
   }, [itemsPerPage]);
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
 
   // for share btn
   const [copiedLinkTitle, setCopiedLinkTitle] = useState('');
@@ -296,11 +275,6 @@ const MyBlogs = () => {
                         blog={blog}
                         copiedLinkTitle={copiedLinkTitle}
                         setCopiedLinkTitle={setCopiedLinkTitle}
-                        // fetchBlogs={fetchBlogs}
-                        setAlertData={setAlertData}
-                        setShowAlert={setShowAlert}
-                        setModalData={setModalData}
-                        setShowModal={setShowModal}
                       />
                     ))}
                   </div>
@@ -322,27 +296,7 @@ const MyBlogs = () => {
             </div>
           </div>
         </>
-      )
-      }
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
+      )}
     </>
   );
 };

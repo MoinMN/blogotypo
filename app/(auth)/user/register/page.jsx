@@ -7,13 +7,15 @@ import Link from 'next/link';
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Alert from '@components/Alert';
 import OtpInputBox from '@app/(auth)/_components/OtpInputBox';
 import useMetadata from '@hooks/metadata';
+import { useUI } from '@context/UIContext';
 
 const Register = () => {
   // set title for page
   useMetadata('User Register - Blogotypo', 'User register page for blogotypo');
+
+  const { showAlert } = useUI();
 
   const userInputs = [
     { name: 'name', type: 'text', placeholder: 'John Parker' },
@@ -29,14 +31,6 @@ const Register = () => {
   // detect otp verification
   const [startOtpVerification, setStartOtpVerification] = useState(false);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-    content: ''
-  });
   // to disable submit button
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -80,17 +74,16 @@ const Register = () => {
         const data = await response.json();
 
         if (response.ok) {
-          setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'success' }));
+          showAlert(data?.msg, "success", "top-right");
           // starting otp verification 
           setStartOtpVerification(true);
         } else {
-          setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'danger' }));
+          showAlert(data?.msg, "danger", "top-right");
         }
       } catch (error) {
-        setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: 'danger' }));
+        showAlert("Internal Server Error!", "danger", "top-right");
         console.log(error);
       } finally {
-        setShowAlert(true);
         setIsSubmitting(false);
       }
     }
@@ -197,15 +190,6 @@ const Register = () => {
           : ''
         }
       </div>
-
-      <Alert
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={'top-right'}
-      />
     </>
   )
 }

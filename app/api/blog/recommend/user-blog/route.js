@@ -22,7 +22,7 @@ export async function GET(req) {
       creator: userId,
       _id: { $ne: blogId },
     })
-      .select('_id title thumbnail_image date') // select specfic
+      .select('_id title thumbnail_image date slug') // select specfic
       .sort({ 'viewedBy.length': -1 })          // Sort by viewBy length in descending order
       .limit(blogLimit);                        // Limit to 3 blogs
 

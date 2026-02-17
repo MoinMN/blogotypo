@@ -67,7 +67,7 @@ const Explore = ({ popularBlogs }) => {
 
                   {/* read more btn  */}
                   <Link
-                    href={'/blog/' + encodeURIComponent(blog.title.split(' ').join('-'))}
+                    href={'/blog/' + blog?.slug}
                     className="flex justify-center items-center z-20 no-underline text-white px-6 py-2 bg-purple-500 hover:bg-purple-700 rounded-xl transition-all duration-200 ease-in-out"
                   >
                     <span className="">

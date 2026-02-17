@@ -79,9 +79,7 @@ const UserDashboard = () => {
               {trendingBlogs?.slice(0, 5).map((trend, index) => (
                 <Carousel.Item key={index}>
                   <Link
-                    href={`/blog/${encodeURIComponent(
-                      trend?.title?.split(" ").join("-")
-                    )}`}
+                    href={`/blog/${trend?.slug}`}
                   >
                     <div className="relative w-full h-[300px] md:h-[500px]">
                       <Image
@@ -129,9 +127,7 @@ const UserDashboard = () => {
                   className="relative w-full h-[150px] group"
                 >
                   <Link
-                    href={`/blog/${encodeURIComponent(
-                      topRated?.title?.split(" ").join("-")
-                    )}`}
+                    href={`/blog/${topRated?.slug}`}
                   >
                     <Image
                       src={topRated.thumbnail_image}
@@ -214,10 +210,9 @@ const UserDashboard = () => {
                   viewport={{ once: true }}
                 >
                   <HorizontalBlogList
-                    header={`Category: ${
-                      item.category.charAt(0).toUpperCase() +
+                    header={`Category: ${item.category.charAt(0).toUpperCase() +
                       item.category.slice(1)
-                    }`}
+                      }`}
                     list={item.blogs}
                   />
                 </motion.div>

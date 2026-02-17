@@ -8,13 +8,15 @@ import Link from 'next/link';
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Alert from '@components/Alert';
 import useMetadata from '@hooks/metadata';
+import { useUI } from '@context/UIContext';
 
 
 const Login = () => {
   // set title for page
   useMetadata('User Login - Blogotypo', 'User login page for blogotypo');
+
+  const { showAlert } = useUI();
 
   const userInputs = [
     { name: 'email', type: 'email', placeholder: 'john@gmail.com' },
@@ -28,13 +30,6 @@ const Login = () => {
   const [userData, setUserData] = useState({});
   // input error
   const [error, setError] = useState({});
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,22 +76,12 @@ const Login = () => {
           msg = 'Incorrect email and password!';
         }
 
-        setAlertData((prev) => ({
-          ...prev,
-          header: msg || result.error,
-          variant: 'danger',
-        }));
-        setShowAlert(true);
+        showAlert(msg || result?.error, "danger", "top-right");
         setIsSubmitting(false);
       }
     } catch (error) {
       console.error('Login Error:', error);
-      setAlertData((prev) => ({
-        ...prev,
-        header: 'An error occurred while logging in.',
-        variant: 'danger',
-      }));
-      setShowAlert(true);
+      showAlert("An error occurred while logging in.", "danger", "top-right");
       setIsSubmitting(false);
     }
   }
@@ -185,16 +170,7 @@ const Login = () => {
             </button>
           </div>
         </div>
-      </div >
-
-      <Alert
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right"}
-      />
+      </div>
     </>
   )
 }

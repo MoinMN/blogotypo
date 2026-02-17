@@ -11,32 +11,33 @@ import {
 import BlogCard from "@components/BlogCard";
 import { BlogBoxSkeleton } from "@components/Skeletons/MyBlogSkeleton";
 import PaginationBlogs from "@components/PaginationBlogs";
-import AlertBox from "@components/Alert";
-import ModalBox from "@components/Modal";
 import useMetadata from "@hooks/metadata";
 import { fetchCategoryBlogs } from "@redux/slices/blog/category.slice";
+import { useUI } from "@context/UIContext";
+import BackButton from "@components/BackButton";
 
 const CategoryBlogs = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
 
+  const { showAlert } = useUI();
+
   // store category type from params
   const [categoryType, setCategoryType] = useState("");
 
-  const newCategoryType = searchParams.get("type");
-  if (newCategoryType !== categoryType) {
-    setCategoryType(newCategoryType);
-  }
+  useEffect(() => {
+    const type = searchParams.get("type");
+    setCategoryType(type || "");
+  }, [searchParams]);
 
   // set title for page
   useMetadata(
-    `${
-      categoryType
-        ? "Category: " +
-          categoryType.charAt(0).toUpperCase() +
-          categoryType.slice(1)
-        : "Select Categories"
+    `${categoryType
+      ? "Category: " +
+      categoryType.charAt(0).toUpperCase() +
+      categoryType.slice(1)
+      : "Select Categories"
     } - Blogotypo`,
     `Admin login page for blogotypo`
   );
@@ -49,24 +50,6 @@ const CategoryBlogs = () => {
   // for pagination
   const [paginatedBlogs, setPaginatedBlogs] = useState([]);
   const itemsPerPage = 10;
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: "",
-    dismissible: true,
-    header: "",
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: "",
-    body: "",
-    actionBtn: "",
-    actionBtnVariant: "",
-    confirmAction: () => {},
-  });
 
   // for share btn
   const [copiedLinkTitle, setCopiedLinkTitle] = useState("");
@@ -178,12 +161,7 @@ const CategoryBlogs = () => {
 
     // ERROR
     if (categoryState.error) {
-      setAlertData((prev) => ({
-        ...prev,
-        header: categoryState.error,
-        variant: "danger",
-      }));
-      setShowAlert(true);
+      showAlert(categoryState.error, "danger");
       setShowSkeleton(false);
       return;
     }
@@ -242,12 +220,7 @@ const CategoryBlogs = () => {
         ) : (
           <div className="">
             <div className="flex items-center gap-3 mb-4">
-              <button
-                onClick={() => window.history.back()}
-                className="flex items-center justify-center gap-1 rounded-lg px-3 py-2 border border-gray-300 hover:bg-[#3D52A0] hover:text-white hover:border-gray-400 transition duration-200"
-              >
-                <i className="fa-solid fa-arrow-left text-lg"></i> Back
-              </button>
+              <BackButton />
 
               <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
                 Category: {categoryType}
@@ -257,20 +230,16 @@ const CategoryBlogs = () => {
             <div className="grid max-md:my-3 md:my-6 max-md:ml-0 md:ml-4 max-md:gap-2 md:gap-4">
               {showSkeleton
                 ? [...Array(2)].map((_, index) => (
-                    <BlogBoxSkeleton key={index} />
-                  ))
+                  <BlogBoxSkeleton key={index} />
+                ))
                 : paginatedBlogs?.map((blog) => (
-                    <BlogCard
-                      key={blog?._id}
-                      blog={blog}
-                      copiedLinkTitle={copiedLinkTitle}
-                      setCopiedLinkTitle={setCopiedLinkTitle}
-                      setAlertData={setAlertData}
-                      setShowAlert={setShowAlert}
-                      setModalData={setModalData}
-                      setShowModal={setShowModal}
-                    />
-                  ))}
+                  <BlogCard
+                    key={blog?._id}
+                    blog={blog}
+                    copiedLinkTitle={copiedLinkTitle}
+                    setCopiedLinkTitle={setCopiedLinkTitle}
+                  />
+                ))}
             </div>
 
             {/* Pagination */}
@@ -290,25 +259,6 @@ const CategoryBlogs = () => {
           </div>
         )}
       </div>
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
     </>
   );
 };

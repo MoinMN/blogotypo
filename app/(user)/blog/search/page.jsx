@@ -1,8 +1,6 @@
 "use client";
 
-import AlertBox from "@components/Alert";
 import BlogCard from "@components/BlogCard";
-import ModalBox from "@components/Modal";
 import PaginationBlogs from "@components/PaginationBlogs";
 import { BlogBoxSkeleton } from "@components/Skeletons/MyBlogSkeleton";
 import useMetadata from "@hooks/metadata";
@@ -10,6 +8,7 @@ import useMetadata from "@hooks/metadata";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useUI } from "@context/UIContext";
 
 const SearchBlogs = () => {
   // set title for page
@@ -17,6 +16,9 @@ const SearchBlogs = () => {
     `Search Blogs - Blogotypo`,
     `Search blogs from title, category, author name or content with advanced filtering system`
   );
+
+  const { showAlert } = useUI();
+
   // store filtered blogs
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   // for search text
@@ -28,7 +30,6 @@ const SearchBlogs = () => {
   const [sortOption, setSortOption] = useState("date-desc");
 
   // track searching process
-  const [isSearching, setIsSearching] = useState(false);
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
 
   // for pagination
@@ -50,24 +51,6 @@ const SearchBlogs = () => {
     }
   }, [itemsPerPage]);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: "",
-    dismissible: true,
-    header: "",
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: "",
-    body: "",
-    actionBtn: "",
-    actionBtnVariant: "",
-    confirmAction: () => {},
-  });
-
   // for share btn
   const [copiedLinkTitle, setCopiedLinkTitle] = useState("");
   // skeleton
@@ -76,7 +59,6 @@ const SearchBlogs = () => {
   // search blogs
   const handleSearchBlogs = async (e, blogLimit = "no-limit") => {
     // if not set then default
-    setIsSearching(true); // set true isSearching
     setShowSkeleton(true); // set skeleton true
 
     // has this function is called when user delete their own blog
@@ -94,23 +76,12 @@ const SearchBlogs = () => {
       filterBlogs(fetchedBlogs);
 
       if (!response?.ok) {
-        setAlertData((prev) => ({
-          ...prev,
-          header: data.msg,
-          variant: "danger",
-        }));
-        setShowAlert(true);
+        showAlert(data?.msg || "Failed to search blogs!", "danger")
       }
     } catch (error) {
       console.log("error while searching blogs", error);
-      setAlertData((prev) => ({
-        ...prev,
-        header: "Internal Server Error",
-        variant: "danger",
-      }));
-      setShowAlert(true);
+      showAlert("Internal Server Error", "danger")
     } finally {
-      setIsSearching(false); // set isSearching false
       setShowSkeleton(false); // set skeleton false
     }
   };
@@ -125,7 +96,8 @@ const SearchBlogs = () => {
         return (
           blog.title.toLowerCase().includes(lowerSearch) ||
           blog.content.toLowerCase().includes(lowerSearch) ||
-          blog.categories.includes(lowerSearch)
+          blog.categories.includes(lowerSearch) ||
+          blog.creator?.name?.toLowerCase().includes(lowerSearch)
         );
       }
 
@@ -139,6 +111,10 @@ const SearchBlogs = () => {
 
       if (searchFrom === "content") {
         return blog.content.toLowerCase().includes(lowerSearch);
+      }
+
+      if (searchFrom === "author") {
+        return blog.creator?.name?.toLowerCase().includes(lowerSearch);
       }
 
       return false;
@@ -193,7 +169,6 @@ const SearchBlogs = () => {
     // Update filtered blogs and pagination
     setFilteredBlogs(filtered);
     setPaginatedBlogs(filtered.slice(0, itemsPerPage)); // Reset pagination after filtering and sorting
-    setIsSearching(false);
   };
 
   // debounce search
@@ -326,47 +301,35 @@ const SearchBlogs = () => {
                 <option value="content">Content</option>
                 <option value="author">Author</option>
               </select>
-              {/* <button
-                type="submit"
-                className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isSearching ? 'cursor-not-allowed bg-theme_2' : 'bg-theme_4 hover:bg-theme_5'}`}
-                disabled={isSearching}
-              >
-                <i className={`fa-solid fa-magnifying-glass text-lg ${isSearching ? 'fa-spin' : ''}`} />
-                <span className="">
-                  {isSearching ? 'Searching...' : 'Search'}
-                </span>
-               </button> */}
             </div>
           </form>
 
           {/* result blogs  */}
           <div className="grid max-md:my-3 md:my-6 max-md:ml-0 md:ml-4 max-md:gap-2 md:gap-4">
             {showSkeleton
-              ? [...Array(2)].map((_, index) => <BlogBoxSkeleton key={index} />)
+              ? [...Array(5)].map((_, index) => <BlogBoxSkeleton key={index} />)
               : paginatedBlogs?.map((blog) => (
-                  <BlogCard
-                    key={blog?._id}
-                    blog={blog}
-                    copiedLinkTitle={copiedLinkTitle}
-                    setCopiedLinkTitle={setCopiedLinkTitle}
-                    fetchBlogs={handleSearchBlogs}
-                    setAlertData={setAlertData}
-                    setShowAlert={setShowAlert}
-                    setModalData={setModalData}
-                    setShowModal={setShowModal}
-                  />
-                ))}
+                <BlogCard
+                  key={blog?._id}
+                  blog={blog}
+                  copiedLinkTitle={copiedLinkTitle}
+                  setCopiedLinkTitle={setCopiedLinkTitle}
+                  fetchBlogs={handleSearchBlogs}
+                />
+              ))}
           </div>
         </div>
 
         {/* Pagination */}
-        {filteredBlogs.length !== 0 ? (
+        {(filteredBlogs.length !== 0) && (
           <PaginationBlogs
             entireData={filteredBlogs}
             itemsPerPage={itemsPerPage}
             onPageChange={setPaginatedBlogs} // retrive filtered blogs
           />
-        ) : (
+        )}
+
+        {(!showSkeleton && filteredBlogs.length === 0) && (
           <div className="flex h-56 justify-center items-center">
             <h3 className="caveat_font text-3xl md:text-5xl text-center font-semibold">
               No Blog Found!
@@ -374,25 +337,6 @@ const SearchBlogs = () => {
           </div>
         )}
       </div>
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
     </>
   );
 };

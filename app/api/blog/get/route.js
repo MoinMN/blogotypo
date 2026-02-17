@@ -11,8 +11,8 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
 
-    // blog title
-    const blogTitle = searchParams.get('blogTitle') ? decodeURIComponent(searchParams.get('blogTitle')) : null;
+    // blog slug
+    const slug = searchParams.get('slug') ? searchParams.get('slug') : null;
     // blog Id
     const blogId = searchParams.get('blogId') === 'null' ? null : searchParams.get('blogId');
 
@@ -22,8 +22,8 @@ export async function GET(req) {
     const userId = await User.findOne({ email: session?.user.email }).select("_id");
 
     // for viewing blogs
-    if (blogTitle) {
-      const blog = await Blog.findOne({ title: blogTitle.split('-').join(' ') })
+    if (slug) {
+      const blog = await Blog.findOne({ slug })
         .populate({
           path: 'creator',
           model: 'User',
@@ -36,7 +36,7 @@ export async function GET(req) {
         });
 
       if (!blog) {
-        return NextResponse.json({ msg: "Blog not found!" }, { status: 400 });
+        return NextResponse.json({ msg: "Blog not found!" }, { status: 404 });
       }
       if (!blog.viewedBy.some(id => id.equals(new mongoose.Types.ObjectId(userId)))) {
         blog.viewedBy.push(new mongoose.Types.ObjectId(userId));  // Add the user ID to the viewedBy array

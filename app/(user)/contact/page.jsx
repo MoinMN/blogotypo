@@ -6,11 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useEffect, useState } from 'react';
 
-import AlertBox from '@components/Alert';
-import ModalBox from '@components/Modal';
 import useMetadata from '@hooks/metadata';
 import { useSession } from 'next-auth/react';
-
 
 const ContactUs = () => {
   // set title for page
@@ -20,42 +17,22 @@ const ContactUs = () => {
 
   const [contactForm, setContactForm] = useState(null);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
-
   // confirmation to submit 
   const handleConfirmation = (e) => {
     e.preventDefault();
 
     if (!contactForm?.message || !contactForm?.subject) {
-      setAlertData((prev) => ({ ...prev, header: "All Field Requied!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("All Field Requied!", "danger");
       return;
     }
 
-    setModalData({
+    showModal({
       title: 'Confirmation',
       body: `Do you really want to send form which has subject: "${contactForm?.subject} ?"`,
       actionBtn: "Confirm",
       actionBtnVariant: "success",
-      confirmAction: () => handleSubmit(),
+      confirmAction: async () => await handleSubmit(),
     })
-    setShowModal(true);
   }
   // finally submit
   const handleSubmit = async () => {
@@ -67,18 +44,14 @@ const ContactUs = () => {
       });
       const data = await response.json();
       if (response?.ok) {
-        setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "success" }));
+        showAlert(data?.msg || "Contact details submitted!", "success");
         setContactForm(null);
         return;
       }
-
-      setAlertData((prev) => ({ ...prev, header: data?.msg, variant: "danger" }));
+      showAlert(data?.msg || "Error while submutting form!", "danger");
     } catch (error) {
       console.log('error while submiting form', error);
-      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error', variant: "danger" }));
-    } finally {
-      setShowModal(false);
-      setShowAlert(true);
+      showAlert("Internal Server Error", "danger");
     }
   }
 
@@ -168,30 +141,8 @@ const ContactUs = () => {
             Submit
           </span>
         </button>
-
       </form>
-
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
     </>
-
   )
 }
 

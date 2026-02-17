@@ -11,13 +11,13 @@ const AdminViewBlog = ({ params }) => {
   useMetadata(`${blogData?.title} - Blogotypo`, `${blogData?.title} see the blog now on blogotypo`);
 
   const fetchBlogData = async () => {
-    const blogTitle = ((await params).blogTitle).trim().split(' ').join('-');
-    if (!blogTitle) {
+    const slug = ((await params).slug);
+    if (!slug) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/blog/get?blogTitle=${encodeURIComponent(blogTitle)}`, { method: "GET" });
+      const response = await fetch(`/api/blog/get?slug=${slug}`, { method: "GET" });
 
       const data = await response.json();
       if (response?.ok) {

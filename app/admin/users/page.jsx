@@ -8,17 +8,18 @@ import Form from 'react-bootstrap/Form';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import ModalBox from '@components/Modal';
-import AlertBox from '@components/Alert';
 import PaginationBlogs from '@components/PaginationBlogs';
 import TableSkeleton from '@components/Skeletons/TableSkeleton';
 import { formatDateForAdmin } from '@components/FormatDate';
 import useMetadata from '@hooks/metadata';
 import { exportUsersContactsToExcel, exportUsersContactsToPDF } from '@utils/exportdata';
+import { useUI } from '@context/UIContext';
 
 const AdminUsers = () => {
   // set title for page
   useMetadata(`Admin Users - Blogotypo`, `Admin users to view or delete users`);
+
+  const { showAlert, showModal } = useUI();
 
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -27,30 +28,11 @@ const AdminUsers = () => {
   const [isUpdating, setIsUpdating] = useState({ id: '', top_creator: '' });
   const [isSearching, setIsSearching] = useState(false);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
-
   // for pagination
   const [paginatedUsers, setPaginatedUsers] = useState([]);
   const itemsPerPage = 10;
 
   const [showSkeleton, setShowSkeleton] = useState(true);
-
 
   const fetchUsers = async () => {
     try {
@@ -64,12 +46,10 @@ const AdminUsers = () => {
         setShowSkeleton(false);
         return;
       }
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
-      setShowAlert(true);
+      showAlert(data?.msg || "failed to fetch users!", "danger");
     } catch (error) {
       console.log('Error while fetching users data ', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Internal Server Error!", "danger");
       setShowSkeleton(false);
     }
   }
@@ -84,20 +64,18 @@ const AdminUsers = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
-        setShowAlert(true);
+        showAlert(data?.msg || "User data has been updated!", "success");
         // update users data
         fetchUsers();
         setIsUpdating({ id: '', top_creator: '' });
         return;
       }
 
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+      showAlert(data?.msg || "failed to update user data!", "danger");
     } catch (error) {
       console.log('Error while save user data ', error);
-      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: "danger" }));
+      showAlert("Internal Server Error!", "danger");
     } finally {
-      setShowAlert(true);
       setIsUpdating({ id: '', top_creator: '' });
     }
   }
@@ -127,14 +105,13 @@ const AdminUsers = () => {
   const handleDelete = (userId, userName) => {
     if (!userId || !userName) return;
 
-    setModalData({
+    showModal({
       title: 'Confirmation',
       body: `Do you really want to delete user "${userName}" ?`,
       actionBtn: 'delete',
       actionBtnVariant: 'danger',
-      confirmAction: () => handleConfirmDelete(userId)
+      confirmAction: async () => await handleConfirmDelete(userId)
     });
-    setShowModal(true);
   }
 
   const handleConfirmDelete = async (userId) => {
@@ -145,20 +122,16 @@ const AdminUsers = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
-        setShowAlert(true);
-        setShowModal(false);
+        showAlert(data?.msg || "User deleted successfully!", "success");
         // fake update of deleting blog
         setPaginatedUsers((users) => users.filter((user) => user._id !== userId));
         return;
       }
       setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+      showAlert(data?.msg || "failed to delete user!", "danger");
     } catch (error) {
       console.log('error while deleting user ', error);
-      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: "danger" }));
-    } finally {
-      setShowAlert(true);
-      setShowModal(false);
+      showAlert("Internal Server Error!", "danger");
     }
   }
 
@@ -321,27 +294,6 @@ const AdminUsers = () => {
             </div>
         }
       </div>
-
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
     </>
   )
 }

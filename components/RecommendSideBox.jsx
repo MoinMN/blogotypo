@@ -4,9 +4,6 @@ import { usePathname } from "next/navigation";
 
 
 const RecommendSideBox = ({ header, blogs }) => {
-  // check if req from /view of /blog
-  const isPublic = usePathname().split('/').includes('view');
-
   return (
     <>
       <div className="border border-black rounded-md md:p-2 max-md:p-1 shadow-md">
@@ -25,7 +22,7 @@ const RecommendSideBox = ({ header, blogs }) => {
         <div className="flex flex-col gap-2 md:gap-4">
           {blogs?.map((blog, index) => (
             <Link
-              href={(isPublic ? '/view' : '/blog') + `/${encodeURIComponent(blog.title.split(' ').join('-'))}`}
+              href={'/blog' + `/${blog?.slug}`}
               key={index}
               className="grid grid-cols-3 gap-2 md:gap-3 no-underline text-black transition-all duration-300 ease-in-out"
               onMouseEnter={(e) => {

@@ -2,51 +2,33 @@
 
 import { useSession } from "next-auth/react";
 import { formatDateForComment } from "./FormatDate";
-import ModalBox from "./Modal";
-import AlertBox from "./Alert";
 import { useState } from "react";
 import Image from "next/image";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useDispatch } from "@node_modules/react-redux/dist/react-redux";
 import { removeReviewFromBlog } from "@redux/slices/blog/blog.slice";
+import { useUI } from "@context/UIContext";
 
-const CommentBox = ({ review, blogTitle }) => {
+const CommentBox = ({ review, slug }) => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
+
+  const { showAlert, showModal } = useUI();
 
   // keep track of deleted review to avoid refresh or fetchData again
   const [deletedReviews, setDeletedReviews] = useState([]);
 
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
   const handleDeleteReview = (reviewId) => {
     if (!reviewId) return;
 
-    setModalData({
+    showModal({
       title: "Confirmation",
       body: "Do you really want to delete your review?",
       actionBtn: "Delete",
       actionBtnVariant: "danger",
-      confirmAction: () => handleConfirmDeleteReview(reviewId)
+      confirmAction: async () => await handleConfirmDeleteReview(reviewId)
     });
-    setShowModal(true);
   }
 
   const handleConfirmDeleteReview = async (reviewId) => {
@@ -60,24 +42,19 @@ const CommentBox = ({ review, blogTitle }) => {
       if (response.ok) {
         // REMOVE the review from Redux
         dispatch(removeReviewFromBlog({
-          blogTitle,
+          slug,
           reviewId,
         }));
 
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
-        setShowAlert(true);
+        showAlert(data?.msg || "Review has been deleted!", "success");
         setDeletedReviews((prev) => ([...prev, reviewId]));
         return;
       }
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+
+      showAlert(data?.msg || "failed to delete review!", "danger");
     } catch (error) {
       console.log('error while deleting review ', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-    } finally {
-      // on alert
-      setShowAlert(true);
-      // off modal
-      setShowModal(false);
+      showAlert("Internal Server Error!", "danger");
     }
   }
 
@@ -154,26 +131,6 @@ const CommentBox = ({ review, blogTitle }) => {
           </p>
         </div>
       </div>
-
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
     </>
   )
 }

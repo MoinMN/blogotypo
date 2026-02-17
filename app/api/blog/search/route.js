@@ -1,5 +1,6 @@
 import "@models/user";
 import Blog from "@models/blog";
+import User from "@models/user";
 import { NextResponse } from "next/server";
 import connectMongoDB from "@utils/database";
 
@@ -31,18 +32,22 @@ export async function GET(req) {
         const filteredBlogs = blogs.filter((blog) =>
           blog.creator?.name?.match(regex)
         );
-
         if (filteredBlogs.length === 0) {
           return NextResponse.json({ data: [], msg: "No Blog Found!" }, { status: 404 });
         }
 
         return NextResponse.json({ data: filteredBlogs }, { status: 200 });
       } else if (searchFrom === "all") {
+        const users = await User.find({ name: regex });
+
+        const userIds = users.map((user) => user._id);
+
         query = {
           $or: [
             { title: regex },
             { content: regex },
             { categories: regex },
+            { creator: { $in: userIds } },
           ],
         };
       }

@@ -18,7 +18,7 @@ export async function GET(req) {
         match: { top_creator: true },
         select: "top_creator",
       })
-      .select("_id title thumbnail_image") // select specfic
+      .select("_id title thumbnail_image slug") // select specfic
       .sort({ date: -1 }) // Sort by viewBy length in descending order
       .limit(blogLimit) // Limit to 3 blogs
       .exec();

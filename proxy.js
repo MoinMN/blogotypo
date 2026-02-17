@@ -16,7 +16,6 @@ const publicApiPaths = [
   '/api/blog/get',
   '/api/blog/search',
   '/api/blog/recommend',
-  '/api/blog/getall',
   '/api/count',
   '/api/user/contact',
   '/api/googleIndexing/indexing'

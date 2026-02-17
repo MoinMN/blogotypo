@@ -1,18 +1,20 @@
 "use client";
 
-import AlertBox from "@components/Alert";
 import useMetadata from "@hooks/metadata";
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { signIn } from "@node_modules/next-auth/react";
 import { useRouter } from "@node_modules/next/navigation";
 import { useState } from "react";
+import { useUI } from "@context/UIContext";
 
 const AdminLogin = () => {
   // set title for page
   useMetadata('Admin Login - Blogotypo', 'Admin login page for blogotypo');
 
   const router = useRouter();
+
+  const { showAlert } = useUI();
 
   const userInputs = [
     { name: 'email', type: 'email', placeholder: 'john@gmail.com' },
@@ -21,14 +23,6 @@ const AdminLogin = () => {
 
   // store user data
   const [userData, setUserData] = useState({});
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,13 +37,12 @@ const AdminLogin = () => {
     // return if empty and show msg
     if (!userData?.email || !userData?.password) {
       if (!userData?.email && !userData?.password)
-        setAlertData((prev) => ({ ...prev, header: 'Email & Password Required!', variant: "danger" }))
+        showAlert("Email & Password Required!", "danger");
       else if (!userData?.email)
-        setAlertData((prev) => ({ ...prev, header: 'Email Required!', variant: "danger" }))
+        showAlert("Email Required!", "danger");
       else if (!userData?.password)
-        setAlertData((prev) => ({ ...prev, header: 'Password Required!', variant: "danger" }))
+        showAlert("Password Required!", "danger");
 
-      setShowAlert(true);
       setIsSubmitting(false);
       return;
     }
@@ -76,22 +69,12 @@ const AdminLogin = () => {
           msg = 'Incorrect email and password!';
         }
 
-        setAlertData((prev) => ({
-          ...prev,
-          header: msg || result.error,
-          variant: 'danger',
-        }));
-        setShowAlert(true);
+        showAlert(msg || result?.error, "danger");
         setIsSubmitting(false);
       }
     } catch (error) {
       console.log('error while loging', error);
-      setAlertData((prev) => ({
-        ...prev,
-        header: 'An error occurred while logging in.',
-        variant: 'danger',
-      }));
-      setShowAlert(true);
+      showAlert("An error occurred while logging in.", "danger");
       setIsSubmitting(false);
     }
   }
@@ -158,16 +141,6 @@ const AdminLogin = () => {
           </form>
         </div>
       </div>
-
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right"}
-      />
     </>
   )
 }

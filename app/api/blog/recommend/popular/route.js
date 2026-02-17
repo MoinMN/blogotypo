@@ -14,7 +14,7 @@ export async function GET(req) {
     const blogLimit = searchParams.get('blogLimit') || 3;
 
     const popularBlogs = await Blog.find({ _id: { $ne: blogId } })  // Exclude blogId
-      .select('_id title thumbnail_image date') // select specfic
+      .select('_id title thumbnail_image date slug') // select specfic
       .sort({ 'viewedBy.length': -1 })    // Sort by `viewedBy length` in descending order
       .limit(blogLimit);
 

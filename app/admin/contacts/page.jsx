@@ -6,40 +6,23 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Table from 'react-bootstrap/Table';
 import Link from 'next/link';
 
-import ModalBox from '@components/Modal';
-import AlertBox from '@components/Alert';
 import TableSkeleton from '@components/Skeletons/TableSkeleton';
 import PaginationBlogs from '@components/PaginationBlogs';
 import { formatDateForAdmin } from '@components/FormatDate';
 import useMetadata from '@hooks/metadata';
 import { exportUsersContactsToExcel, exportUsersContactsToPDF } from '@utils/exportdata';
+import { useUI } from '@context/UIContext';
 
 const AdminContacts = () => {
   // set title for page
   useMetadata('Admin Contacts - Blogotypo', 'Admin Contacts for view or delete');
 
+  const { showAlert, showModal } = useUI();
+
   const [contacts, setContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
 
   // for pagination
   const [paginatedContacts, setPaginatedContacts] = useState([]);
@@ -60,12 +43,10 @@ const AdminContacts = () => {
         setShowSkeleton(false);
         return;
       }
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
-      setShowAlert(true);
+      showAlert(data?.msg || "Failed to load contacts!", "danger");
     } catch (error) {
       console.log('Error while fetching contact detail info ', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Internal Server Error!", "danger");
       setShowSkeleton(false);
     }
   }
@@ -98,14 +79,13 @@ const AdminContacts = () => {
   const handleDelete = (contactId) => {
     if (!contactId) return;
 
-    setModalData({
+    showModal({
       title: 'Confirmation',
       body: `Do you really want to delete contact detail?`,
       actionBtn: 'Delete',
       actionBtnVariant: 'danger',
-      confirmAction: () => handleConfirmDelete(contactId)
+      confirmAction: async () => await handleConfirmDelete(contactId)
     });
-    setShowModal(true);
   }
 
   const handleConfirmDelete = async (contactId) => {
@@ -116,20 +96,16 @@ const AdminContacts = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
-        setShowAlert(true);
-        setShowModal(false);
+        showAlert(data?.msg || "Contact deleted successfully!", "success");
         // fake update of deleting contact
         setPaginatedContacts((contacts) => contacts.filter((contact) => contact._id !== contactId));
         return;
       }
       setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+      showAlert(data?.msg || "Failed to delete contact!", "danger");
     } catch (error) {
       console.log('error while deleting contact ', error);
       setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: "danger" }));
-    } finally {
-      setShowAlert(true);
-      setShowModal(false);
     }
   }
 
@@ -260,27 +236,6 @@ const AdminContacts = () => {
             </div>
         }
       </div>
-
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
     </>
   )
 }

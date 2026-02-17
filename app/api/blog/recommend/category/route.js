@@ -71,6 +71,7 @@ export async function GET(req) {
             _id: 1,
             title: 1,
             thumbnail_image: 1,
+            slug: 1,
           }
         }
       }

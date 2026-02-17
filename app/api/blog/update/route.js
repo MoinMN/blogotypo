@@ -49,7 +49,7 @@ export async function POST(req) {
 
       // Upload new image to Cloudinary
       const uploadResponse = await cloudinary.v2.uploader.upload(
-        `data:image/jpeg;base64,${buffer.toString('base64')}`, 
+        `data:image/jpeg;base64,${buffer.toString('base64')}`,
         { folder: 'blog_thumbnails' }
       );
 
@@ -66,9 +66,16 @@ export async function POST(req) {
       blog.thumbnail_image = uploadResponse.secure_url;
     }
 
+    // If title changed → regenerate slug
+    if (blog.title !== title.trim()) {
+      const newSlug = await generateSlug(title.trim(), blog._id);
+      blog.slug = newSlug;
+    }
+
     blog.title = title.trim();
     blog.categories = categories;
     blog.content = content.trim();
+
 
     await blog.save();
 
@@ -88,4 +95,34 @@ export async function POST(req) {
     console.log('Error while updating ', error);
     return NextResponse.json({ msg: "Internal Server Error!" }, { status: 500 });
   }
-}
+};
+
+const generateSlug = async (title, excludeId = null) => {
+  let baseSlug = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  if (!baseSlug) {
+    baseSlug = Math.random().toString(36).substring(2, 10);
+  }
+
+  let slug = baseSlug;
+  let counter = 0;
+
+  while (
+    await Blog.findOne({
+      slug,
+      ...(excludeId && { _id: { $ne: excludeId } })
+    })
+  ) {
+    counter++;
+    slug = `${baseSlug}-${counter}`;
+  }
+
+  return slug;
+};
+

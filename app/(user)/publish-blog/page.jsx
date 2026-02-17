@@ -8,16 +8,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import AlertBox from '@components/Alert';
 import useMetadata from '@hooks/metadata';
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 import { addMyBlogCache, updateMyBlogCache } from '@redux/slices/blog/myblogs.slice';
+import { useUI } from '@context/UIContext';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
 const PublishBlog = () => {
   // set title for page
   useMetadata('Publish Blog - Blogotypo', `Publish Blog in blogotypo`);
+
+  const { showAlert } = useUI();
 
   const router = useRouter();
   // for edit blog search params 
@@ -45,14 +47,6 @@ const PublishBlog = () => {
     },
   }), []);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
   // Handle 'Enter' key press to add input category
   const handleCategoryEnter = (e) => {
     if (e.key === 'Enter' && currentCategory.trim() !== '') {
@@ -77,14 +71,12 @@ const PublishBlog = () => {
   const handleSubmitBlog = async (e) => {
     e.preventDefault();
     if (!blogData?.title || !blogData?.content || !blogData?.thumbnail_image instanceof File) {
-      setAlertData((prev) => ({ ...prev, header: "All Fields Required!", variant: 'danger' }));
-      setShowAlert(true);
+      showAlert("All Fields Required!", "danger");
       return;
     }
 
     if (blogData?.categories.length === 0) {
-      setAlertData((prev) => ({ ...prev, header: 'Ensure you press "Enter" after each category!', variant: 'warning' }));
-      setShowAlert(true);
+      showAlert(`Ensure you press "Enter" after each category!`, "danger");
       return;
     }
 
@@ -107,7 +99,7 @@ const PublishBlog = () => {
       });
 
       const result = await response.json();
-      
+
       if (response.ok) {
         if (blogIdFromParams) {
           dispatch(updateMyBlogCache(result?.updatedBlog));
@@ -117,14 +109,12 @@ const PublishBlog = () => {
 
         router.push('/my-blogs');
       } else {
-        setAlertData((prev) => ({ ...prev, header: result?.msg, variant: "danger" }));
-        setShowAlert(true);
+        showAlert(result?.msg || "Failed to update the blog!", "danger");
         setIsSubmitting(false);
       }
     } catch (error) {
       console.log('Error while posting blog: ', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Internal Server Error!", "danger");
       setIsSubmitting(false);
     }
   }
@@ -137,8 +127,7 @@ const PublishBlog = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'danger' }));
-          setShowAlert(true);
+          showAlert(data?.msg || "failed to fetch blog data!", "danger");
           // redirect if unauthorized blog id req
           if (data.msg === 'Unauthorized Access!') {
             router.push('/publish-blog')
@@ -148,8 +137,7 @@ const PublishBlog = () => {
         setBlogData(data.data);
       } catch (error) {
         console.log('error while fetching blog data ', error);
-        setAlertData((prev) => ({ ...prev, header: 'Error while fetching blog details', variant: 'danger' }));
-        setShowAlert(true);
+        showAlert("Error while fetching blog details!", "danger");
       }
     }
 
@@ -264,17 +252,7 @@ const PublishBlog = () => {
             }
           </span>
         </button>
-
       </form>
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
     </>
   )
 }

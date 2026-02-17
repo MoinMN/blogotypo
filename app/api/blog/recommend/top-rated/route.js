@@ -21,6 +21,7 @@ export async function GET(req) {
           title: 1, // Include the title
           thumbnail_image: 1, // Include the image
           date: 1,
+          slug: 1,
           averageRating: { $avg: "$reviews.rating" }, // Calculate the average rating of reviews
         }
       },

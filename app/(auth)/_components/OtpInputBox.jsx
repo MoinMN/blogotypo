@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import Alert from '@components/Alert';
+import { useUI } from '@context/UIContext';
 
 const OtpInputBox = ({ userData, setUserData }) => {
   const router = useRouter();
+
+  const { showAlert } = useUI();
 
   // for masked email
   const [maskedEmail, setMaskedEmail] = useState("");
@@ -33,14 +34,6 @@ const OtpInputBox = ({ userData, setUserData }) => {
     otpInput6: useRef(null),
   };
 
-  // alert 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-    content: ''
-  });
   // check is submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -77,8 +70,7 @@ const OtpInputBox = ({ userData, setUserData }) => {
 
     // if any one also empty then return
     if (!otpInputValues?.otpInput1 || !otpInputValues?.otpInput2 || !otpInputValues?.otpInput3 || !otpInputValues?.otpInput4 || !otpInputValues?.otpInput5 || !otpInputValues?.otpInput6) {
-      setAlertData((prev) => ({ ...prev, header: 'Invalid OTP!', variant: 'danger' }))
-      setShowAlert(true);
+      showAlert("Invalid OTP!", "danger", "top-right");
       setIsSubmitting(false);
       return;
     }
@@ -100,15 +92,14 @@ const OtpInputBox = ({ userData, setUserData }) => {
 
       if (response.ok) {
         router.push('/user/login');
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'success' }));
+        showAlert(data?.msg || "User verified!", "success", "top-right");
       } else {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: 'danger' }));
+        showAlert(data?.msg || "failed to verify user!", "danger", "top-right");
       }
     } catch (error) {
-      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: 'danger' }));
+      showAlert("Internal Server Error!", "danger", "top-right");
       console.log(error);
     } finally {
-      setShowAlert(true);
       setIsSubmitting(false);
     }
   }
@@ -129,15 +120,6 @@ const OtpInputBox = ({ userData, setUserData }) => {
 
   return (
     <>
-      <Alert
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={'top-right'}
-      />
-
       {/* opt box */}
       <form
         onSubmit={handleOtpSubmit}

@@ -3,11 +3,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect, useState } from "react";
 import { useSession } from 'next-auth/react';
-import AlertBox from "@components/Alert";
 import SkeletonBox from '@components/Skeletons/Skeleton';
 import ProfileImage from '../_components/ProfileImage';
 import useMetadata from '@hooks/metadata';
-
+import { useUI } from '@context/UIContext';
 
 const Profile = () => {
   const { data: session, update } = useSession();
@@ -15,20 +14,14 @@ const Profile = () => {
   // set title for page
   useMetadata(session?.user?.name ? `${session.user.name} Profile - Blogotypo` : "Blogotypo", `User Profile`);
 
+  const { showAlert } = useUI();
+
   const [userData, setUserData] = useState({});
   const [passwords, setPasswords] = useState({
     email: '',
     current_password: '',
     new_password: '',
     confirm_password: '',
-  });
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
   });
 
   // show skeleton
@@ -43,8 +36,7 @@ const Profile = () => {
         const response = await fetch("/api/user/get-data");
 
         if (!response.ok) {
-          setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to fetch user data!' }));
-          setShowAlert(true);
+          showAlert("Failed to fetch user data!", "danger");
           return;
         }
 
@@ -64,8 +56,7 @@ const Profile = () => {
 
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to fetch user data!' }));
-        setShowAlert(true);
+        showAlert("Failed to fetch user data!", "danger");
       } finally {
         setShowSkeleton(false);
       }
@@ -92,8 +83,7 @@ const Profile = () => {
 
     try {
       if (!userData?.name || !userData?.email) {
-        setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Name & Email Required!' }));
-        setShowAlert(true);
+        showAlert("Name & Email Required!", "danger");
         setIsProfileSubmitting(false);
         return;
       }
@@ -105,17 +95,16 @@ const Profile = () => {
       });
 
       if (!response.ok) {
-        setAlertData((prev) => ({ ...prev, variant: 'danger', header: response?.statusText }));
+        showAlert(response?.statusText || "Failed to update user data!", "danger");
         setIsProfileSubmitting(false);
         return;
       }
 
-      setAlertData((prev) => ({ ...prev, variant: 'success', header: 'Profile updated successfully!' }));
+      showAlert("Profile updated successfully!", "success");
     } catch (error) {
       console.error('Error updating profile:', error);
-      setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to update profile!' }));
+      showAlert("Failed to update profile!", "danger");
     } finally {
-      setShowAlert(true);
       setIsProfileSubmitting(false);
     }
   }
@@ -130,15 +119,13 @@ const Profile = () => {
     setIsPasswordSubmitting(true);
 
     if (!passwords?.new_password || !passwords?.confirm_password) {
-      setAlertData((prev) => ({ ...prev, header: "All Fields Required!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("All Fields Required!", "danger");
       setIsPasswordSubmitting(false);
       return;
     }
 
     if (passwords?.new_password !== passwords?.confirm_password) {
-      setAlertData((prev) => ({ ...prev, header: "New Password & Confirm Password Mismatched", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("New Password & Confirm Password Mismatched", "danger");
       setIsPasswordSubmitting(false);
       return;
     }
@@ -152,17 +139,16 @@ const Profile = () => {
 
       response.text().then(text => {
         if (response?.ok) {
-          setAlertData((prev) => ({ ...prev, variant: 'success', header: text }));
+          showAlert(text || "Password updated successfully!", "success");
           setPasswords({ current_password: '', new_password: '', confirm_password: '' });
         } else {
-          setAlertData((prev) => ({ ...prev, variant: 'danger', header: text }));
+          showAlert(text || "Failed to update password!", "danger");
         }
       });
     } catch (error) {
       console.error('Error updating password:', error);
-      setAlertData((prev) => ({ ...prev, variant: 'danger', header: 'Failed to update password!' }));
+      showAlert("Internal Server Error!", "danger");
     } finally {
-      setShowAlert(true);
       setIsPasswordSubmitting(false);
     }
   }
@@ -350,16 +336,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
     </>
   )
 }

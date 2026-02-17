@@ -34,7 +34,7 @@ const myBlogsCacheSlice = createSlice({
     // DELETE A BLOG LOCALLY
     deleteMyBlogCache(state, action) {
       const blogId = action.payload;
-      state.myBlogs = state.myBlogs.filter((b) => b._id !== blogId);
+      state.myBlogs = state.myBlogs.filter((b) => b._id != blogId);
     },
     // ADD A NEW BLOG LOCALLY
     addMyBlogCache(state, action) {

@@ -16,7 +16,7 @@ export async function GET(req) {
     // const latestBlogs = await getLatestBlogs(blogId, blogLimit);
 
     const latestBlogs = await Blog.find({ _id: { $ne: blogId } })  // Exclude blogId
-      .select('_id title thumbnail_image date') // select specfic
+      .select('_id title thumbnail_image date slug') // select specfic
       .sort({ date: -1 })           // Sort by `date` in descending order
       .limit(blogLimit);
 

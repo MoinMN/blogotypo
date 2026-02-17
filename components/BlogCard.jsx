@@ -11,23 +11,26 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 import { deleteMyBlogCache } from '@redux/slices/blog/myblogs.slice';
+import { useUI } from '@context/UIContext';
 
 
-const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, setShowModal, setModalData, setAlertData }) => {
+const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle }) => {
   const { data: session } = useSession();
   const router = useRouter();
 
   const dispatch = useDispatch();
 
+  const { showAlert, showModal } = useUI();
+
   // copy link to clipboard
-  const handleCopyLink = (blogTitle) => {
+  const handleCopyLink = (slug) => {
     const shareUrl =
-      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/` + blogTitle.split(" ").join("-");
+      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/blog/` + slug;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       // Modern Clipboard API
       navigator.clipboard.writeText(shareUrl).then(() => {
-        setCopiedLinkTitle(blogTitle);
+        setCopiedLinkTitle(slug);
       }).catch((err) => {
         console.error("Failed to copy: ", err);
       });
@@ -41,7 +44,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
       textArea.select();
       try {
         document.execCommand("copy");
-        setCopiedLinkTitle(blogTitle);
+        setCopiedLinkTitle(slug);
       } catch (err) {
         console.error("Fallback: Unable to copy", err);
       }
@@ -52,21 +55,20 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
   // handle delete for confirmation
   const handleConfirmationDeleteBlog = (blogId, blogTitle) => {
     const title = blogTitle?.length > 80 ? `${blogTitle?.substring(0, 80)}...` : blogTitle;
-    setModalData({
+
+    showModal({
       title: "Confirmation",
       body: `Do you really want to delete blog with title "${title}" ?`,
       actionBtn: "Delete",
       actionBtnVariant: "danger",
-      confirmAction: () => handleDeleteBlog(blogId)
+      confirmAction: async () => await handleDeleteBlog(blogId)
     });
-    setShowModal(true);
   }
 
   // confirmed delete
   const handleDeleteBlog = async (blogId) => {
     if (!blogId) {
-      setAlertData((prev) => ({ ...prev, header: "Blog not found!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Blog not found!", "danger");
       return;
     }
 
@@ -77,15 +79,12 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
       if (response.ok) {
         dispatch(deleteMyBlogCache(blogId));
 
-        setAlertData((prev) => ({ ...prev, header: text, variant: "success" }));
+        showAlert(text || "Blog deleted successfully!", "success");
       } else
-        setAlertData((prev) => ({ ...prev, header: text, variant: "danger" }));
+        showAlert(text || "Failed to delete blog", "danger");
     } catch (error) {
       console.log('error while deleting blog', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-    } finally {
-      setShowAlert(true);
-      setShowModal(false);
+      showAlert("Internal Server Error!", "danger");
     }
   }
 
@@ -111,7 +110,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
           <div className="flex flex-col sm:col-span-3 lg:col-span-4">
             {/* Title */}
             <h3
-              onClick={() => router.push(`/blog/${encodeURIComponent(blog.title.split(' ').join('-'))}`)}
+              onClick={() => router.push(`/blog/${blog?.slug}`)}
               className="text-xl md:text-3xl font-medium line-clamp-2 md:line-clamp-3 group-hover:text-blue-500 group-hover:underline cursor-pointer transition-all duration-300 ease-in-out select-none"
             >
               {blog?.title}
@@ -155,7 +154,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
                 </span>
               </OverlayTrigger>
               <OverlayTrigger overlay={<Tooltip id="copy_link">{copiedLinkTitle === blog.title.trim() ? 'Copied' : 'Copy Link'}</Tooltip>}>
-                <span onClick={() => handleCopyLink(blog.title.trim())} className="flex justify-center items-center cursor-pointer hover:text-yellow-400 transition-all duration-300 ease-in-out">
+                <span onClick={() => handleCopyLink(blog?.slug)} className="flex justify-center items-center cursor-pointer hover:text-yellow-400 transition-all duration-300 ease-in-out">
                   <i
                     className={`${copiedLinkTitle == blog.title.trim() ? 'fa-solid' : 'fa-regular'} fa-clone`} />
                 </span>
@@ -171,7 +170,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle, setShowAlert, set
                   Edit
                 </button>
                 <button
-                  onClick={() => handleConfirmationDeleteBlog(blog._id, blog.title)}
+                  onClick={() => handleConfirmationDeleteBlog(blog._id, blog?.title)}
                   className="md:px-4 max-md:px-2 py-0.5 text-xs md:text-sm rounded-md shadow-md text-white bg-red-500 hover:bg-red-700 transition-all duration-300 ease-in-out"
                 >
                   Delete

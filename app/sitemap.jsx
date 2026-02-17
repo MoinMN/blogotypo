@@ -5,10 +5,10 @@ export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
   await connectMongoDB();
 
-  const blogs = await Blog.find().select("title updatedAt");
+  const blogs = await Blog.find().select("slug updatedAt");
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${baseUrl}/blog/${encodeURIComponent(blog?.title?.split(" ").join("-"))}`,
+    url: `${baseUrl}/blog/${slug}`,
     lastModified: blog.updatedAt || new Date(),
     changeFrequency: "weekly",
     priority: 0.8,

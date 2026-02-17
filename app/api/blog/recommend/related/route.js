@@ -23,7 +23,7 @@ export async function GET(req) {
       categories: { $in: blog.categories }, // include categoies
       _id: { $ne: blogId }   // Exclude blogId
     })
-      .select('_id title thumbnail_image date') // select specfic
+      .select('_id title thumbnail_image date slug') // select specfic
       .sort({ date: -1 })
       .limit(blogLimit);   // Limit to 3 blogs
 

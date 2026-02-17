@@ -6,24 +6,27 @@ import useMetadata from "@hooks/metadata";
 import { useEffect, useMemo } from "react";
 import { fetchFullBlogData } from '@redux/slices/blog/blog.slice';
 import React from 'react';
+import { useParams } from '@node_modules/next/navigation';
+import BlogNotFound from '@components/BlogNotFound';
 
-const UserBlog = ({ params }) => {
+const UserBlog = () => {
   const dispatch = useDispatch();
 
-  const unwrappedParams = React.use(params);
-  const blogTitle = useMemo(() => {
-    return unwrappedParams?.blogTitle?.trim()?.split(" ")?.join("-") || "";
-  }, [unwrappedParams]);
+  const params = useParams();
 
-  const { blogs, blogChacheLoading } = useSelector(state => state.blogCache);
+  const slug = useMemo(() => {
+    return params?.slug || "";
+  }, [params]);
 
-  const cachedBlog = blogs?.[blogTitle];
+  const { blogs, blogCacheLoading, blogCacheError } = useSelector(state => state.blogCache);
+
+  const cachedBlog = blogs?.[slug];
 
   // Always fetch blog ONLY if not already cached
   useEffect(() => {
-    if (!blogTitle) return;
-    if (!cachedBlog) dispatch(fetchFullBlogData({ blogTitle }));
-  }, [blogTitle, cachedBlog, dispatch]);
+    if (!slug) return;
+    if (!cachedBlog) dispatch(fetchFullBlogData({ slug }));
+  }, [slug, cachedBlog, dispatch]);
 
   // Blog data = prefer cached > fallback empty
   const blogData = cachedBlog?.blogData || {};
@@ -35,13 +38,17 @@ const UserBlog = ({ params }) => {
     blogData?.thumbnail_image
   );
 
+  if (blogCacheError) {
+    return <BlogNotFound />;
+  }
+
   return (
     <>
       <ViewBlog
-        blogTitle={blogTitle}
+        slug={slug}
         blogData={blogData}
         recommendBlogs={cachedBlog?.recommended || {}}
-        loading={blogChacheLoading}
+        loading={blogCacheLoading}
       />
     </>
   )

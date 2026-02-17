@@ -7,47 +7,29 @@ import Table from 'react-bootstrap/Table';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import ModalBox from '@components/Modal';
-import AlertBox from '@components/Alert';
 import TableSkeleton from '@components/Skeletons/TableSkeleton';
 import PaginationBlogs from '@components/PaginationBlogs';
 import { formatDateForAdmin } from '@components/FormatDate';
 import useMetadata from '@hooks/metadata';
 import { exportBlogsToExcel, exportBlogsToPDF } from '@utils/exportdata';
+import { useUI } from '@context/UIContext';
 
 const AdminBlogs = () => {
   // set title for page
   useMetadata('Admin Blogs - Blogotypo', 'Admin blogs for view or delete');
+
+  const { showAlert, showModal } = useUI();
 
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
-
   // for pagination
   const [paginatedBlogs, setPaginatedBlogs] = useState([]);
   const itemsPerPage = 10;
 
   const [showSkeleton, setShowSkeleton] = useState(true);
-
 
   const fetchBlogs = async () => {
     try {
@@ -61,12 +43,10 @@ const AdminBlogs = () => {
         setShowSkeleton(false);
         return;
       }
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
-      setShowAlert(true);
+      showAlert(data.msg || "Failed to fetch blogs!", "danger");
     } catch (error) {
       console.log('Error while fetching users data ', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Internal Server Error!", "danger");
       setShowSkeleton(false);
     }
   }
@@ -99,14 +79,13 @@ const AdminBlogs = () => {
   const handleDelete = (blogId) => {
     if (!blogId) return;
 
-    setModalData({
+    showModal({
       title: 'Confirmation',
       body: `Do you really want to delete blog?`,
       actionBtn: 'delete',
       actionBtnVariant: 'danger',
-      confirmAction: () => handleConfirmDelete(blogId)
+      confirmAction: async () => await handleConfirmDelete(blogId)
     });
-    setShowModal(true);
   }
 
   const handleConfirmDelete = async (blogId) => {
@@ -117,9 +96,7 @@ const AdminBlogs = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
-        setShowAlert(true);
-        setShowModal(false);
+        showAlert(data?.msg || "Blog deleted successfully!", "success");
         // fake update of deleting blog
         setPaginatedBlogs((blogs) => blogs.filter((blog) => blog._id !== blogId));
         return;
@@ -128,9 +105,7 @@ const AdminBlogs = () => {
     } catch (error) {
       console.log('error while deleting blog ', error);
       setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: "danger" }));
-    } finally {
-      setShowAlert(true);
-      setShowModal(false);
+
     }
   }
 
@@ -231,7 +206,7 @@ const AdminBlogs = () => {
                       </td>
                       <td className="p-2 text-center align-middle">
                         <Link
-                          href={'/admin/blog/' + encodeURIComponent(blog?.title.split(' ').join('-'))}
+                          href={'/admin/blog/' + blog?.slug}
                           className='no-underline hover:underline'
                         >
                           {blog?.title}
@@ -286,27 +261,6 @@ const AdminBlogs = () => {
             </div>
         }
       </div>
-
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
-
     </>
   )
 }

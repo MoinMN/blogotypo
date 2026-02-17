@@ -15,16 +15,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { formatDateForBlog } from "./FormatDate";
 import RecommendSideBox from "./RecommendSideBox";
 import CommentBox from "./CommentBox";
-import AlertBox from "./Alert";
-import ModalBox from "./Modal";
 import BlogSkeleton from "./Skeletons/BlogSkeleton";
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 import { addReviewToBlog, removeBlogCache } from "@redux/slices/blog/blog.slice";
+import { deleteMyBlogCache, fetchMyBlogs } from '@redux/slices/blog/myblogs.slice';
+import { useUI } from '@context/UIContext';
+import BackButton from './BackButton';
 
-const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
+const ViewBlog = ({ slug, blogData, recommendBlogs, loading }) => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const { showAlert, showModal } = useUI();
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -40,24 +43,6 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const initialReviewsToShow = 4;
 
-  // modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    title: '',
-    body: '',
-    actionBtn: '',
-    actionBtnVariant: '',
-    confirmAction: () => { }
-  });
-
-  // alert
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertData, setAlertData] = useState({
-    variant: '',
-    dismissible: true,
-    header: '',
-  });
-
   const [showSafetyAlert, setShowSafetyAlert] = useState(false);
   const [safetyAccepted, setSafetyAccepted] = useState(false);
 
@@ -65,14 +50,12 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
     e?.preventDefault();
 
     if (!reviewData.review || reviewData.star === 0) {
-      setAlertData((prev) => ({ ...prev, header: "All field required!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("All field required!", "danger");
       return;
     }
 
     if (!session?.user) {
-      setAlertData((prev) => ({ ...prev, header: "Please login first!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Please login first!", "danger");
       return;
     }
 
@@ -87,19 +70,19 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(addReviewToBlog({ blogTitle, review: data?.review }));
+        dispatch(addReviewToBlog({ slug, review: data?.review }));
 
-        setAlertData((prev) => ({ ...prev, header: data.msg, variant: "success" }));
+        showAlert(data?.msg || "Review has been posted!", "success");
         setReviewData({ review: '', star: 0 });
         setIsReviewSubmitting(false);
         return;
       }
 
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+      showAlert(data?.msg || "failed to post review!", "danger");
     } catch (error) {
       console.log('error posting review ', error);
+      showAlert("Internal Server Error!", "danger");
     } finally {
-      setShowAlert(true);
       setIsReviewSubmitting(false);
     }
   }
@@ -107,21 +90,20 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
   // handle delete for confirmation
   const handleConfirmationDeleteBlog = (blogId, blogTitle) => {
     const title = blogTitle?.length > 80 ? `${blogTitle?.substring(0, 80)}...` : blogTitle;
-    setModalData({
+
+    showModal({
       title: "Confirmation",
       body: `Do you really want to delete blog with title "${title}" ?`,
       actionBtn: "Delete",
       actionBtnVariant: "danger",
-      confirmAction: () => handleDeleteBlog(blogId)
+      confirmAction: async () => await handleDeleteBlog(blogId)
     });
-    setShowModal(true);
   }
 
   // confirmed delete
   const handleDeleteBlog = async (blogId) => {
     if (!blogId) {
-      setAlertData((prev) => ({ ...prev, header: "Blog not found!", variant: "danger" }));
-      setShowAlert(true);
+      showAlert("Blog not found!", "danger");
       return;
     }
 
@@ -130,18 +112,17 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
       const text = await response.text();
 
       if (response.ok) {
-        dispatch(removeBlogCache({ blogTitle }));
+        dispatch(removeBlogCache({ slug }));
+        dispatch(deleteMyBlogCache(blogId));
 
-        setAlertData((prev) => ({ ...prev, header: text, variant: "success" }));
+        showAlert(text || "Blog deleted successfully!", "success");
+
         router.push(session.user.role === 'user' ? '/my-blogs' : '/admin/blogs');
       } else
-        setAlertData((prev) => ({ ...prev, header: text, variant: "danger" }));
+        showAlert(text || "failed to delete blog!", "danger");
     } catch (error) {
       console.log('error while deleting blog', error);
-      setAlertData((prev) => ({ ...prev, header: "Internal Server Error!", variant: "danger" }));
-    } finally {
-      setShowAlert(true);
-      setShowModal(false);
+      showAlert("Internal Server Error!", "danger");
     }
   }
 
@@ -167,6 +148,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
     <>
       <div className="flex flex-col gap-4">
         <div className="">
+          <BackButton />
           {/* title  */}
           <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
             {blogData?.title}
@@ -254,7 +236,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             {/* WhatsApp */}
             <OverlayTrigger overlay={<Tooltip id="whatsapp">Share via whatsapp</Tooltip>}>
               <Link
-                href={`https://wa.me/?text=${encodeURIComponent(currentUrl)}`}
+                href={`https://wa.me/?text=${currentUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-green-500 hover:underline hover:text-green-600 transition-all duration-150 ease-in-out"
@@ -278,7 +260,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             {/* Facebook */}
             <OverlayTrigger overlay={<Tooltip id="facebook">Share via facebook</Tooltip>}>
               <Link
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline hover:text-blue-600 transition-all duration-150 ease-in-out"
@@ -290,7 +272,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             {/* Twitter */}
             <OverlayTrigger overlay={<Tooltip id="twitter">Share via twitter</Tooltip>}>
               <Link
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
+                href={`https://twitter.com/intent/tweet?url=${currentUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sky-400 hover:underline hover:text-blue-400 transition-all duration-150 ease-in-out"
@@ -302,7 +284,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             {/* LinkedIn */}
             <OverlayTrigger overlay={<Tooltip id="linkedin">Share via linkedin</Tooltip>}>
               <Link
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-700 hover:underline hover:text-blue-800 transition-all duration-150 ease-in-out"
@@ -314,7 +296,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
             {/* Email */}
             <OverlayTrigger overlay={<Tooltip id="mail">Share via mail</Tooltip>}>
               <Link
-                href={`mailto:?subject=Check this out&body=${encodeURIComponent(currentUrl)}`}
+                href={`mailto:?subject=Check this out&body=${currentUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-700 hover:underline hover:text-gray-900 transition-all duration-150 ease-in-out"
@@ -468,7 +450,7 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
                         exit={{ opacity: 0, y: -10 }}  // Exit animation when removed
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
-                        <CommentBox blogTitle={blogTitle} review={review} />
+                        <CommentBox slug={slug} review={review} />
                       </motion.div>
                     ))
                   }
@@ -518,26 +500,6 @@ const ViewBlog = ({ blogTitle, blogData, recommendBlogs, loading }) => {
           }
         </div>
       </div>
-
-
-      <ModalBox
-        showModal={showModal}
-        setShowModal={setShowModal}
-        title={modalData.title}
-        body={modalData.body}
-        actionBtn={modalData.actionBtn}
-        actionBtnVariant={modalData.actionBtnVariant}
-        confirmAction={modalData.confirmAction}
-      />
-
-      <AlertBox
-        show={showAlert}
-        setShow={setShowAlert}
-        variant={alertData?.variant}
-        dismissible={alertData?.dismissible}
-        header={alertData?.header}
-        position={"top-right-with-space"}
-      />
     </>
   )
 }
