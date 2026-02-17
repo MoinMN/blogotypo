@@ -8,8 +8,8 @@ export default async function sitemap() {
   const blogs = await Blog.find().select("slug updatedAt");
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${baseUrl}/blog/${slug}`,
-    lastModified: blog.updatedAt || new Date(),
+    url: `${baseUrl}/blog/${blog?.slug}`,
+    lastModified: blog?.updatedAt || new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
   }));
