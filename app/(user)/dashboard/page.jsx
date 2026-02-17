@@ -29,7 +29,6 @@ const UserDashboard = () => {
     topCreatorBlogs,
     categoryBlogs,
     dashboardRecommendBlogLoading,
-    dashboardRecommendBlogError,
     dashboardRecommendBlogCacheLoaded,
   } = useSelector((state) => state.dashboardRecommendBlog);
 

@@ -17,7 +17,7 @@ import RecommendSideBox from "./RecommendSideBox";
 import CommentBox from "./CommentBox";
 import BlogSkeleton from "./Skeletons/BlogSkeleton";
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
-import { addReviewToBlog, removeBlogCache } from "@redux/slices/blog/blog.slice";
+import { addReviewToBlog, fetchFullBlogData, removeBlogCache } from "@redux/slices/blog/blog.slice";
 import { deleteMyBlogCache, fetchMyBlogs } from '@redux/slices/blog/myblogs.slice';
 import { useUI } from '@context/UIContext';
 import BackButton from './BackButton';
@@ -114,6 +114,7 @@ const ViewBlog = ({ slug, blogData, recommendBlogs, loading }) => {
       if (response.ok) {
         dispatch(removeBlogCache({ slug }));
         dispatch(deleteMyBlogCache(blogId));
+        dispatch(fetchDashboardRecommendBlog(null));
 
         showAlert(text || "Blog deleted successfully!", "success");
 
