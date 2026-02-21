@@ -4,7 +4,6 @@ import User from '@models/user';
 import connectMongoDB from '@utils/database';
 import cloudinary from '@utils/cloudinary';
 import { getServerSession } from 'next-auth';
-import requestGoogleIndexing from "@app/api/googleIndexing/index/route";
 
 export async function POST(req) {
   try {
@@ -30,6 +29,9 @@ export async function POST(req) {
       return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
     }
 
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) return NextResponse.json({ msg: "User not found!" }, { status: 401 });
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;
@@ -43,15 +45,16 @@ export async function POST(req) {
       return NextResponse.json({ msg: "Failed to upload image!" }, { status: 500 });
     }
 
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) return NextResponse.json({ msg: "User not found!" }, { status: 401 });
+    const normalizedCategories = categories
+      .filter((cat) => typeof cat === "string" && cat.trim() !== "")
+      .map((cat) => cat.trim().toLowerCase());
 
     const slug = await generateSlug(title);
 
     const newBlog = await Blog.create({
       creator: user._id,
       title: title.trim(),
-      categories,
+      categories: normalizedCategories,
       slug,
       content: content.trim(),
       thumbnail_image: cloudinaryResponse.secure_url,

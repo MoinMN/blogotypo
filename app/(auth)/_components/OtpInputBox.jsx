@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useUI } from '@context/UIContext';
+import Link from 'next/link';
 
 const OtpInputBox = ({ userData, setUserData }) => {
   const router = useRouter();
@@ -112,55 +113,88 @@ const OtpInputBox = ({ userData, setUserData }) => {
   }
 
   useEffect(() => {
-    if (email) {
+    if (userData?.email) {
       // call and store masked email
       setMaskedEmail(handleEmailMasked());
     }
-  }, [email]);
+  }, [userData?.email]);
 
   return (
-    <>
-      {/* opt box */}
-      <form
-        onSubmit={handleOtpSubmit}
-        className="bg-theme_4 rounded-md shadow-lg p-4 mx-6 text-base w-full md:w-3/4 lg:w-3/5 md:text-lg md:p-8 flex-col flex justify-center items-center"
-      >
-        <h3 className='text-2xl text-theme_1 playwrite_in_font font-semibold text-center md:text-4xl'>
+    <form
+      onSubmit={handleOtpSubmit}
+      className="w-full flex flex-col items-center space-y-8"
+    >
+      {/* Title */}
+      <div className="text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-white">
           OTP Verification
-        </h3>
-        <p className='text-center pt-8 text-green-700'>
-          Check Inbox of {maskedEmail}!
+        </h2>
+        <p className="text-gray-300 mt-3 text-sm">
+          Enter the 6-digit code sent to
         </p>
-        <div className="py-6 px-3 flex gap-12 max-sm:gap-4 max-lg:gap-8 md:py-4">
-          {/* Render input fields */}
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <input
-              key={num}
-              type="text"
-              className='w-11 max-sm:w-8 max-sm:p-3 sm:p-4 outline-none bg-theme_1 rounded-lg text-gray-600'
-              value={otpInputValues[`otpInput${num}`]}
-              onChange={handleOtpInputChange}
-              name={`otpInput${num}`}
-              ref={otpInputRefs[`otpInput${num}`]}
-              maxLength={1}
-            />
-          ))}
-        </div>
+        <p className="text-green-400 font-medium text-sm mt-1">
+          {maskedEmail}
+        </p>
+      </div>
 
-        <button
-          type='submit'
-          disabled={isSubmitting}
-          className={`w-fit px-8 py-2 md:px-10 outline-none rounded-md shadow-md bg-theme_1 transition-all duration-300 ease-in-out ${isSubmitting ? 'cursor-not-allowed text-gray-500 bg-theme_1/50' : ''}`}
+      {/* OTP Inputs */}
+      <div className="flex justify-center gap-3 sm:gap-4">
+        {[1, 2, 3, 4, 5, 6].map((num) => (
+          <input
+            key={num}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={otpInputValues[`otpInput${num}`]}
+            onChange={handleOtpInputChange}
+            name={`otpInput${num}`}
+            ref={otpInputRefs[`otpInput${num}`]}
+            className="w-12 h-14 text-center text-xl font-semibold 
+                     bg-white/20 text-white 
+                     border border-white/30 
+                     rounded-lg 
+                     focus:outline-none 
+                     focus:ring-2 focus:ring-white/40 
+                     transition duration-300"
+          />
+        ))}
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className={`w-full max-w-xs py-3 rounded-lg font-semibold text-white transition duration-300 ${isSubmitting
+          ? "bg-white/10 cursor-not-allowed"
+          : "bg-white/20 hover:bg-white/30 backdrop-blur-md"
+          }`}
+      >
+        {isSubmitting ? (
+          <>
+            <Spinner
+              as="span"
+              animation="grow"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />{" "}
+            Verifying...
+          </>
+        ) : (
+          "Verify OTP"
+        )}
+      </button>
+
+      <div className="text-center mt-4">
+        <Link
+          href="/dashboard"
+          className="text-gray-600 text-sm hover:text-gray-800 cursor-pointer transition no-underline hover:underline"
         >
-          {isSubmitting
-            ? (<>
-              <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" /> Submitting...
-            </>)
-            : 'Submit'
-          }
-        </button>
-      </form>
-    </>
+          Continue as Guest
+        </Link>
+      </div>
+    </form>
+
   )
 }
 

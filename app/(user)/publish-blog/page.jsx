@@ -12,6 +12,8 @@ import useMetadata from '@hooks/metadata';
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 import { addMyBlogCache, updateMyBlogCache } from '@redux/slices/blog/myblogs.slice';
 import { useUI } from '@context/UIContext';
+import { fetchDashboardRecommendBlog } from '@redux/slices/blog/dashboard.recommend.slice';
+import { fetchCategoryBlogs } from '@redux/slices/blog/category.slice';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
@@ -70,13 +72,17 @@ const PublishBlog = () => {
 
   const handleSubmitBlog = async (e) => {
     e.preventDefault();
-    if (!blogData?.title || !blogData?.content || !blogData?.thumbnail_image instanceof File) {
+    if (
+      !blogData?.title?.trim() ||
+      !blogData?.content?.trim() ||
+      !(blogData?.thumbnail_image instanceof File)
+    ) {
       showAlert("All Fields Required!", "danger");
       return;
     }
 
-    if (blogData?.categories.length === 0) {
-      showAlert(`Ensure you press "Enter" after each category!`, "danger");
+    if (!Array.isArray(blogData?.categories) || blogData.categories.length === 0) {
+      showAlert('Ensure you press "Enter" after each category!', "danger");
       return;
     }
 
@@ -106,6 +112,10 @@ const PublishBlog = () => {
         } else {
           dispatch(addMyBlogCache(result?.newBlog));
         }
+        dispatch(fetchDashboardRecommendBlog(null));
+        result?.newBlog?.categories?.forEach((category) => {
+          dispatch(fetchCategoryBlogs(category));
+        });
 
         router.push('/my-blogs');
       } else {

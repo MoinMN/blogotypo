@@ -20,7 +20,7 @@ export async function GET(req) {
 
     const blogs = await Blog.find()
       .populate('creator', '_id name email')
-      .select('_id title thumbnail_image categories date viewedBy reviews');
+      .select('_id title thumbnail_image categories date viewedBy reviews slug');
 
     return NextResponse.json({ data: blogs.reverse() }, { status: 200 });
   } catch (error) {

@@ -12,6 +12,7 @@ const protectedPaths = [
 ];
 
 const publicApiPaths = [
+  '/api/run',
   '/api/auth',
   '/api/blog/get',
   '/api/blog/search',

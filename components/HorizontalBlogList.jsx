@@ -36,49 +36,94 @@ const HorizontalBlogList = ({ list, header }) => {
 
   return (
     <div
-      className="relative w-full"
+      className="relative w-full group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <h3 className="montserrat_alternates_font font-semibold text-lg md:text-2xl lg:text-3xl">{header}</h3>
+      {/* Section Header */}
+      <h3 className="montserrat_alternates_font font-semibold 
+                 text-xl md:text-2xl lg:text-3xl 
+                 mb-4 tracking-tight">
+        {header}
+      </h3>
 
       <div className="relative">
-        {/* Previous Button */}
+
+        {/* Prev Button */}
         {showPrev && (
           <button
             onClick={() => scroll("left")}
-            className={`absolute flex justify-start items-center px-2 left-0 top-1/2 -translate-y-1/2 z-10 w-12 md:w-20 h-full transition-all duration-300 ${isHovered ? "opacity-100" : "opacity-0"} bg-gradient-to-r from-black via-transparent to-transparent`}
+            className={`absolute left-0 top-0 bottom-0
+                z-20 w-10 md:w-14
+                flex items-center justify-center
+                rounded-l-2xl
+                bg-gradient-to-r from-black/70 to-transparent
+                transition-opacity duration-300
+                ${isHovered ? "opacity-100" : "opacity-0"}
+              `}
           >
-            <i className="fa-solid fa-angle-left text-lg md:text-3xl text-white drop-shadow-lg" />
+            <i className="fa-solid fa-angle-left text-white text-lg md:text-2xl" />
           </button>
         )}
 
-        {/* Scrollable container with extra padding to avoid content overlap */}
+        {/* Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto md:gap-4 max-md:gap-2 scrollbar_hide md:p-2 max-md:p-1 scroll-smooth pl-12 pr-12"
+          className="flex gap-3 md:gap-5 
+                 overflow-x-auto 
+                 scrollbar_hide 
+                 scroll-smooth 
+                 snap-x snap-mandatory
+                 px-8 md:px-12"
         >
           {list?.map((abc, index) => (
             <Link
               href={`/blog/${abc?.slug}`}
-              className="relative w-[130px] h-[120px] md:w-[300px] md:h-[200px] flex-shrink-0 transition-all duration-300 ease-in-out bg-black rounded-xl shadow-md hover:shadow-lg group"
               key={index}
+              className="relative 
+                     snap-start
+                     min-w-[160px] 
+                     sm:min-w-[220px] 
+                     md:min-w-[280px] 
+                     lg:min-w-[320px]
+                     h-[140px] 
+                     sm:h-[170px] 
+                     md:h-[200px]
+                     flex-shrink-0 
+                     rounded-2xl 
+                     overflow-hidden
+                     shadow-md hover:shadow-xl
+                     transition-all duration-300 group"
             >
-              <div className="relative w-full h-full overflow-hidden rounded-xl shadow-md">
-                {/* Thumbnail image */}
-                <Image
-                  src={abc.thumbnail_image}
-                  fill
-                  alt={abc.title}
-                  className="absolute inset-0 opacity-80 group-hover:opacity-65 transition-all duration-300 ease-in-out group-hover:scale-110"
-                  sizes="(max-width: 600px) 130px, (max-width: 1024px) 300px, 300px"
-                />
-              </div>
+              {/* Image */}
+              <Image
+                src={abc.thumbnail_image}
+                fill
+                alt={abc.title}
+                className="object-cover 
+                       group-hover:scale-110 
+                       transition-transform duration-500"
+                sizes="(max-width: 640px) 160px,
+                   (max-width: 768px) 220px,
+                   (max-width: 1024px) 280px,
+                   320px"
+              />
+
+              {/* Dark Gradient Overlay */}
+              <div className="absolute inset-0 
+                          bg-gradient-to-t 
+                          from-black/80 via-black/40 to-transparent" />
 
               {/* Title */}
-              <h3 className="absolute -bottom-2 rounded-xl left-0 right-0 z-10 md:p-3 max-md:p-1.5 bg-gradient-to-t from-black via-transparent to-transparent text-white text-base md:text-lg lg:text-2xl transition-all duration-300 ease-in-out leading-5">
-                {abc?.title?.length > 60 ? `${abc.title.substr(0, 60)}...` : abc.title}
-              </h3>
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <h3 className="text-white 
+                           text-sm sm:text-base md:text-lg 
+                           font-semibold 
+                           leading-snug 
+                           line-clamp-2">
+                  {abc?.title}
+                </h3>
+              </div>
             </Link>
           ))}
         </div>
@@ -87,11 +132,19 @@ const HorizontalBlogList = ({ list, header }) => {
         {showNext && (
           <button
             onClick={() => scroll("right")}
-            className={`absolute flex justify-end items-center px-2 right-0 top-1/2 -translate-y-1/2 z-10 w-12 md:w-20 h-full transition-all duration-300 ${isHovered ? "opacity-100" : "opacity-0"} bg-gradient-to-l from-black via-transparent to-transparent`}
+            className={`absolute right-0 top-0 bottom-0
+                    z-20 w-10 md:w-14
+                    flex items-center justify-center
+                    rounded-r-2xl
+                    bg-gradient-to-l from-black/70 to-transparent
+                    transition-opacity duration-300
+                    ${isHovered ? "opacity-100" : "opacity-0"}
+                  `}
           >
-            <i className="fa-solid fa-angle-right text-lg md:text-3xl text-white drop-shadow-lg" />
+            <i className="fa-solid fa-angle-right text-white text-lg md:text-2xl" />
           </button>
         )}
+
       </div>
     </div>
   );

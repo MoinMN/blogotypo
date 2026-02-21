@@ -72,8 +72,12 @@ export async function POST(req) {
       blog.slug = newSlug;
     }
 
+    const normalizedCategories = categories
+      .filter((cat) => typeof cat === "string" && cat.trim() !== "")
+      .map((cat) => cat.trim().toLowerCase());
+
     blog.title = title.trim();
-    blog.categories = categories;
+    blog.categories = normalizedCategories;
     blog.content = content.trim();
 
 

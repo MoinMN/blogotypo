@@ -87,91 +87,140 @@ const Login = () => {
   }
 
   return (
-    <>
-      <div className='min-h-screen w-full bg-theme_1 flex justify-center items-center'>
-        {/* login box */}
-        <div className='bg-theme_4 rounded-md shadow-lg mx-4 text-base w-full md:w-3/4 lg:w-3/5 md:text-lg md:p-8 max-md:p-4'>
-          <form onSubmit={handleFormSubmit} className="flex flex-col justify-center items-center">
-            <h3 className='text-2xl text-theme_1 playwrite_in_font font-semibold text-center md:text-4xl'>
-              Log In
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-3 md:gap-6 md:py-4 max-md:py-2 w-full">
-              {userInputs?.map((input, index) => (
-                <div className='flex flex-col' key={index}>
-                  <label htmlFor={input.name}>
-                    {input.name.split('_').map(a => (a.charAt(0).toUpperCase() + a.slice(1))).join(' ')}:
-                  </label>
-                  {error[input.name] && (
-                    <label className='text-red-700'>
-                      {error[input.name]}
-                    </label>
-                  )}
-                  <input
-                    autoComplete={input.name}
-                    id={input.name}
-                    type={input.type}
-                    name={input.name}
-                    onChange={handleUserDataChange}
-                    className='shadow-md bg-theme_1 outline-none p-2 rounded-md text-gray-600'
-                    placeholder={input.placeholder}
-                  />
-                </div>
-              ))}
-            </div>
-            <button
-              type='submit'
-              className={`w-fit px-14 md:px-32 py-2 outline-none rounded-md shadow-md bg-theme_1 transition-all duration-300 ease-in-out ${isSubmitting ? 'cursor-not-allowed text-gray-500 bg-theme_1/50' : ''}`}
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? (<>
-                  <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" /> Logging In...
-                </>)
-                : 'Log In'
-              }
-            </button>
-          </form>
+    <div className="min-h-screen w-full bg-gradient-to-br from-theme_3 via-theme_4 to-theme_5 flex justify-center items-center px-4">
 
-          <p className='flex flex-wrap gap-1 justify-center my-4 text-center'>
-            Don't have an account?
-            <Link href='/user/register' className='font-semibold text-blue-700'>
-              Create Now
-            </Link>
+      {/* Card */}
+      <div className="w-full max-w-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-6 md:p-10">
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">
+            Welcome Back
+          </h1>
+          <p className="text-gray-200 mt-2 text-sm md:text-base">
+            Sign in to manage your dashboard
           </p>
-
-          <div className="flex justify-center items-center my-4 text-theme_1">
-            <hr className='w-1/2' />
-            <span className='px-4'>or</span>
-            <hr className='w-1/2' />
-          </div>
-
-          {/* provider sign in  */}
-          <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
-            <button onClick={() => signIn('google')} className='bg-theme_1 flex justify-evenly items-center rounded-md gap-2 px-2 py-1 md:gap-4 md:px-4 md:py-2'>
-              <img
-                src="https://authjs.dev/img/providers/google.svg"
-                alt="Google Provider Image"
-                width={40}
-              />
-              <span className=''>
-                Sign in with Google
-              </span>
-            </button>
-
-            <button onClick={() => signIn('github')} className='bg-theme_1 flex justify-evenly items-center rounded-md gap-2 px-2 py-1 md:gap-4 md:px-4 md:py-2'>
-              <img
-                src="https://authjs.dev/img/providers/github.svg"
-                alt="Google Provider Image"
-                width={40}
-              />
-              <span className=''>
-                Sign in with Google
-              </span>
-            </button>
-          </div>
         </div>
+
+        {/* Form */}
+        <form onSubmit={handleFormSubmit} className="space-y-6">
+
+          <div className="grid sm:grid-cols-2 gap-5">
+            {userInputs?.map((input, index) => (
+              <div key={index} className="flex flex-col space-y-2">
+                <label
+                  htmlFor={input.name}
+                  className="text-sm font-medium text-gray-200"
+                >
+                  {input.name
+                    .split("_")
+                    .map(a => a.charAt(0).toUpperCase() + a.slice(1))
+                    .join(" ")}
+                </label>
+
+                {error[input.name] && (
+                  <span className="text-red-500 text-sm">
+                    {error[input.name]}
+                  </span>
+                )}
+
+                <input
+                  autoComplete={input.name}
+                  id={input.name}
+                  type={input.type}
+                  name={input.name}
+                  onChange={handleUserDataChange}
+                  placeholder={input.placeholder}
+                  className="bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:border-white focus:ring-2 focus:ring-white/30 outline-none px-4 py-2.5 rounded-lg transition duration-300"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-3 rounded-lg font-semibold text-white transition duration-300 ${isSubmitting
+              ? "bg-white/10 cursor-not-allowed"
+              : "bg-white/20 hover:bg-white/30 backdrop-blur-md"
+              }`}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />{" "}
+                Logging In...
+              </>
+            ) : (
+              "Log In"
+            )}
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-8">
+          <div className="flex-grow h-px bg-white/20"></div>
+          <span className="px-4 text-gray-200 text-sm">OR</span>
+          <div className="flex-grow h-px bg-white/20"></div>
+        </div>
+
+        {/* Provider Buttons */}
+        <div className="grid sm:grid-cols-2 gap-4">
+
+          <button
+            onClick={() => signIn("google")}
+            className="flex items-center justify-center gap-3 bg-white text-black font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
+          >
+            <img
+              src="https://authjs.dev/img/providers/google.svg"
+              alt="Google"
+              width={22}
+            />
+            Sign in with Google
+          </button>
+
+          <button
+            onClick={() => signIn("github")}
+            className="flex items-center justify-center gap-3 bg-white text-black font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
+          >
+            <img
+              src="https://authjs.dev/img/providers/github.svg"
+              alt="GitHub"
+              width={22}
+            />
+            Sign in with GitHub
+          </button>
+
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-gray-200 text-sm mt-8">
+          Don't have an account?{" "}
+          <Link
+            href="/user/register"
+            className="text-white font-semibold no-underline hover:underline"
+          >
+            Create Now
+          </Link>
+        </p>
+
+        <div className="text-center mt-4">
+          <Link
+            href="/dashboard"
+            className="text-gray-600 text-sm hover:text-gray-800 cursor-pointer transition no-underline hover:underline"
+          >
+            Continue as Guest
+          </Link>
+        </div>
+
       </div>
-    </>
+    </div>
   )
 }
 

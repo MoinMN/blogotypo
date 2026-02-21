@@ -61,93 +61,123 @@ const UserDashboard = () => {
         </>
       ) : (
         <>
-          {/* hero content */}
+          {/* HERO CONTENT */}
           <motion.div
-            className="grid md:grid-cols-7 gap-3"
-            initial={{ opacity: 0, y: 20 }}
+            className="grid grid-cols-1 lg:grid-cols-7 gap-6"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
           >
-            {/* slider for trending blogs */}
-            <Carousel
-              activeIndex={carouselIndex}
-              interval={5000}
-              onSelect={(e) => setCarouselIndex(e)}
-              className="md:col-span-5"
-            >
-              {trendingBlogs?.slice(0, 5).map((trend, index) => (
-                <Carousel.Item key={index}>
-                  <Link
-                    href={`/blog/${trend?.slug}`}
-                  >
-                    <div className="relative w-full h-[300px] md:h-[500px]">
-                      <Image
-                        src={trend.thumbnail_image}
-                        layout="fill"
-                        objectFit="cover"
-                        alt={trend.title}
-                        priority={true}
-                        className="rounded-xl shadow-md"
-                      />
-                      <span className="absolute top-4 left-4 bg-black text-white md:px-3 max-md:px-1.5 md:py-1 max-md:py-0.5 rounded-lg text-xs md:text-sm animate-pulse">
-                        Top Trending 🔥
-                      </span>
-                    </div>
-                    <Carousel.Caption>
-                      <h3 className="text-3xl md:text-6xl">
-                        {trend?.title?.length > 60
-                          ? `${trend.title.substr(0, 60)}...`
-                          : trend.title}
-                      </h3>
-                      <div className="flex justify-center items-center gap-2 text-xs md:text-sm">
-                        {trend?.categories?.map((cate, inx) => (
-                          <span
-                            key={inx}
-                            className="bg-white text-black md:px-2 max-md:px-1 md:py-1 max-md:py-0.5 rounded-md"
-                          >
-                            {cate}
-                          </span>
-                        ))}
-                      </div>
-                    </Carousel.Caption>
-                  </Link>
-                </Carousel.Item>
-              ))}
-            </Carousel>
 
-            <div className="hidden md:col-span-2 md:flex flex-col gap-4">
-              {/* Top-rated blogs */}
+            {/* Trending Carousel */}
+            <div className="lg:col-span-5">
+              <Carousel
+                activeIndex={carouselIndex}
+                interval={5000}
+                onSelect={(e) => setCarouselIndex(e)}
+                indicators={false}
+              >
+                {trendingBlogs?.slice(0, 5).map((trend, index) => (
+                  <Carousel.Item key={index}>
+                    <Link href={`/blog/${trend?.slug}`}>
+
+                      <div className="relative w-full h-[240px] sm:h-[320px] md:h-[420px] lg:h-[500px] overflow-hidden rounded-2xl group">
+
+                        {/* Image */}
+                        <Image
+                          src={trend.thumbnail_image}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                          alt={trend.title}
+                          priority={index === 0}
+                        />
+
+                        {/* Dark Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+                        {/* Trending Badge */}
+                        <span className="absolute top-4 left-4 bg-red-600/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-md">
+                          🔥 Trending
+                        </span>
+
+                        {/* Caption Content */}
+                        <div className="absolute bottom-6 left-6 right-6 text-white space-y-3">
+
+                          <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-bold leading-tight">
+                            {trend?.title?.length > 70
+                              ? `${trend.title.substr(0, 70)}...`
+                              : trend.title}
+                          </h2>
+
+                          {/* Categories */}
+                          <div className="flex flex-wrap gap-2">
+                            {trend?.categories?.map((cate, inx) => (
+                              <span
+                                key={inx}
+                                className="bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs px-2 py-1 rounded-md"
+                              >
+                                {cate}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                      </div>
+                    </Link>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </div>
+
+
+            {/* Top Rated Section */}
+            <div className="lg:col-span-2 
+                flex lg:flex-col gap-4 
+                overflow-x-auto lg:overflow-visible 
+                scrollbar_hide
+                pb-2 lg:pb-0">
+
               {topRatedBlogs?.slice(0, 3).map((topRated, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -100 }}
+                  initial={{ opacity: 0, x: 40 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="relative w-full h-[150px] group"
+                  className="relative min-w-[260px] sm:min-w-[300px] lg:min-w-full h-[180px] lg:h-[150px] group flex-shrink-0"
                 >
-                  <Link
-                    href={`/blog/${topRated?.slug}`}
-                  >
-                    <Image
-                      src={topRated.thumbnail_image}
-                      layout="fill"
-                      objectFit="cover"
-                      alt={topRated.title}
-                      priority={true}
-                      className="absolute inset-0 rounded-xl shadow-md transition-transform duration-300 ease-in-out group-hover:scale-105"
-                    />
-                    <h3 className="absolute -bottom-2 group-hover:scale-105 rounded-xl left-0 right-0 z-10 p-3 bg-gradient-to-t from-black via-transparent to-transparent text-white text-lg lg:text-2xl transition-all duration-300 ease-in-out">
-                      {topRated?.title?.length > 60
-                        ? `${topRated.title.substr(0, 60)}...`
-                        : topRated.title}
-                    </h3>
-                    <span className="absolute top-2 left-2 bg-black text-white rounded-lg md:px-3 max-md:px-1.5 md:py-1 max-md:py-0.5 text-xs transition-all duration-300 ease-in-out">
-                      Top Rated ⭐
-                    </span>
+                  <Link href={`/blog/${topRated?.slug}`}>
+
+                    <div className="relative w-full h-full overflow-hidden rounded-xl">
+
+                      <Image
+                        src={topRated.thumbnail_image}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        alt={topRated.title}
+                      />
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+                      {/* Top Rated Badge */}
+                      <span className="absolute top-3 left-3 bg-white/75 text-black text-xs px-2 py-1 rounded-full font-semibold shadow">
+                        ⭐ Top Rated
+                      </span>
+
+                      {/* Title */}
+                      <h3 className="absolute bottom-4 left-4 right-4 text-white text-sm sm:text-lg font-semibold leading-snug">
+                        {topRated?.title?.length > 55
+                          ? `${topRated.title.substr(0, 55)}...`
+                          : topRated.title}
+                      </h3>
+
+                    </div>
+
                   </Link>
                 </motion.div>
               ))}
             </div>
+
           </motion.div>
 
           <div className="flex flex-col gap-4">
