@@ -126,7 +126,7 @@ const OtpInputBox = ({ userData, setUserData }) => {
     >
       {/* Title */}
       <div className="text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-100">
           OTP Verification
         </h2>
         <p className="text-gray-300 mt-3 text-sm">
@@ -150,11 +150,11 @@ const OtpInputBox = ({ userData, setUserData }) => {
             name={`otpInput${num}`}
             ref={otpInputRefs[`otpInput${num}`]}
             className="w-12 h-14 text-center text-xl font-semibold 
-                     bg-white/20 text-white 
-                     border border-white/30 
+                     bg-gray-100/20 text-gray-100 
+                     border border-gray-100/30 
                      rounded-lg 
                      focus:outline-none 
-                     focus:ring-2 focus:ring-white/40 
+                     focus:ring-2 focus:ring-gray-100/40 
                      transition duration-300"
           />
         ))}
@@ -164,9 +164,9 @@ const OtpInputBox = ({ userData, setUserData }) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className={`w-full max-w-xs py-3 rounded-lg font-semibold text-white transition duration-300 ${isSubmitting
-          ? "bg-white/10 cursor-not-allowed"
-          : "bg-white/20 hover:bg-white/30 backdrop-blur-md"
+        className={`w-full max-w-xs py-3 rounded-lg font-semibold text-gray-100100 transition duration-300 ${isSubmitting
+          ? "bg-gray-100/10 cursor-not-allowed"
+          : "bg-gray-100100/20 hover:bg-gray-100/30 backdrop-blur-md"
           }`}
       >
         {isSubmitting ? (

@@ -55,7 +55,7 @@ const BlogSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
-});
+}, { timestamps: true });
 
 BlogSchema.index({ date: -1 });
 BlogSchema.index({ categories: 1 });

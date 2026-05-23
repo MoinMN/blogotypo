@@ -58,7 +58,7 @@ export async function sendOTPMail(to, otp) {
     .content {
       font-size: 18px;
       line-height: 1.6;
-      color: #f5f3ff; /* Soft white for readability */
+      color: #f5f3ff; /* Soft gray-100 for readability */
     }
     .footer {
       margin-top: 25px;

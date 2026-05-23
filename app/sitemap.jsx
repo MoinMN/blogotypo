@@ -21,7 +21,7 @@ export default async function sitemap() {
   const categories = await Blog.distinct("categories");
 
   const categoryUrls = categories.map((category) => ({
-    url: `${baseUrl}/blog/category?type=${category}`,
+    url: `${baseUrl}/blog/category/${category}`,
     lastModified: nowDate,
     changeFrequency: "weekly",
     priority: 0.7,

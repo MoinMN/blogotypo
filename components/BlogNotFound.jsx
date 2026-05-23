@@ -128,7 +128,7 @@ const BlogNotFound = () => {
           </h2>
 
           {/* Description */}
-          <p className="bnf-fade-3 text-sm text-theme_3 leading-relaxed mb-8 max-w-sm">
+          <p className="bnf-fade-3 text-sm text-theme_3  mb-8 max-w-sm">
             The post you're looking for doesn't exist, may have been removed,
             or the URL might be incorrect.
           </p>

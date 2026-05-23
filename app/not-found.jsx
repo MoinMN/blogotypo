@@ -10,7 +10,7 @@ export default function NotFound() {
 
   const homePage = session?.user?.role === 'user' ? '/dashboard' : '/admin/dashboard';
   return (
-    <div className="bg-gradient-to-b lg:bg-gradient-to-r from-yellow-100 via-white to-white min-h-[94vh] sm:min-h-screen w-full flex flex-col lg:flex-row justify-around items-center gap-20 md:px-32 max-md:p-10">
+    <div className="bg-gradient-to-b lg:bg-gradient-to-r from-yellow-100 via-gray-100 to-gray-100 min-h-[94vh] sm:min-h-screen w-full flex flex-col lg:flex-row justify-around items-center gap-20 md:px-32 max-md:p-10">
 
       <div className="flex flex-col gap-2 items-start max-sm:items-center">
         <div className="flex flex-col items-start max-sm:items-center">

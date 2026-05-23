@@ -155,182 +155,348 @@ const Profile = () => {
 
   return (
     <>
-      <div className="">
-        <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
-          My Profile
-        </h1>
-        <div className="flex flex-wrap max-md:gap-2 md:gap-4">
-          {/* first column */}
-          <div className="w-full lg:w-1/2">
-            {/* personal details  */}
-            <div className="bg-theme_2 max-md:p-2 md:p-4 max-md:my-2 md:my-4 rounded-lg shadow-md text-base md:text-lg flex flex-col">
-              <h3 className="text-lg md:text-xl montserrat_alternates_font font-semibold max-md:my-1 md:my-2">
-                {showSkeleton
-                  ? <SkeletonBox />
-                  : 'Personal Details'
-                }
-              </h3>
-              <div className="flex flex-col flex-wrap max-md:gap-2 md:gap-4 max-md:ml-2 md:ml-4">
-                <div className="flex flex-col gap-2 w-full">
+      <div className="w-full">
+        {/* Header */}
+        <div className="mb-4 md:mb-5">
+          <div
+            className="
+        inline-flex items-center gap-2
+        px-2.5 py-1 rounded-full
+        bg-indigo-50 dark:bg-indigo-500/[0.08]
+        border border-indigo-100 dark:border-indigo-500/20
+        text-indigo-600 dark:text-indigo-300
+        text-[10px] font-semibold tracking-[0.16em] uppercase
+        mb-2
+      "
+          >
+            Account Settings
+          </div>
+
+          <h1
+            className="
+        text-2xl md:text-3xl
+        font-bold tracking-tight
+        text-gray-900 dark:text-gray-100
+        montserrat_alternates_font
+      "
+          >
+            My Profile
+          </h1>
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 md:gap-4">
+
+          {/* Left */}
+          <div className="xl:col-span-7">
+            <div
+              className="
+          rounded-2xl
+          border border-gray-200 dark:border-gray-100/[0.08]
+          bg-gray-100 dark:bg-[#0f172a]
+          shadow-sm
+          p-3 md:p-4
+        "
+            >
+              {/* Title */}
+              <div className="mb-3">
+                <h3
+                  className="
+              text-base md:text-xl
+              font-semibold
+              text-gray-900 dark:text-gray-100
+              montserrat_alternates_font
+            "
+                >
                   {showSkeleton
-                    ? (
-                      <>
-                        <SkeletonBox width={200} height={200} className="rounded-xl shadow-md" />
-                        <SkeletonBox height={40} />
-                      </>
-                    )
-                    : <ProfileImage imageSrc={userData?.image} />
+                    ? <SkeletonBox width={160} height={24} />
+                    : "Personal Details"
                   }
+                </h3>
+              </div>
+
+              <div className="flex flex-col gap-4">
+
+                {/* Profile */}
+                <div>
+                  {showSkeleton ? (
+                    <>
+                      <SkeletonBox
+                        width={140}
+                        height={140}
+                        className="rounded-2xl"
+                      />
+                    </>
+                  ) : (
+                    <ProfileImage imageSrc={userData?.image} />
+                  )}
                 </div>
-                <div className="flex flex-wrap gap-2 w-full">
-                  {showSkeleton
-                    ?
-                    <div className="flex flex-col w-full">
-                      <SkeletonBox width={100} />
-                      <SkeletonBox height={40} />
+
+                {/* Inputs */}
+                <div className="grid grid-cols-1 gap-3">
+
+                  {/* Name */}
+                  {showSkeleton ? (
+                    <div className="flex flex-col gap-1">
+                      <SkeletonBox width={90} />
+                      <SkeletonBox height={42} />
                     </div>
-                    :
-                    <div className="flex flex-col w-full">
-                      <label htmlFor="name" className="">Name: </label>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="name"
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        Name
+                      </label>
+
                       <input
-                        type="email"
+                        type="text"
                         name="name"
                         id="name"
                         value={userData?.name}
                         onChange={handleUserDataChange}
-                        className="outline-none px-2 py-1 rounded-md text-gray-600"
+                        className="
+                    w-full
+                    rounded-xl
+                    border border-gray-200 dark:border-gray-100/[0.08]
+                    bg-gray-50 dark:bg-gray-100/[0.04]
+                    px-3 py-2.5
+                    text-sm md:text-base
+                    text-gray-800 dark:text-gray-100
+                    outline-none
+                    transition-all duration-200
+                    focus:border-indigo-500
+                  "
                       />
                     </div>
-                  }
-                  {showSkeleton
-                    ?
-                    <div className="flex flex-col w-full">
-                      <SkeletonBox width={100} />
-                      <SkeletonBox height={40} />
+                  )}
+
+                  {/* Email */}
+                  {showSkeleton ? (
+                    <div className="flex flex-col gap-1">
+                      <SkeletonBox width={90} />
+                      <SkeletonBox height={42} />
                     </div>
-                    :
-                    <div className="flex flex-col w-full">
-                      <label htmlFor="email">Email: </label>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="email"
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        Email
+                      </label>
+
                       <input
                         type="text"
-                        disabled={true}
+                        disabled
                         value={userData?.email}
-                        className="outline-none px-2 py-1 bg-theme_1 rounded-md border-1 border-red-500 cursor-not-allowed text-gray-600"
+                        className="
+                    w-full
+                    rounded-xl
+                    border border-red-200 dark:border-red-500/20
+                    bg-red-50 dark:bg-red-500/[0.06]
+                    px-3 py-2.5
+                    text-sm md:text-base
+                    text-gray-500 dark:text-gray-400
+                    cursor-not-allowed
+                    outline-none
+                  "
                       />
                     </div>
-                  }
+                  )}
                 </div>
-                {showSkeleton
-                  ? <SkeletonBox
-                    className="rounded-lg"
-                    width={100}
-                    height={40}
-                    baseColor="#7091E6"
-                    highlightColor="#a3b5f3"
-                  />
-                  : <button
-                    onClick={handlePersonalDataSubmit}
-                    disabled={isProfileSubmitting}
-                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isProfileSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
-                  >
-                    {isProfileSubmitting ? 'Saving...' : 'Save'}
-                  </button>
-                }
+
+                {/* Button */}
+                <div>
+                  {showSkeleton ? (
+                    <SkeletonBox width={120} height={42} />
+                  ) : (
+                    <button
+                      onClick={handlePersonalDataSubmit}
+                      disabled={isProfileSubmitting}
+                      className={`
+                  px-5 py-2.5 rounded-xl
+                  text-sm font-medium text-gray-100
+                  transition-all duration-300
+                  ${isProfileSubmitting
+                          ? "cursor-not-allowed bg-indigo-300 dark:bg-indigo-400/40"
+                          : "bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+                        }
+                `}
+                    >
+                      {isProfileSubmitting ? "Saving..." : "Save"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* second column  */}
-          <div className="w-full lg:w-5/12">
-            {/* change password  */}
-            <div className="bg-theme_2 max-md:p-2 md:p-4 max-md:my-2 md:my-4 rounded-lg shadow-md h-fit">
-              <h3 className="text-lg md:text-xl montserrat_alternates_font font-semibold max-md:my-1 md:my-2">
-                {showSkeleton
-                  ? <SkeletonBox />
-                  : userData?.password
-                    ? 'Change Password'
-                    : 'Set Password'
-                }
-              </h3>
-              <div className="flex flex-col flex-wrap text-base md:text-lg max-md:gap-2 md:gap-4 max-md:ml-2 md:ml-4">
-                {showSkeleton
-                  ?
-                  <div className="flex flex-col">
-                    <SkeletonBox width={150} />
-                    <SkeletonBox height={40} />
+          {/* Right */}
+          <div className="xl:col-span-5">
+            <div
+              className="
+          rounded-2xl
+          border border-gray-200 dark:border-gray-100/[0.08]
+          bg-gray-100 dark:bg-[#0f172a]
+          shadow-sm
+          p-3 md:p-4
+        "
+            >
+              {/* Title */}
+              <div className="mb-3">
+                <h3
+                  className="
+              text-base md:text-xl
+              font-semibold
+              text-gray-900 dark:text-gray-100
+              montserrat_alternates_font
+            "
+                >
+                  {showSkeleton
+                    ? <SkeletonBox width={160} height={24} />
+                    : userData?.password
+                      ? "Change Password"
+                      : "Set Password"
+                  }
+                </h3>
+              </div>
+
+              {/* Form */}
+              <div className="flex flex-col gap-3">
+
+                {/* Current */}
+                {showSkeleton ? (
+                  <div className="flex flex-col gap-1">
+                    <SkeletonBox width={120} />
+                    <SkeletonBox height={42} />
                   </div>
-                  : userData?.password
-                    ?
-                    <div className="flex flex-col">
-                      <label htmlFor="name" className="">Current Password: </label>
-                      <input
-                        type="password"
-                        name="current_password"
-                        id="current_password"
-                        className="outline-none px-2 py-1 rounded-md text-gray-600"
-                        onChange={handlePasswordChange}
-                        value={passwords.current_password}
-                      />
-                    </div>
-                    : ''
-                }
-                {showSkeleton
-                  ?
-                  <div className="flex flex-col">
-                    <SkeletonBox width={150} />
-                    <SkeletonBox height={40} />
+                ) : userData?.password ? (
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="current_password"
+                      className="text-sm text-gray-700 dark:text-gray-300"
+                    >
+                      Current Password
+                    </label>
+
+                    <input
+                      type="password"
+                      name="current_password"
+                      id="current_password"
+                      value={passwords.current_password}
+                      onChange={handlePasswordChange}
+                      className="
+                  w-full
+                  rounded-xl
+                  border border-gray-200 dark:border-gray-100/[0.08]
+                  bg-gray-50 dark:bg-gray-100/[0.04]
+                  px-3 py-2.5
+                  text-sm md:text-base
+                  text-gray-800 dark:text-gray-100
+                  outline-none
+                  focus:border-indigo-500
+                "
+                    />
                   </div>
-                  :
-                  <div className="flex flex-col">
-                    <label htmlFor="name" className="">New Password: </label>
+                ) : null}
+
+                {/* New */}
+                {showSkeleton ? (
+                  <div className="flex flex-col gap-1">
+                    <SkeletonBox width={120} />
+                    <SkeletonBox height={42} />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="new_password"
+                      className="text-sm text-gray-700 dark:text-gray-300"
+                    >
+                      New Password
+                    </label>
+
                     <input
                       type="password"
                       name="new_password"
                       id="new_password"
-                      className="outline-none px-2 py-1 rounded-md text-gray-600"
-                      onChange={handlePasswordChange}
                       value={passwords.new_password}
+                      onChange={handlePasswordChange}
+                      className="
+                  w-full
+                  rounded-xl
+                  border border-gray-200 dark:border-gray-100/[0.08]
+                  bg-gray-50 dark:bg-gray-100/[0.04]
+                  px-3 py-2.5
+                  text-sm md:text-base
+                  text-gray-800 dark:text-gray-100
+                  outline-none
+                  focus:border-indigo-500
+                "
                     />
                   </div>
-                }
+                )}
 
-                {showSkeleton
-                  ?
-                  <div className="flex flex-col">
-                    <SkeletonBox width={150} />
-                    <SkeletonBox height={40} />
+                {/* Confirm */}
+                {showSkeleton ? (
+                  <div className="flex flex-col gap-1">
+                    <SkeletonBox width={120} />
+                    <SkeletonBox height={42} />
                   </div>
-                  :
-                  <div className="flex flex-col">
-                    <label htmlFor="name" className="">Confirm Password: </label>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="confirm_password"
+                      className="text-sm text-gray-700 dark:text-gray-300"
+                    >
+                      Confirm Password
+                    </label>
+
                     <input
                       type="password"
                       name="confirm_password"
                       id="confirm_password"
-                      className="outline-none px-2 py-1 rounded-md text-gray-600"
-                      onChange={handlePasswordChange}
                       value={passwords.confirm_password}
+                      onChange={handlePasswordChange}
+                      className="
+                  w-full
+                  rounded-xl
+                  border border-gray-200 dark:border-gray-100/[0.08]
+                  bg-gray-50 dark:bg-gray-100/[0.04]
+                  px-3 py-2.5
+                  text-sm md:text-base
+                  text-gray-800 dark:text-gray-100
+                  outline-none
+                  focus:border-indigo-500
+                "
                     />
                   </div>
-                }
+                )}
 
-                {showSkeleton
-                  ? <SkeletonBox
-                    className="rounded-lg"
-                    width={100}
-                    height={40}
-                    baseColor="#7091E6"
-                    highlightColor="#a3b5f3"
-                  />
-                  : <button
-                    type="submit"
-                    onClick={handleUpdatePassword}
-                    disabled={isPasswordSubmitting}
-                    className={`text-theme_1 px-6 py-2 rounded-lg transition-all duration-300 ease-in-out w-fit shadow-md ${isPasswordSubmitting ? 'cursor-not-allowed bg-theme_3' : 'bg-theme_4 hover:bg-theme_5'}`}
-                  >
-                    {isPasswordSubmitting ? 'Saving...' : 'Save'}
-                  </button>
-                }
+                {/* Button */}
+                <div className="pt-1">
+                  {showSkeleton ? (
+                    <SkeletonBox width={120} height={42} />
+                  ) : (
+                    <button
+                      type="submit"
+                      onClick={handleUpdatePassword}
+                      disabled={isPasswordSubmitting}
+                      className={`
+                  px-5 py-2.5 rounded-xl
+                  text-sm font-medium text-gray-100
+                  transition-all duration-300
+                  ${isPasswordSubmitting
+                          ? "cursor-not-allowed bg-indigo-300 dark:bg-indigo-400/40"
+                          : "bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+                        }
+                `}
+                    >
+                      {isPasswordSubmitting ? "Saving..." : "Save"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>

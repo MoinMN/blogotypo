@@ -94,11 +94,11 @@ const Register = () => {
 
       {/* SIGN UP CARD */}
       {!startOtpVerification && (
-        <div className="w-full max-w-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-6 md:px-10 md:py-6 transition-all duration-500">
+        <div className="w-full max-w-3xl bg-gray-100/10 backdrop-blur-xl border border-gray-100/20 shadow-2xl rounded-2xl p-6 md:px-10 md:py-6 transition-all duration-500">
 
           {/* Title */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-100">
               Create Account
             </h1>
             <p className="text-gray-200 mt-2 text-sm md:text-base">
@@ -134,7 +134,7 @@ const Register = () => {
                     name={input.name}
                     onChange={handleUserDataChange}
                     placeholder={input.placeholder}
-                    className="bg-white/20 text-white placeholder-gray-300 border border-white/20 focus:border-white focus:ring-2 focus:ring-white/30 outline-none px-4 py-2.5 rounded-lg transition duration-300"
+                    className="bg-gray-100/20 text-gray-100 placeholder-gray-300 border border-gray-100/20 focus:border-gray-100 focus:ring-2 focus:ring-gray-100/30 outline-none px-4 py-2.5 rounded-lg transition duration-300"
                   />
                 </div>
               ))}
@@ -144,9 +144,9 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full py-3 rounded-lg font-semibold text-white transition duration-300 ${isSubmitting
-                ? "bg-white/10 cursor-not-allowed"
-                : "bg-white/20 hover:bg-white/30 backdrop-blur-md"
+              className={`w-full py-3 rounded-lg font-semibold text-gray-100 transition duration-300 ${isSubmitting
+                ? "bg-gray-100/10 cursor-not-allowed"
+                : "bg-gray-100/20 hover:bg-gray-100/30 backdrop-blur-md"
                 }`}
             >
               {isSubmitting ? (
@@ -175,9 +175,9 @@ const Register = () => {
 
           {/* Divider */}
           <div className="flex items-center my-8">
-            <div className="flex-grow h-px bg-white/20"></div>
+            <div className="flex-grow h-px bg-gray-100/20"></div>
             <span className="px-4 text-gray-200 text-sm">OR</span>
-            <div className="flex-grow h-px bg-white/20"></div>
+            <div className="flex-grow h-px bg-gray-100/20"></div>
           </div>
 
           {/* Provider Buttons */}
@@ -185,7 +185,7 @@ const Register = () => {
 
             <button
               onClick={() => signIn("google")}
-              className="flex items-center justify-center gap-3 bg-white text-black font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
+              className="flex items-center justify-center gap-3 bg-gray-100 text-black font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
             >
               <img
                 src="https://authjs.dev/img/providers/google.svg"
@@ -197,7 +197,7 @@ const Register = () => {
 
             <button
               onClick={() => signIn("github")}
-              className="flex items-center justify-center gap-3 text-black bg-white font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
+              className="flex items-center justify-center gap-3 text-black bg-gray-100 font-medium rounded-lg py-2.5 hover:scale-105 transition duration-300"
             >
               <img
                 src="https://authjs.dev/img/providers/github.svg"
@@ -214,7 +214,7 @@ const Register = () => {
             Already have an account?{" "}
             <Link
               href="/user/login"
-              className="text-white font-semibold hover:underline"
+              className="text-gray-100 font-semibold hover:underline"
             >
               Log in
             </Link>

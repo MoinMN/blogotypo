@@ -1,22 +1,43 @@
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
-const SkeletonBox = ({ width, height, circle, baseColor, highlightColor, count }) => {
+const SkeletonBox = ({
+  width,
+  height,
+  circle,
+  baseColor,
+  highlightColor,
+  darkBaseColor,
+  darkHighlightColor,
+  count,
+}) => {
+  const isDark =
+    typeof window !== "undefined" &&
+    document.documentElement.classList.contains("dark");
+
   return (
     <Skeleton
       width={width}
       height={height}
       circle={circle}
       count={count}
-
       borderRadius={6}
-
-      baseColor={baseColor || '#EDE8F5'}
-      highlightColor={highlightColor || '#f0f3f7'}
       enableAnimation={true}
-      className='cursor-wait'
-    />
-  )
-}
+      className="cursor-wait"
 
-export default SkeletonBox
+      baseColor={
+        isDark
+          ? darkBaseColor || "#111827"
+          : baseColor || "#EDE8F5"
+      }
+
+      highlightColor={
+        isDark
+          ? darkHighlightColor || "#1f2937"
+          : highlightColor || "#f0f3f7"
+      }
+    />
+  );
+};
+
+export default SkeletonBox;

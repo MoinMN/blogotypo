@@ -9,11 +9,12 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import useMetadata from '@hooks/metadata';
-import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
-import { addMyBlogCache, updateMyBlogCache } from '@redux/slices/blog/myblogs.slice';
 import { useUI } from '@context/UIContext';
 import { fetchDashboardRecommendBlog } from '@redux/slices/blog/dashboard.recommend.slice';
 import { fetchCategoryBlogs } from '@redux/slices/blog/category.slice';
+import Loading from '@app/loading';
+import { useAddMyBlogMutation, useUpdateMyBlogMutation } from '@redux/services/myBlogsApi';
+import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
@@ -22,12 +23,18 @@ const PublishBlog = () => {
   useMetadata('Publish Blog - Blogotypo', `Publish Blog in blogotypo`);
 
   const { showAlert } = useUI();
+  const dispatch = useDispatch();
 
   const router = useRouter();
   // for edit blog search params 
   const blogIdFromParams = useSearchParams().get('blogId');
 
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(
+    blogIdFromParams && blogIdFromParams !== "null"
+  );
+
+  const [addMyBlog] = useAddMyBlogMutation();
+  const [updateMyBlog] = useUpdateMyBlogMutation();
 
   // for form submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,24 +48,74 @@ const PublishBlog = () => {
 
   // jodit config
   const editor = useRef(null);
+
   const config = useMemo(() => ({
-    readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-    placeholder: 'Start typing...',
+    readonly: false,
+    placeholder: "Start typing...",
+
     uploader: {
       insertImageAsBase64URI: true,
     },
+
+    /* Disable color + background tools */
+    removeButtons: [
+      "brush",
+      "font",
+      "fontsize",
+      "paragraph",
+      "superscript",
+      "subscript",
+      "classSpan",
+      "color",
+      "background"
+    ],
+
+    /* Clean paste behavior */
+    askBeforePasteHTML: false,
+    askBeforePasteFromWord: false,
+    defaultActionOnPaste: "insert_clear_html",
+    pastePlain: true,
+
+    /* Clean internal HTML */
+    cleanHTML: {
+      removeStyle: true,
+      removeClass: true,
+      fillEmptyParagraph: false
+    }
+
   }), []);
 
   // Handle 'Enter' key press to add input category
   const handleCategoryEnter = (e) => {
-    if (e.key === 'Enter' && currentCategory.trim() !== '') {
+    if (e.key === "Enter") {
       e.preventDefault();
-      setBlogData((prev) => ({
-        ...prev,
-        categories: [...prev?.categories || [], currentCategory],
-      }));
-      // reset current category data
-      setCurrentCategory('');
+
+      if (!currentCategory.trim()) return;
+
+      const newCategories = currentCategory
+        .split(",")
+        .map((cat) =>
+          cat
+            .trim()
+            .replace(/[^a-zA-Z0-9 ]/g, "") // remove special chars, allow numbers
+        )
+        .filter((cat) => cat !== "");
+
+      if (newCategories.length === 0) return;
+
+      setBlogData((prev) => {
+        const existing = prev?.categories || [];
+
+        const merged = [...existing, ...newCategories];
+        const unique = [...new Set(merged)];
+
+        return {
+          ...prev,
+          categories: unique,
+        };
+      });
+
+      setCurrentCategory("");
     }
   };
 
@@ -72,45 +129,79 @@ const PublishBlog = () => {
 
   const handleSubmitBlog = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (
       !blogData?.title?.trim() ||
-      !blogData?.content?.trim() ||
-      !(blogData?.thumbnail_image instanceof File)
+      !blogData?.content?.trim()
     ) {
       showAlert("All Fields Required!", "danger");
       return;
     }
 
-    if (!Array.isArray(blogData?.categories) || blogData.categories.length === 0) {
-      showAlert('Ensure you press "Enter" after each category!', "danger");
+    if (!blogIdFromParams && !(blogData?.thumbnail_image instanceof File)) {
+      showAlert("Hero Image required for the blog post!", "danger");
       return;
     }
+
+    // auto include remaining typed category
+    let finalCategories = [...(blogData.categories || [])];
+
+    if (currentCategory.trim()) {
+      const extraCategories = currentCategory
+        .split(",")
+        .map((cat) =>
+          cat.trim().replace(/[^a-zA-Z0-9 ]/g, "")
+        )
+        .filter((cat) => cat !== "");
+
+      finalCategories = [
+        ...new Set([...finalCategories, ...extraCategories]),
+      ];
+    }
+
+    if (finalCategories.length === 0) {
+      showAlert("At least one category required!", "danger");
+      return;
+    }
+
+    setBlogData((prev) => ({
+      ...prev,
+      categories: finalCategories,
+    }));
 
     // set submitting true to disable submit btn
     setIsSubmitting(true);
 
     const formData = new FormData();
 
-    // Append file
-    formData.append("thumbnail_image", blogData.thumbnail_image);
+    if (blogData.thumbnail_image instanceof File) {
+      formData.append("thumbnail_image", blogData.thumbnail_image);
+    }
 
     // Append blogData fields title, content, categories
-    formData.append("blogData", JSON.stringify(blogData));
+    formData.append(
+      "blogData",
+      JSON.stringify({
+        ...blogData,
+        categories: finalCategories,
+      })
+    );
 
     try {
-      const reqUrl = blogIdFromParams ? '/api/blog/update' : '/api/blog/post';
+      const reqUrl = '/api/blog/';
       const response = await fetch(reqUrl, {
-        method: 'POST',
+        method: blogIdFromParams ? 'PATCH' : 'POST',
         body: formData
       });
 
       const result = await response.json();
-
+      console.log(result);
       if (response.ok) {
         if (blogIdFromParams) {
-          dispatch(updateMyBlogCache(result?.updatedBlog));
+          await updateMyBlog(result?.updatedBlog);
         } else {
-          dispatch(addMyBlogCache(result?.newBlog));
+          await addMyBlog(result?.newBlog);
         }
         dispatch(fetchDashboardRecommendBlog(null));
         result?.newBlog?.categories?.forEach((category) => {
@@ -131,9 +222,13 @@ const PublishBlog = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
-      if (blogIdFromParams === null || blogIdFromParams === 'null') return;
+      if (!blogIdFromParams || blogIdFromParams === "null") {
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`/api/blog/get?blogId=${blogIdFromParams}`, { method: 'GET' });
+        const response = await fetch(`/api/blog/edit/${blogIdFromParams}`, { method: 'GET' });
         const data = await response.json();
 
         if (!response.ok) {
@@ -144,126 +239,318 @@ const PublishBlog = () => {
           }
           return;
         }
-        setBlogData(data.data);
+        setBlogData(data);
       } catch (error) {
         console.log('error while fetching blog data ', error);
         showAlert("Error while fetching blog details!", "danger");
+      } finally {
+        setIsLoading(false);
       }
     }
 
     fetchBlog();
   }, [blogIdFromParams]);
 
+  if (isLoading) return <Loading />
 
   return (
-    <>
-      <form onSubmit={handleSubmitBlog}>
-        <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold">
-          {blogIdFromParams ? 'Edit Blog' : 'Publish Blog'}
-        </h1>
+    <div className="max-w-6xl mx-auto max-md:px-3 md:px-6 max-md:py-5 md:py-8">
+      <form onSubmit={handleSubmitBlog} className="flex flex-col max-md:gap-4 md:gap-6">
 
-        <div className="text-base md:text-lg md:p-4 max-md:py-2 flex flex-col gap-3 md:gap-4">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-6 h-px bg-indigo-500" />
+              <span className="text-indigo-500 dark:text-indigo-400 max-md:text-[10px] md:text-xs font-semibold tracking-widest uppercase">
+                Creator Studio
+              </span>
+            </div>
 
-          {/* title  */}
-          <div className="flex flex-col">
-            <label className='font-medium' htmlFor="title">Title of the blog:</label>
-            <textarea
-              name="title"
-              id="title"
-              className='outline-none px-2 py-2 border shadow-md rounded h-20'
-              placeholder='Title of the blog'
-              onChange={(e) => setBlogData((prev) => ({ ...prev, title: e.target.value }))}
-              value={blogData?.title}
-            />
+            <h1
+              className="max-md:text-2xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {blogIdFromParams ? "Edit Blog" : "Publish Blog"}
+            </h1>
           </div>
 
+          {isSubmitting && (
+            <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 max-md:text-xs md:text-sm font-medium">
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Saving...
+            </div>
+          )}
+        </div>
 
-          <div className="grid md:grid-cols-2 items-center gap-3 md:gap-4">
-            {/* category  */}
-            <div className="w-full">
-              <label className='font-medium' htmlFor="">Category of blog:</label>
-              {/* Render category as tags */}
-              <div className='flex flex-wrap w-full gap-2 md:p-2 max-md:p-1 rounded bg-white shadow-md'>
-                {blogData['categories']?.map((input, index) => (
-                  <div key={index} className="bg-blue-200 hover:bg-blue-300 rounded px-1 py-0.5 md:px-2 md:py-1">
-                    <span>{input}</span>
-                    <button
-                      onClick={() => handleRemoveCategory(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <i className="fa-solid fa-xmark mx-1" />
-                    </button>
-                  </div>
-                ))}
+        {/* ── Main Editor Card ── */}
+        <div className="bg-gray-100 dark:bg-[#0f0f22] border border-gray-200 dark:border-gray-100/[0.08] rounded-2xl overflow-hidden">
 
-                {/* Input field */}
-                <textarea
-                  value={currentCategory}
-                  onChange={(e) => setCurrentCategory(e.target.value)}
-                  onKeyDown={handleCategoryEnter}
-                  placeholder="Category"
-                  className='border-none p-2 rounded w-full focus:outline-none bg-transparent flex-grow'
-                  style={{ resize: 'none', }}
-                  rows={1} // One-line by default, expands automatically
+          {/* ── Top Section ── */}
+          <div className="max-md:p-3 md:p-5 flex flex-col max-md:gap-4 md:gap-5">
+
+            {/* ── Title ── */}
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="title"
+                className="text-gray-700 dark:text-gray-300 max-md:text-xs md:text-sm font-semibold uppercase tracking-wide"
+              >
+                Blog Title
+              </label>
+
+              <textarea
+                id="title"
+                value={blogData?.title}
+                disabled={isSubmitting}
+                onChange={(e) =>
+                  setBlogData((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
+                placeholder="Write an engaging blog title..."
+                rows={2}
+                className="
+                w-full resize-none outline-none
+                bg-gray-50 dark:bg-[#0a0a14]
+                border border-gray-200 dark:border-gray-100/[0.08]
+                focus:border-indigo-500 dark:focus:border-indigo-500/70
+                text-gray-900 dark:text-gray-100
+                placeholder:text-gray-400 dark:placeholder:text-gray-600
+                rounded-2xl
+                max-md:px-3 md:px-4
+                max-md:py-3 md:py-3.5
+                max-md:text-base md:text-lg
+                font-semibold
+                transition-all duration-200
+              "
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              />
+            </div>
+
+            {/* ── Category + Thumbnail ── */}
+            <div className="grid md:grid-cols-2 max-md:gap-4 md:gap-5">
+
+              {/* Categories */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-gray-700 dark:text-gray-300 max-md:text-xs md:text-sm font-semibold uppercase tracking-wide">
+                  Categories
+                </label>
+
+                <div className="
+                bg-gray-50 dark:bg-[#0a0a14]
+                border border-gray-200 dark:border-gray-100/[0.08]
+                focus-within:border-indigo-500 dark:focus-within:border-indigo-500/70
+                rounded-2xl
+                max-md:p-2.5 md:p-3
+                transition-all duration-200
+              ">
+
+                  {/* Tags */}
+                  {blogData?.categories?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 max-md:mb-2 md:mb-3">
+                      {blogData.categories.map((input, index) => (
+                        <div
+                          key={index}
+                          className="
+                          inline-flex items-center gap-1
+                          bg-indigo-500/10 dark:bg-indigo-500/15
+                          border border-indigo-200 dark:border-indigo-500/20
+                          text-indigo-600 dark:text-indigo-400
+                          rounded-full
+                          max-md:px-2 md:px-2.5
+                          max-md:py-0.5 md:py-1
+                          max-md:text-[10px] md:text-xs
+                          font-medium
+                        "
+                        >
+                          {input}
+
+                          <button
+                            type="button"
+                            disabled={isSubmitting}
+                            onClick={() => handleRemoveCategory(index)}
+                            className="hover:text-red-500 transition-colors duration-200"
+                          >
+                            <i className="fa-solid fa-xmark max-md:text-[9px] md:text-[10px]" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Input */}
+                  <textarea
+                    value={currentCategory}
+                    onChange={(e) => setCurrentCategory(e.target.value)}
+                    onKeyDown={handleCategoryEnter}
+                    placeholder="technology, coding, react..."
+                    rows={1}
+                    disabled={isSubmitting}
+                    className="
+                    w-full resize-none border-none outline-none bg-transparent
+                    text-gray-800 dark:text-gray-200
+                    placeholder:text-gray-400 dark:placeholder:text-gray-600
+                    max-md:text-sm md:text-sm
+                    leading-relaxed
+                  "
+                  />
+
+                  <p className="text-gray-400 dark:text-gray-500 max-md:text-[10px] md:text-xs mt-2">
+                    Press Enter or separate categories using commas.
+                  </p>
+                </div>
+              </div>
+
+              {/* Thumbnail */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="thumbnail_image"
+                  className="text-gray-700 dark:text-gray-300 max-md:text-xs md:text-sm font-semibold uppercase tracking-wide"
+                >
+                  Thumbnail Image
+                </label>
+
+                <div className="
+                bg-gray-50 dark:bg-[#0a0a14]
+                border border-dashed border-gray-300 dark:border-gray-100/[0.12]
+                hover:border-indigo-400 dark:hover:border-indigo-500/50
+                rounded-2xl
+                max-md:p-4 md:p-5
+                transition-all duration-200
+              ">
+                  <Form.Group controlId="thumbnail_image">
+                    <Form.Control
+                      type="file"
+                      name="thumbnail_image"
+                      accept=".png, .jpg, .jpeg, .ico"
+                      onChange={(e) =>
+                        setBlogData((prev) => ({
+                          ...prev,
+                          thumbnail_image: e.target.files[0],
+                        }))
+                      }
+                      disabled={isSubmitting}
+                      className="
+                      bg-transparent
+                      border-0
+                      shadow-none
+                      text-gray-700 dark:text-gray-300
+                      max-md:text-sm md:text-sm
+                    "
+                    />
+                  </Form.Group>
+
+                  <p className="text-gray-400 dark:text-gray-500 max-md:text-[10px] md:text-xs mt-2">
+                    Recommended: 1280×720 JPG or PNG
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Editor ── */}
+          <div className="border-t border-gray-200 dark:border-gray-100/[0.06]">
+            <div className="max-md:px-3 md:px-5 max-md:pt-3 md:pt-5">
+              <label className="text-gray-700 dark:text-gray-300 max-md:text-xs md:text-sm font-semibold uppercase tracking-wide">
+                Blog Content
+              </label>
+            </div>
+
+            <div className="max-md:p-3 md:p-5">
+              <div className="
+              rounded-2xl overflow-hidden
+              border border-gray-200 dark:border-gray-100/[0.08]
+              bg-gray-100 dark:bg-[#0a0a14]
+            ">
+                <JoditEditor
+                  ref={editor}
+                  value={blogData?.content}
+                  config={config}
+                  tabIndex={1}
+                  onBlur={(newContent) =>
+                    setBlogData((prev) => ({
+                      ...prev,
+                      content: newContent,
+                    }))
+                  }
+                  onChange={(newContent) =>
+                    setBlogData((prev) => ({
+                      ...prev,
+                      content: newContent,
+                    }))
+                  }
                 />
               </div>
             </div>
-
-            {/* thumnail image  */}
-            <div className="flex flex-col gap-2">
-              <label className='font-medium' htmlFor="thumbnail_image">Thumbnail Image:</label>
-              <Form.Group controlId="thumbnail_image">
-                <Form.Control
-                  type="file"
-                  name="thumail_image"
-                  accept=".png, .jpg, .jpeg, .ico"
-                  onChange={(e) => setBlogData((prev) => ({ ...prev, thumbnail_image: e.target.files[0] }))}
-                  className='shadow-md'
-                />
-              </Form.Group>
-            </div>
-          </div>
-
-          {/* content  */}
-          <div className="">
-            <label className='font-medium' htmlFor="content">Content:</label>
-            <JoditEditor
-              ref={editor}
-              value={blogData.content}
-              config={config}
-              tabIndex={1} // tabIndex of textarea
-              onBlur={newContent => setBlogData((prev) => ({ ...prev, content: newContent }))}
-              onChange={newContent => setBlogData((prev) => ({ ...prev, content: newContent }))}
-              className='shadow-md'
-            />
           </div>
         </div>
 
-        <button
-          disabled={isSubmitting}
-          type="submit"
-          className={`relative overflow-hidden bg-theme_4 text-theme_1 md:mx-4 px-8 py-2 font-semibold rounded-lg hover:text-white transition-all duration-500 group shadow-md ${isSubmitting ? 'cursor-not-allowed opacity-55' : 'opacity-100'}`}
-        >
-          <span
-            className="absolute inset-0 bg-theme_5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"
-          />
-          <span className="relative z-10">
-            {blogIdFromParams
-              ? isSubmitting
-                ? (<>
-                  <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />  Saving...
-                </>)
-                : "Save Changes"
-              : isSubmitting
-                ? (<>
-                  <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />  Creating...
-                </>)
-                : "Create"
-            }
-          </span>
-        </button>
+        {/* ── Footer Actions ── */}
+        <div className="flex items-center justify-end gap-3">
+
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="
+            bg-gray-100 dark:bg-[#0f0f22]
+            border border-gray-200 dark:border-gray-100/[0.08]
+            hover:border-gray-300 dark:hover:border-gray-100/[0.16]
+            text-gray-700 dark:text-gray-300
+            rounded-xl
+            max-md:px-4 md:px-5
+            max-md:py-2 md:py-2.5
+            max-md:text-xs md:text-sm
+            font-semibold
+            transition-all duration-200
+          "
+          >
+            Cancel
+          </button>
+
+          <button
+            disabled={isSubmitting}
+            type="submit"
+            className={`
+            flex items-center gap-2
+            bg-indigo-600 hover:bg-indigo-700
+            text-gray-100
+            rounded-xl
+            max-md:px-4 md:px-5
+            max-md:py-2 md:py-2.5
+            max-md:text-xs md:text-sm
+            font-semibold
+            transition-all duration-200
+            ${isSubmitting ? "opacity-60 cursor-not-allowed" : ""}
+          `}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                {blogIdFromParams ? "Saving..." : "Publishing..."}
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-paper-plane max-md:text-[10px] md:text-xs" />
+                {blogIdFromParams ? "Save Changes" : "Publish Blog"}
+              </>
+            )}
+          </button>
+        </div>
       </form>
-    </>
+    </div>
   )
 }
 

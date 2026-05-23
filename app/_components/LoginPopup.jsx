@@ -31,7 +31,7 @@ const LoginPopup = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="bg-white p-6 rounded-lg shadow-lg relative w-80 md:w-96 text-center"
+            className="bg-gray-100 p-6 rounded-lg shadow-lg relative w-80 md:w-96 text-center"
           >
             {/* Close Button */}
             <button
@@ -56,13 +56,13 @@ const LoginPopup = () => {
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => router.push('/user/register')}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                className="px-4 py-2 bg-purple-600 text-gray-100 rounded-lg hover:bg-purple-700 transition"
               >
                 Sign Up
               </button>
               <button
                 onClick={() => router.push('/user/login')}
-                className="px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-white transition"
+                className="px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-gray-100 transition"
               >
                 Log In
               </button>

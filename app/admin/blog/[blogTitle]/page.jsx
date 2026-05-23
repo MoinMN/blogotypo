@@ -17,7 +17,7 @@ const AdminViewBlog = ({ params }) => {
     }
 
     try {
-      const response = await fetch(`/api/blog/get?slug=${slug}`, { method: "GET" });
+      const response = await fetch(`/api/blog/${slug}`, { method: "GET" });
 
       const data = await response.json();
       if (response?.ok) {

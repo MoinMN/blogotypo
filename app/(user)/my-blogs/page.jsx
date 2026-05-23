@@ -1,303 +1,206 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import PaginationBlogs from "@components/PaginationBlogs";
-import MyBlogSkeleton from "@components/Skeletons/MyBlogSkeleton";
 import BlogCard from "@components/BlogCard";
+import UniversalPagination from "@components/UniversalPagination";
+import MyBlogSkeleton, {
+  BlogBoxSkeleton,
+} from "@components/Skeletons/MyBlogSkeleton";
+
 import useMetadata from "@hooks/metadata";
+import { H1Header } from "@components/Header";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useDispatch, useSelector } from "@node_modules/react-redux/dist/react-redux";
-import { fetchMyBlogs } from "@redux/slices/blog/myblogs.slice";
-
+import { useGetMyBlogsQuery } from "@redux/services/myBlogsApi";
 
 const MyBlogs = () => {
-  // set title for page
-  useMetadata('My Blogs - Blogotypo', 'Blogotypo is Blogging platform. Anyone from anywhere can create account and post their blogs for free.');
+  useMetadata(
+    "My Blogs - Blogotypo",
+    "Blogotypo is Blogging platform. Anyone from anywhere can create account and post their blogs for free."
+  );
 
-  const dispatch = useDispatch();
-
-  const [blogList, setBlogList] = useState([]);
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
-
-  const [search, setSearch] = useState('');
-  const [searchFrom, setSearchFrom] = useState('all');
-  const [dateInterval, setDateInterval] = useState("all");
-  const [sortOption, setSortOption] = useState("date-desc");
-
-  // track searching process
-  const [isSearching, setIsSearching] = useState(false);
-  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
-
-  // for pagination
-  const [paginatedBlogs, setPaginatedBlogs] = useState([]);
+  const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [copiedLinkTitle, setCopiedLinkTitle] = useState("");
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedValue = localStorage.getItem("itemsPerPage");
-      if (storedValue) {
-        setItemsPerPage(Number(storedValue));
-      }
+  const {
+    data,
+    error,
+    isLoading,
+    isFetching,
+  } = useGetMyBlogsQuery(
+    {
+      page,
+      limit: itemsPerPage,
+    },
+    {
+      keepPreviousData: true,
     }
-  }, []);
+  );
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("itemsPerPage", itemsPerPage);
-    }
-  }, [itemsPerPage]);
+  const blogs = data?.blogs || [];
+  const total = data?.total || 0;
 
-  // for share btn
-  const [copiedLinkTitle, setCopiedLinkTitle] = useState('');
+  // ── Initial Full Skeleton ──
+  if (isLoading && page === 1) {
+    return <MyBlogSkeleton />;
+  }
 
-  const { myBlogs, myBlogsCacheLoading, myBlogsCacheLoaded } = useSelector((state) => state.myBlogs);
+  // ── Error State ──
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center max-md:h-52 md:h-72 bg-gray-50 dark:bg-[#0f0f22] border border-gray-100 dark:border-gray-100/[0.07] rounded-2xl max-md:gap-2 md:gap-3">
+        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+          <i className="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 max-md:text-lg md:text-xl" />
+        </div>
 
-  useEffect(() => {
-    if (!myBlogsCacheLoaded) {
-      dispatch(fetchMyBlogs());
-    }
-  }, [myBlogsCacheLoaded]);
+        <p className="text-gray-700 dark:text-gray-300 max-md:text-sm md:text-base font-medium">
+          Failed to load blogs
+        </p>
 
-  useEffect(() => {
-    if (myBlogs.length !== 0) {
-      setBlogList(myBlogs);
-      setFilteredBlogs(myBlogs);
-      setPaginatedBlogs(myBlogs.slice(0, itemsPerPage));
-    }
-  }, [myBlogs]);
-
-  const filterBlogs = () => {
-    const lowerSearch = search.toLowerCase();
-
-    // Filter blogs based on the search query and selected filters
-    let filtered = blogList.filter((blog) => {
-      if (searchFrom === 'all') {
-        return (
-          blog.title.toLowerCase().includes(lowerSearch) ||
-          blog.content.toLowerCase().includes(lowerSearch) ||
-          blog.categories.includes(lowerSearch)
-        );
-      }
-
-      if (searchFrom === 'title') {
-        return blog.title.toLowerCase().includes(lowerSearch);
-      }
-
-      if (searchFrom === 'category') {
-        return blog.categories.includes(lowerSearch);
-      }
-
-      if (searchFrom === 'content') {
-        return blog.content.toLowerCase().includes(lowerSearch);
-      }
-
-      return false;
-    });
-
-    // Apply Date Interval Filtering
-    const currentDate = new Date();
-    switch (dateInterval) {
-      case "today":
-        filtered = filtered.filter(blog => {
-          const blogDate = new Date(blog.date);
-          return blogDate.toDateString() === currentDate.toDateString();
-        });
-        break;
-      case "week":
-        const oneWeekAgo = new Date(currentDate.setDate(currentDate.getDate() - 7));
-        filtered = filtered.filter(blog => new Date(blog.date) >= oneWeekAgo);
-        break;
-      case "month":
-        const oneMonthAgo = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
-        filtered = filtered.filter(blog => new Date(blog.date) >= oneMonthAgo);
-        break;
-      default:
-        // All time
-        break;
-    }
-
-    // Apply Sorting
-    switch (sortOption) {
-      case "date-asc":
-        filtered = filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-        break;
-      case "date-desc":
-        filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-        break;
-      case "title-asc":
-        filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "title-desc":
-        filtered = filtered.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      default:
-        break;
-    }
-
-    // Update filtered blogs and pagination
-    setFilteredBlogs(filtered);
-    setPaginatedBlogs(filtered.slice(0, itemsPerPage)); // Reset pagination after filtering and sorting
-    setIsSearching(false);
-  };
-
-  useEffect(() => {
-    setPaginatedBlogs(filteredBlogs.slice(0, itemsPerPage));
-  }, [itemsPerPage, filteredBlogs]);
+        <p className="text-gray-400 dark:text-gray-600 max-md:text-xs md:text-sm">
+          Please refresh the page and try again.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {myBlogsCacheLoading ? (
-        <MyBlogSkeleton />
+    <div className="max-w-7xl mx-auto max-md:px-3 md:px-6 max-md:py-5 md:py-8">
+
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between gap-3 max-md:mb-4 md:mb-6">
+
+        {/* Left */}
+        <div>
+          <div className="flex items-center gap-2 max-md:mb-1 md:mb-1.5">
+            <div className="w-6 h-px bg-indigo-500" />
+
+            <span className="text-indigo-500 dark:text-indigo-400 max-md:text-[10px] md:text-xs font-semibold tracking-widest uppercase">
+              Dashboard
+            </span>
+          </div>
+
+          <H1Header>
+            {total === 0 ? "No Blogs Yet" : "My Blogs"}
+          </H1Header>
+
+          {total > 0 && (
+            <p className="text-gray-400 dark:text-gray-500 max-md:text-[11px] md:text-sm md:mt-1">
+              You have{" "}
+              <span className="text-gray-700 dark:text-gray-200 font-semibold">
+                {total}
+              </span>{" "}
+              published blog{total > 1 ? "s" : ""}
+            </p>
+          )}
+        </div>
+
+        {/* Right */}
+        <div className="flex items-center max-md:gap-1.5 md:gap-2">
+
+          <label className="text-gray-500 dark:text-gray-400 max-md:text-[10px] md:text-sm gray-100space-nowrap">
+            Per Page
+          </label>
+
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              setPage(1);
+              setItemsPerPage(Number(e.target.value));
+            }}
+            className="
+              bg-gray-100 dark:bg-[#0f0f22]
+              border border-gray-200 dark:border-gray-100/10
+              text-gray-700 dark:text-gray-300
+              rounded-xl
+              outline-none
+              cursor-pointer
+              transition-all duration-200
+              hover:border-indigo-300 dark:hover:border-indigo-500/40
+              focus:border-indigo-500 dark:focus:border-indigo-500/50
+              max-md:px-2 max-md:py-1.5
+              md:px-3 md:py-2
+              max-md:text-[11px]
+              md:text-sm
+            "
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+      </div>
+
+      {/* ── Empty State ── */}
+      {!isFetching && blogs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center max-md:h-56 md:h-80 bg-gray-50 dark:bg-[#0f0f22] border border-gray-100 dark:border-gray-100/[0.07] rounded-2xl max-md:gap-2 md:gap-3">
+
+          <div className="w-14 h-14 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+            <i className="fa-solid fa-feather-pointed text-indigo-500 dark:text-indigo-400 max-md:text-xl md:text-2xl" />
+          </div>
+
+          <h3
+            className="text-gray-800 dark:text-gray-100 font-semibold max-md:text-lg md:text-2xl"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            No Blogs Published
+          </h3>
+
+          <p className="text-gray-400 dark:text-gray-500 max-md:text-xs md:text-sm text-center max-w-md">
+            Start writing and publish your first article on Blogotypo.
+          </p>
+        </div>
       ) : (
         <>
-          <div className="">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl md:text-4xl montserrat_alternates_font font-bold lg:mr-auto">
-                {blogList.length === 0 ? 'No blog published yet!' : 'My Blogs'}
-              </h1>
-              <span
-                className="text-blue-500 underline text-sm md:text-base cursor-pointer select-none"
-                onClick={() => setShowAdvancedFilter((prev) => !prev)}
-              >
-                {showAdvancedFilter ? 'Hide' : 'Show'} Advanced Filter
+          {/* ── Loading State While Switching Pages ── */}
+          {isFetching && !isLoading && (
+            <div className="flex items-center gap-2 max-md:mb-3 md:mb-4 max-md:px-1 md:px-1">
+              <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+
+              <span className="text-gray-400 dark:text-gray-500 max-md:text-[10px] md:text-xs">
+                Loading blogs...
               </span>
             </div>
+          )}
 
-            <AnimatePresence>
-              {showAdvancedFilter && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="flex max-sm:flex-col md:justify-center gap-2 lg:ml-auto text-sm md:text-base mb-1"
-                >
-                  {/* Sort By Dropdown */}
-                  <div className="flex items-center">
-                    <label htmlFor="sortBy" className="mr-2 text-gray-600">Sort By:</label>
-                    <select
-                      id="sortBy"
-                      className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
-                      onChange={(e) => setSortOption(e.target.value)}
-                    >
-                      <option value="date-desc">Date Descending</option>
-                      <option value="date-asc">Date Ascending</option>
-                      <option value="title-asc">Title A-Z</option>
-                      <option value="title-desc">Title Z-A</option>
-                    </select>
-                  </div>
+          {/* ── Blog List ── */}
+          <div className="flex flex-col max-md:gap-3 md:gap-4">
 
-                  {/* Date Interval Select */}
-                  <div className="flex items-center">
-                    <label htmlFor="dateInterval" className="mr-2 text-gray-600">Date Interval:</label>
-                    <select
-                      id="dateInterval"
-                      className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
-                      onChange={(e) => setDateInterval(e.target.value)}
-                    >
-                      <option value="all">All Time</option>
-                      <option value="today">Today</option>
-                      <option value="week">This Week</option>
-                      <option value="month">This Month</option>
-                    </select>
-                  </div>
-
-                  {/* Items per page select */}
-                  <div className="flex items-center">
-                    <label htmlFor="blogsPerPage" className="mr-2 text-gray-600">Blogs Per Page:</label>
-                    <select
-                      id="blogsPerPage"
-                      className="px-4 py-2 border rounded-lg text-gray-600 bg-transparent outline-none"
-                      onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                      value={itemsPerPage}
-                    >
-                      <option value="5">5</option>
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="">
-              {blogList.length !== 0
-                ? (<>
-                  {/* Search box */}
-                  <div className="bg-white w-full flex max-sm:flex-col rounded-lg md:px-4 md:py-3 max-md:px-2 max-md:py-2 text-gray-600 border border-gray-300 shadow-md text-base md:text-lg">
-                    <input
-                      type="text"
-                      name="search"
-                      id="search"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="outline-none w-full md:px-4 md:py-2 max-md:px-2 max-md:py-1 rounded-lg transition-all"
-                      placeholder="Type here..."
-                    />
-                    <div className="grid grid-flow-col justify-between">
-                      <select
-                        name="whereToSearch"
-                        id="whereToSearch"
-                        className="cursor-pointer md:px-4 md:py-2 max-md:px-2 max-md:py-1 transition-all w-full sm:w-auto sm:mr-2 max-sm:mb-2 outline-none sm:border-x border-gray-400 bg-transparent"
-                        value={searchFrom}
-                        onChange={(e) => setSearchFrom(e.target.value)}
-                      >
-                        <option value="all">Select From All</option>
-                        <option value="title">Title</option>
-                        <option value="category">Category</option>
-                        <option value="content">Content</option>
-                      </select>
-                      <button
-                        type="submit"
-                        className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isSearching ? 'cursor-not-allowed bg-theme_2' : 'bg-theme_4 hover:bg-theme_5'}`}
-                        disabled={isSearching}
-                        onClick={() => {
-                          setIsSearching(true);
-                          filterBlogs();
-                        }}
-                      >
-                        <i className="fa-solid fa-magnifying-glass text-lg" />
-                        <span className="">
-                          {isSearching ? 'Searching...' : 'Search'}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid max-md:my-3 md:my-6 max-md:ml-0 md:ml-4 max-md:gap-2 md:gap-4">
-                    {paginatedBlogs.map((blog) => (
-                      <BlogCard
-                        key={blog?._id}
-                        blog={blog}
-                        copiedLinkTitle={copiedLinkTitle}
-                        setCopiedLinkTitle={setCopiedLinkTitle}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Pagination */}
-                  <PaginationBlogs
-                    entireData={filteredBlogs}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={setPaginatedBlogs}
-                  />
-                </>)
-                : (
-                  <div className="flex h-56 justify-center items-center">
-                    <h3 className="caveat_font text-3xl md:text-5xl text-center font-semibold">
-                      No Blog Found!
-                    </h3>
-                  </div>
-                )}
-            </div>
+            {isFetching && !isLoading
+              ? [...Array(3)].map((_, i) => (
+                <BlogBoxSkeleton key={i} />
+              ))
+              : blogs.map((blog) => (
+                <BlogCard
+                  key={blog._id}
+                  blog={blog}
+                  copiedLinkTitle={copiedLinkTitle}
+                  setCopiedLinkTitle={setCopiedLinkTitle}
+                />
+              ))}
           </div>
+
+          {/* ── Pagination ── */}
+          {total > itemsPerPage && (
+            <UniversalPagination
+              currentPage={page}
+              totalSize={total}
+              itemsPerPage={itemsPerPage}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+              }}
+            />
+          )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

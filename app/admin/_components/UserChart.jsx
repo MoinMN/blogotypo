@@ -20,14 +20,14 @@ const UserChart = ({ today, yesterday, thisMonth, lastMonth, thisYear, lastYear,
   };
 
   const options = {
-    plugins: { legend: { labels: { color: "white", }, }, },
+    plugins: { legend: { labels: { color: "gray-100", }, }, },
     scales: {
       x: {
-        ticks: { color: "white", },
+        ticks: { color: "gray-100", },
         grid: { color: "rgba(255, 255, 255, 0.2)", },
       },
       y: {
-        ticks: { color: "white", },
+        ticks: { color: "gray-100", },
         grid: { color: "rgba(255, 255, 255, 0.2)", },
       },
     },
@@ -35,7 +35,7 @@ const UserChart = ({ today, yesterday, thisMonth, lastMonth, thisYear, lastYear,
 
 
   return (
-    <div className="w-full md:w-1/2 mx-auto md:p-4 max-md:p-2 text-white" >
+    <div className="w-full md:w-1/2 mx-auto md:p-4 max-md:p-2 text-gray-100" >
       <h3 className="montserrat_alternates_font text-center font-bold text-lg md:text-2xl lg:text-3xl">
         User Statistics
       </h3>

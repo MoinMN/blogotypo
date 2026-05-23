@@ -36,7 +36,7 @@ const HomeLoading = () => {
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <li className="font-semibold montserrat_alternates_font text-4xl md:text-5xl text-white list-disc">
+        <li className="font-semibold montserrat_alternates_font text-4xl md:text-5xl text-gray-100 list-disc">
           {greetings[index]}
         </li>
       </motion.ul>

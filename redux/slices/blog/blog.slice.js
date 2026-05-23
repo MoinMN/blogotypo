@@ -6,7 +6,7 @@ export const fetchFullBlogData = createAsyncThunk(
   async ({ slug }, { rejectWithValue }) => {
     try {
       // Main blog request
-      const blogRes = await fetch(`/api/blog/get?slug=${slug}`);
+      const blogRes = await fetch(`/api/blog/${slug}`);
       const blogData = await blogRes.json();
 
       if (!blogRes.ok) return rejectWithValue("Failed to load blog data.");

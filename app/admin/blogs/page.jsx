@@ -1,268 +1,396 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Table from 'react-bootstrap/Table';
-import Image from 'next/image';
-import Link from 'next/link';
+import "bootstrap/dist/css/bootstrap.min.css";
+import Table from "react-bootstrap/Table";
+import Form from "react-bootstrap/Form";
 
-import TableSkeleton from '@components/Skeletons/TableSkeleton';
-import PaginationBlogs from '@components/PaginationBlogs';
-import { formatDateForAdmin } from '@components/FormatDate';
-import useMetadata from '@hooks/metadata';
-import { exportBlogsToExcel, exportBlogsToPDF } from '@utils/exportdata';
-import { useUI } from '@context/UIContext';
+import Image from "next/image";
+import Link from "next/link";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import TableSkeleton from "@components/Skeletons/TableSkeleton";
+import { formatDateForAdmin } from "@components/FormatDate";
+import useMetadata from "@hooks/metadata";
+import { exportBlogsToExcel, exportBlogsToPDF } from "@utils/exportdata";
+import { useUI } from "@context/UIContext";
+import UniversalPagination from "@components/UniversalPagination";
 
 const AdminBlogs = () => {
-  // set title for page
-  useMetadata('Admin Blogs - Blogotypo', 'Admin blogs for view or delete');
+  useMetadata("Admin Blogs - Blogotypo", "Admin blogs for view or delete");
 
   const { showAlert, showModal } = useUI();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const queryText = searchParams.get("text") || "";
+  const queryPage = Number(searchParams.get("page")) || 1;
+  const queryLimit = Number(searchParams.get("limit")) || 10;
 
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [search, setSearch] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-
-  // for pagination
+  const [search, setSearch] = useState(queryText);
+  const [currentPage, setCurrentPage] = useState(queryPage);
+  const [itemsPerPage, setItemsPerPage] = useState(queryLimit);
   const [paginatedBlogs, setPaginatedBlogs] = useState([]);
-  const itemsPerPage = 10;
-
   const [showSkeleton, setShowSkeleton] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedBlogs, setSelectedBlogs] = useState([]);
 
   const fetchBlogs = async () => {
     try {
-      const response = await fetch('/api/admin/blog/get', { method: 'GET' });
+      const response = await fetch("/api/admin/blog/get", { method: "GET" });
       const data = await response.json();
-
       if (response?.ok) {
-        setBlogs(data.data);
-        setFilteredBlogs(data.data);
-        setPaginatedBlogs(data.data.slice(0, itemsPerPage));
+        setBlogs(data?.data || []);
         setShowSkeleton(false);
         return;
       }
-      showAlert(data.msg || "Failed to fetch blogs!", "danger");
+      showAlert(data?.msg || "Failed to fetch blogs!", "danger");
     } catch (error) {
-      console.log('Error while fetching users data ', error);
+      console.log("Error while fetching blogs ", error);
       showAlert("Internal Server Error!", "danger");
       setShowSkeleton(false);
     }
-  }
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-
-    setIsSearching(true);
-    setShowSkeleton(true);
-    let filtered = [];
-
-    if (!search) {
-      filtered = blogs;
-    } else {
-      filtered = blogs.filter((blog) =>
-        blog.title.toLowerCase().includes(search.toLowerCase()) ||
-        blog.creator.name.toLowerCase().includes(search.toLowerCase()) ||
-        blog.creator.email.toLowerCase().includes(search.toLowerCase()) ||
-        blog.categories.some((category) => category.toLowerCase().includes(search.toLowerCase()))
-      );
-    }
-
-    setFilteredBlogs(filtered);
-    setPaginatedBlogs(filtered.slice(0, itemsPerPage));
-
-    setIsSearching(false);
-    setShowSkeleton(false);
-  }
+  };
 
   const handleDelete = (blogId) => {
     if (!blogId) return;
-
     showModal({
-      title: 'Confirmation',
-      body: `Do you really want to delete blog?`,
-      actionBtn: 'delete',
-      actionBtnVariant: 'danger',
-      confirmAction: async () => await handleConfirmDelete(blogId)
+      title: "Confirmation",
+      body: `Do you really want to delete this blog?`,
+      actionBtn: "Delete",
+      actionBtnVariant: "danger",
+      confirmAction: async () => await handleConfirmDelete(blogId),
     });
-  }
+  };
 
   const handleConfirmDelete = async (blogId) => {
-    if (!blogId) return;
-
     try {
       const response = await fetch(`/api/admin/blog/delete?blogId=${blogId}`, { method: "DELETE" });
       const data = await response.json();
-
       if (response.ok) {
         showAlert(data?.msg || "Blog deleted successfully!", "success");
-        // fake update of deleting blog
-        setPaginatedBlogs((blogs) => blogs.filter((blog) => blog._id !== blogId));
+        setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
         return;
       }
-      setAlertData((prev) => ({ ...prev, header: data.msg, variant: "danger" }));
+      showAlert(data?.msg || "Failed to delete blog!", "danger");
     } catch (error) {
-      console.log('error while deleting blog ', error);
-      setAlertData((prev) => ({ ...prev, header: 'Internal Server Error!', variant: "danger" }));
-
+      console.log("error while deleting blog ", error);
+      showAlert("Internal Server Error!", "danger");
     }
-  }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedBlogs.length === 0) return;
+    showModal({
+      title: "Confirmation",
+      body: `Delete ${selectedBlogs.length} selected blogs?`,
+      actionBtn: "Delete",
+      actionBtnVariant: "danger",
+      confirmAction: async () => {
+        try {
+          await Promise.all(
+            selectedBlogs.map((id) =>
+              fetch(`/api/admin/blog/delete?blogId=${id}`, { method: "DELETE" })
+            )
+          );
+          setBlogs((prev) => prev.filter((blog) => !selectedBlogs.includes(blog._id)));
+          setSelectedBlogs([]);
+          setIsSelectionMode(false);
+          showAlert("Selected blogs deleted successfully!", "success");
+        } catch (error) {
+          console.log(error);
+          showAlert("Internal Server Error!", "danger");
+        }
+      },
+    });
+  };
 
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    let filtered = !queryText
+      ? blogs
+      : blogs.filter((blog) => {
+          const text = queryText.toLowerCase();
+          return (
+            blog?.title?.toLowerCase().includes(text) ||
+            blog?.creator?.name?.toLowerCase().includes(text) ||
+            blog?.creator?.email?.toLowerCase().includes(text) ||
+            blog?.categories?.some((c) => c.toLowerCase().includes(text))
+          );
+        });
+    setFilteredBlogs(filtered);
+    const start = (currentPage - 1) * itemsPerPage;
+    setPaginatedBlogs(filtered.slice(start, start + itemsPerPage));
+  }, [blogs, queryText, currentPage, itemsPerPage]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setIsSearching(true);
+    const params = new URLSearchParams(searchParams);
+    if (search.trim()) params.set("text", search);
+    else params.delete("text");
+    params.set("page", 1);
+    params.set("limit", itemsPerPage);
+    router.push(`${pathname}?${params.toString()}`);
+    setCurrentPage(1);
+    setTimeout(() => setIsSearching(false), 300);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page);
+    params.set("limit", itemsPerPage);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleLimitChange = (e) => {
+    const value = Number(e.target.value);
+    setItemsPerPage(value);
+    setCurrentPage(1);
+    const params = new URLSearchParams(searchParams);
+    params.set("limit", value);
+    params.set("page", 1);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSelectBlog = (id) => {
+    setSelectedBlogs((prev) =>
+      prev.includes(id) ? prev.filter((blogId) => blogId !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const currentIds = paginatedBlogs.map((blog) => blog._id);
+    const allSelected = currentIds.every((id) => selectedBlogs.includes(id));
+    if (allSelected) {
+      setSelectedBlogs((prev) => prev.filter((id) => !currentIds.includes(id)));
+    } else {
+      setSelectedBlogs((prev) => [...new Set([...prev, ...currentIds])]);
+    }
+  };
+
+  useEffect(() => { fetchBlogs(); }, []);
 
   return (
-    <>
-      <div className="">
-
-        <div className="flex items-center justify-between">
-          <h3 className="montserrat_alternates_font font-bold text-lg md:text-2xl lg:text-3xl">
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 montserrat_alternates_font">
             Blogs
           </h3>
-          <span className="">
-            Export to{` `}
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage blogs, exports and bulk actions
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Export */}
+          <div className="flex items-center overflow-hidden rounded-xl border border-gray-200 dark:border-gray-100/[0.08]">
             <button
-              className='text-blue-500 underline'
-              onClick={() => exportBlogsToExcel(blogs, "cpms_blogs")}
+              onClick={() => exportBlogsToExcel(blogs, "blogotypo_blogs")}
+              className="px-3 py-2 text-sm bg-gray-100 dark:bg-[#0f172a] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-100/[0.06] transition-all"
             >
               Excel
             </button>
-            {` , `}
+            <div className="w-px h-5 bg-gray-200 dark:bg-gray-100/[0.08]" />
             <button
-              className='text-blue-500 underline'
-              onClick={() => exportBlogsToPDF(blogs, "cpms_blogs")}
+              onClick={() => exportBlogsToPDF(blogs, "blogotypo_blogs")}
+              className="px-3 py-2 text-sm bg-gray-100 dark:bg-[#0f172a] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-100/[0.06] transition-all"
             >
               PDF
             </button>
-          </span>
-        </div>
+          </div>
 
-        {/* Search box */}
-        <form
-          onSubmit={handleSearch}
-          className="bg-white w-full flex max-sm:flex-col rounded-lg md:px-3 md:py-2 max-md:px-1 max-md:py-1 text-gray-600 border border-gray-300 shadow-md text-sm md:text-base md:my-2 max-md:my-1"
-        >
+          {/* Selection */}
+          {!isSelectionMode ? (
+            <button
+              onClick={() => setIsSelectionMode(true)}
+              className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-gray-100 text-sm font-medium transition-all"
+            >
+              Select
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleBulkDelete}
+                disabled={selectedBlogs.length === 0}
+                className="px-3 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 disabled:opacity-40 text-gray-100 text-sm font-medium transition-all"
+              >
+                Delete ({selectedBlogs.length})
+              </button>
+              <button
+                onClick={() => { setSelectedBlogs([]); setIsSelectionMode(false); }}
+                className="px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-100/[0.06] text-gray-700 dark:text-gray-200 text-sm font-medium"
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Search */}
+      <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2">
+        <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-2xl border border-gray-200 dark:border-gray-100/[0.08] bg-gray-100 dark:bg-[#0f172a]">
+          <i className="fa-solid fa-magnifying-glass text-gray-400 text-sm" />
           <input
             type="text"
-            name="search"
-            id="search"
-            onChange={(e) => setSearch(e.target.value)}
             value={search}
-            className="outline-none w-full md:px-4 md:py-2 max-md:px-2 max-md:py-1 rounded-lg transition-all"
-            placeholder="Search by user name, email, title & categories"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search title, creator, email or category..."
+            className="w-full bg-transparent outline-none text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={itemsPerPage}
+            onChange={handleLimitChange}
+            className="px-3 py-2 rounded-2xl border border-gray-200 dark:border-gray-100/[0.08] bg-gray-100 dark:bg-[#0f172a] text-sm text-gray-700 dark:text-gray-200 outline-none"
+          >
+            {[10, 20, 30, 40, 50, 100].map((num) => (
+              <option key={num} value={num} className="bg-gray-100 dark:bg-[#0f172a] text-gray-800 dark:text-gray-200">{num}</option>
+            ))}
+          </select>
           <button
             type="submit"
-            className={`px-4 py-2 text-white rounded-lg flex justify-center items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${isSearching ? 'cursor-not-allowed bg-purple-300' : 'bg-purple-600 hover:bg-purple-900'}`}
             disabled={isSearching}
+            className="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-gray-100 text-sm font-medium transition-all"
           >
-            <i className="fa-solid fa-magnifying-glass text-lg" />
-            <span className="">
-              {isSearching ? 'Searching...' : 'Search'}
-            </span>
+            {isSearching ? "Searching..." : "Search"}
           </button>
-        </form>
+        </div>
+      </form>
 
+      {/* Table */}
+      {showSkeleton ? (
+        <TableSkeleton />
+      ) : paginatedBlogs?.length ? (
+        <>
+          <div className="overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-100/[0.08] bg-gray-100 dark:!bg-[#0f172a]">
+            <Table responsive="xl" hover className="mb-0 align-middle text-sm !bg-transparent text-gray-700 dark:text-gray-200">
+              <thead className="!bg-gray-100 dark:!bg-[#0f172a] border-b border-gray-200 dark:border-gray-100/[0.06]">
+                <tr className="!bg-gray-100 dark:!bg-[#0f172a]">
+                  <th className="px-3 py-2 text-center !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">
+                    {isSelectionMode ? (
+                      <Form.Check
+                        type="checkbox"
+                        onChange={handleSelectAll}
+                        checked={paginatedBlogs.every((blog) => selectedBlogs.includes(blog._id))}
+                      />
+                    ) : "Sr"}
+                  </th>
+                  <th className="px-3 py-2 !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Thumbnail</th>
+                  <th className="px-3 py-2 !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Title</th>
+                  <th className="px-3 py-2 !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Creator</th>
+                  <th className="px-3 py-2 !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Categories</th>
+                  <th className="px-3 py-2 text-center !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Views</th>
+                  <th className="px-3 py-2 text-center !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Reviews</th>
+                  <th className="px-3 py-2 !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Published</th>
+                  <th className="px-3 py-2 text-center !bg-gray-100 dark:!bg-[#0f172a] !text-gray-700 dark:!text-gray-300 font-semibold">Action</th>
+                </tr>
+              </thead>
 
-        {showSkeleton
-          ? <TableSkeleton />
-          : paginatedBlogs.length !== 0
-            ? <>
-              <Table
-                striped
-                bordered
-                hover
-                responsive="sm"
-                className="rounded-xl shadow-md overflow-hidden text-sm md:text-base"
-              >
-                <thead className="bg-gray-200">
-                  <tr>
-                    <th className="p-2 text-center align-middle" style={{ width: "2%" }}>#</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "10%" }}>Thumnail Image</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "18%" }}>Title</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "12%" }}>Creator Name</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "14%" }}>Creator Email</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "12%" }}>Categories</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "8%" }}>No. of views</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "8%" }}>No. of reviews</th>
-                    <th className="p-2 text-center align-middle" style={{ width: "10%" }}>Publish Date</th>
-                    <th className="p-2 text-center align-middle whitespace-nowrap" style={{ width: "6%" }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {paginatedBlogs?.map((blog, index) => (
-                    <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="p-2 text-center align-middle">{index + 1 + "."}</td>
-                      <td className="p-2 text-center align-middle">
-                        <Image
-                          src={blog?.thumbnail_image}
-                          width={100}
-                          height={100}
-                          className="rounded-lg shadow-md block mx-auto"
-                          alt="Thumnail Image"
+              <tbody className="!bg-gray-100 dark:!bg-[#0f172a]">
+                {paginatedBlogs?.map((blog, index) => (
+                  <tr
+                    key={blog?._id}
+                    className="!bg-gray-100 dark:!bg-[#0f172a] border-b border-gray-200 dark:border-gray-100/[0.05] hover:!bg-gray-200 dark:hover:!bg-gray-100/[0.04] transition-all"
+                  >
+                    <td className="px-3 py-2 text-center !bg-transparent !text-gray-700 dark:!text-gray-300">
+                      {isSelectionMode ? (
+                        <Form.Check
+                          type="checkbox"
+                          checked={selectedBlogs.includes(blog._id)}
+                          onChange={() => handleSelectBlog(blog._id)}
                         />
-                      </td>
-                      <td className="p-2 text-center align-middle">
+                      ) : (
+                        index + 1 + (currentPage - 1) * itemsPerPage
+                      )}
+                    </td>
+                    <td className="px-3 py-2 !bg-transparent">
+                      <Image
+                        src={blog?.thumbnail_image}
+                        width={56}
+                        height={56}
+                        alt="Thumbnail"
+                        className="rounded-xl object-cover border border-gray-200 dark:border-gray-100/[0.08]"
+                      />
+                    </td>
+                    <td className="px-3 py-2 min-w-[220px] !bg-transparent">
+                      <Link
+                        href={`/admin/blog/${blog?.slug}`}
+                        className="no-underline text-gray-800 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all font-medium"
+                      >
+                        {blog?.title}
+                      </Link>
+                    </td>
+                    <td className="px-3 py-2 !bg-transparent">
+                      <div className="space-y-1">
+                        <div className="font-medium !text-gray-800 dark:!text-gray-100">{blog?.creator?.name}</div>
                         <Link
-                          href={'/admin/blog/' + blog?.slug}
-                          className='no-underline hover:underline'
+                          href={`mailto:${blog?.creator?.email}`}
+                          className="no-underline text-xs text-indigo-600 dark:text-indigo-300"
                         >
-                          {blog?.title}
-                        </Link>
-                      </td>
-                      <td className="p-2 text-center align-middle">
-                        {blog?.creator?.name}
-                      </td>
-                      <td className="p-2 text-center align-middle">
-                        <Link href={`mailto:${blog.creator?.email}`} target='_blank' className='no-underline hover:underline'>
                           {blog?.creator?.email}
                         </Link>
-                      </td>
-                      <td className="p-2 text-center flex flex-wrap md:gap-2 max-md:gap-1 justify-center items-center h-full text-xs md:text-sm">
-                        {blog?.categories.map((cate, inx) => (
-                          <span key={inx} className="md:px-1.5 max-md:px-1 md:py-1 max-md:py-0.5 flex  items-center justify-center bg-black rounded-md text-white">
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 !bg-transparent">
+                      <div className="flex flex-wrap gap-1">
+                        {blog?.categories?.map((cate, inx) => (
+                          <span
+                            key={inx}
+                            className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-100/[0.06] text-[11px] text-gray-700 dark:text-gray-200"
+                          >
                             {cate}
                           </span>
                         ))}
-                      </td>
-                      <td className="p-2 text-center align-middle">
-                        {blog?.viewedBy.length}
-                      </td>
-                      <td className="p-2 text-center align-middle">
-                        {blog?.reviews.length}
-                      </td>
-                      <td className="p-2 text-center align-middle">
-                        {formatDateForAdmin(blog?.date)}
-                      </td>
-                      <td className="p-2 text-center align-middle text-lg md:text-2xl">
-                        <i
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 text-center !bg-transparent !text-gray-700 dark:!text-gray-300">{blog?.viewedBy?.length}</td>
+                    <td className="px-3 py-2 text-center !bg-transparent !text-gray-700 dark:!text-gray-300">{blog?.reviews?.length}</td>
+                    <td className="px-3 py-2 gray-100space-nowrap !bg-transparent !text-gray-700 dark:!text-gray-300">
+                      {formatDateForAdmin(blog?.date)}
+                    </td>
+                    <td className="px-3 py-2 !bg-transparent">
+                      <div className="flex justify-center">
+                        <button
                           onClick={() => handleDelete(blog._id)}
-                          className="fa-solid fa-trash-can text-gray-500 hover:text-gray-700 transition-colors duration-150 mx-2 cursor-pointer"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+                          className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 transition-all"
+                        >
+                          <i className="fa-solid fa-trash-can text-sm" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
 
-              {/* Pagination */}
-              <PaginationBlogs
-                entireData={filteredBlogs}
-                itemsPerPage={itemsPerPage}
-                onPageChange={setPaginatedBlogs}
-              />
-            </>
-            : <div className="flex h-56 justify-center items-center">
-              <h3 className="caveat_font text-3xl md:text-5xl text-center font-semibold">
-                No Blogs Found!
-              </h3>
-            </div>
-        }
-      </div>
-    </>
-  )
-}
+          <UniversalPagination
+            currentPage={currentPage}
+            totalSize={filteredBlogs.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+          />
+        </>
+      ) : (
+        <div className="flex h-56 justify-center items-center">
+          <h3 className="text-3xl md:text-5xl text-center font-semibold text-gray-400 caveat_font">
+            No Blogs Found!
+          </h3>
+        </div>
+      )}
+    </div>
+  );
+};
 
-export default AdminBlogs
+export default AdminBlogs;

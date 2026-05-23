@@ -47,7 +47,7 @@ export async function welcomeNewUserMail(to, userName) {
     .content {
       font-size: 18px;
       line-height: 1.6;
-      color: #f5f3ff; /* Soft white for readability */
+      color: #f5f3ff; /* Soft gray-100 for readability */
     }
     .cta-button {
       display: inline-block;

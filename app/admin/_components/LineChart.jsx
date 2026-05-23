@@ -45,14 +45,14 @@ const LineChart = ({ userStats, blogStats }) => {
   };
 
   const options = {
-    plugins: { legend: { labels: { color: "white", }, }, },
+    plugins: { legend: { labels: { color: "gray-100", }, }, },
     scales: {
       x: {
-        ticks: { color: "white", },
+        ticks: { color: "gray-100", },
         grid: { color: "rgba(255, 255, 255, 0.2)", },
       },
       y: {
-        ticks: { color: "white", },
+        ticks: { color: "gray-100", },
         grid: { color: "rgba(255, 255, 255, 0.2)", },
       },
     },

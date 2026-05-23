@@ -43,19 +43,19 @@ const AdminLayout = ({ children }) => {
   }, [setIsSidebarOpen, isSidebarOpen]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-[#0d0d1a]">
       <Nav
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
       />
 
       {/* Sidebar with transition */}
-      <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed left-0 top-0 h-screen bg-purple-800 w-48 md:w-64 shadow-lg transition-all duration-300 ease-in-out z-40`}>
+      <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed left-0 top-0 h-screen w-48 md:w-64 shadow-lg bg-black/30 dark:bg-black/50 backdrop-blur-sm transition-all duration-300 ease-in-out z-40`}>
         <Sidebar />
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-grow bg-[#3a3153] text-white">
+      <div className="flex flex-col flex-grow text-gray-100">
         <div className={`${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'} min-h-fit md:p-6 max-md:p-3 transition-all duration-300 ease-in-out`}>
           {children}
         </div>

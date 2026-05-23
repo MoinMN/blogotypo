@@ -5,6 +5,9 @@ import { UIProvider } from "@/context/UIContext";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import ScrollToTop from "@components/ScrollToTop";
+import Script from "next/script";
+import GoogleOneTap from "@components/GoogleOneTap";
+import { ThemeProvider } from "@context/ThemeContext";
 
 export const viewport = {
   themeColor: [
@@ -46,19 +49,42 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="roboto_font bg-theme_1" cz-shortcut-listen="true">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+          })();
+        `,
+          }}
+        />
+      </head>
+      <body className="bg-gray-50 dark:bg-[#0a0a14] text-black dark:text-gray-50 transition-colors duration-300 roboto_font" cz-shortcut-listen="true">
 
         <AuthProvider>
           <ReduxProvider>
-            <UIProvider>
-              {children}
-            </UIProvider>
+            <ThemeProvider>
+              <UIProvider>
+                {children}
+                <GoogleOneTap />
+              </UIProvider>
+            </ThemeProvider>
             <ScrollToTop />
             <Analytics />
             <SpeedInsights />
           </ReduxProvider>
         </AuthProvider>
 
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="afterInteractive"
+        />
         <script src="https://kit.fontawesome.com/93f8c5dee5.js" crossOrigin="anonymous"></script>
       </body>
     </html>

@@ -36,7 +36,7 @@ const Home = () => {
   }, []);
 
   return (
-    <>
+    <div className="flex flex-col max-md:gap-2 md:gap-4">
       <Navbar />
       <Hero />
       <AboutUs />
@@ -46,7 +46,7 @@ const Home = () => {
       </Suspense>
       <WhyBlogotypo />
       <Footer />
-    </>
+    </div>
   );
 };
 

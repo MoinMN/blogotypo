@@ -3,59 +3,81 @@
 import SkeletonBox from "@components/Skeletons/Skeleton";
 
 const ExploreSkeleton = () => {
-  // show 8 skeleton cards
   const skeletonCards = Array(8).fill(null);
 
   return (
-    <div className="bg-purple-100 md:py-16 max-md:py-6 select-none">
+    <div className="bg-purple-100 dark:bg-[#0b1020] md:py-16 max-md:py-6 select-none transition-colors duration-300">
+
       {/* Heading */}
-      <h1 className="text-2xl md:text-3xl md:px-16 max-md:px-4 montserrat_alternates_font font-bold mb-8">
-        Explore Popular Blogs
-      </h1>
+      <div className="md:px-16 max-md:px-4 mb-8">
+        <SkeletonBox
+          width={260}
+          height={36}
+        />
+      </div>
 
       {/* Cards container */}
-      <div className="relative w-full overflow-hidden py-8">
-        <div className="flex gap-3 md:gap-6 min-w-max">
+      <div className="relative w-full overflow-hidden py-4">
+        <div className="flex gap-3 md:gap-6 min-w-max md:px-16 max-md:px-4">
+
           {skeletonCards.map((_, index) => (
             <div
               key={index}
-              className="bg-white w-64 md:w-72 lg:w-80 flex flex-col md:p-6 max-md:p-3 
-              rounded-2xl shadow-md border border-gray-200"
+              className="
+                w-64 md:w-72 lg:w-80 flex flex-col
+                md:p-6 max-md:p-3
+                rounded-2xl
+                bg-gray-100 dark:bg-[#111827]
+                border border-gray-200 dark:border-gray-800
+                shadow-sm dark:shadow-none
+                transition-colors duration-300
+              "
             >
-              {/* Thumbnail skeleton */}
+              {/* Thumbnail */}
               <SkeletonBox
                 width="100%"
                 height={160}
-                baseColor="#f3f3f3"
-                highlightColor="#e0e0e0"
                 borderRadius={16}
               />
 
-              {/* Title skeleton */}
-              <div className="mt-4 space-y-2 px-3">
+              {/* Title */}
+              <div className="mt-4 space-y-3 px-1">
                 <SkeletonBox
-                  width="80%"
+                  width="85%"
                   height={22}
-                  baseColor="#f3f3f3"
-                  highlightColor="#e0e0e0"
                   borderRadius={8}
                 />
+
                 <SkeletonBox
                   width="60%"
                   height={22}
-                  baseColor="#f3f3f3"
-                  highlightColor="#e0e0e0"
                   borderRadius={8}
                 />
               </div>
 
-              {/* Button skeleton */}
-              <div className="mt-6 px-3">
+              {/* Content lines */}
+              <div className="mt-5 flex flex-col gap-2 px-1">
                 <SkeletonBox
                   width="100%"
-                  height={40}
-                  baseColor="#f3f3f3"
-                  highlightColor="#e0e0e0"
+                  height={14}
+                />
+
+                <SkeletonBox
+                  width="95%"
+                  height={14}
+                />
+
+                <SkeletonBox
+                  width="75%"
+                  height={14}
+                />
+              </div>
+
+              {/* Button */}
+              <div className="mt-6 px-1">
+                <SkeletonBox
+                  width="100%"
+                  height={42}
                   borderRadius={12}
                 />
               </div>
