@@ -236,12 +236,49 @@ const ViewBlog = ({ slug, blogData, recommendBlogs, loading }) => {
         </div>
         <div className="flex flex-wrap gap-3">
           {[
-            { icon: 'fa-brands fa-square-whatsapp', color: 'text-green-500 hover:text-green-600', href: `https://wa.me/?text=${currentUrl}`, label: 'Share via whatsapp', id: 'whatsapp' },
-            { icon: 'fa-brands fa-square-instagram', color: 'text-pink-500 hover:text-pink-600', href: 'https://www.instagram.com/direct/new/', label: 'Share via instagram', id: 'instagram' },
-            { icon: 'fa-brands fa-square-facebook', color: 'text-blue-600 hover:text-blue-700', href: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`, label: 'Share via facebook', id: 'facebook' },
-            { icon: 'fa-brands fa-square-twitter', color: 'text-sky-400 hover:text-sky-500', href: `https://twitter.com/intent/tweet?url=${currentUrl}`, label: 'Share via twitter', id: 'twitter' },
-            { icon: 'fa-brands fa-linkedin', color: 'text-blue-700 hover:text-blue-800', href: `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`, label: 'Share via linkedin', id: 'linkedin' },
-            { icon: 'fa-solid fa-envelope', color: 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200', href: `mailto:?subject=Check this out&body=${currentUrl}`, label: 'Share via mail', id: 'mail' },
+            {
+              icon: "fa-brands fa-square-whatsapp",
+              color: "text-green-500 hover:text-green-600",
+              href: `https://wa.me/?text=${currentUrl}`,
+              label: "Share via whatsapp",
+              id: "whatsapp",
+            },
+            {
+              icon: "fa-brands fa-square-instagram",
+              color: "text-pink-500 hover:text-pink-600",
+              href: "https://www.instagram.com/direct/new/",
+              label: "Share via instagram",
+              id: "instagram",
+            },
+            {
+              icon: "fa-brands fa-square-facebook",
+              color: "text-blue-600 hover:text-blue-700",
+              href: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+              label: "Share via facebook",
+              id: "facebook",
+            },
+            {
+              icon: "fa-brands fa-square-twitter",
+              color: "text-sky-400 hover:text-sky-500",
+              href: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+              label: "Share via twitter",
+              id: "twitter",
+            },
+            {
+              icon: "fa-brands fa-linkedin",
+              color: "text-blue-700 hover:text-blue-800",
+              href: `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`,
+              label: "Share via linkedin",
+              id: "linkedin",
+            },
+            {
+              icon: "fa-solid fa-envelope",
+              color:
+                "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200",
+              href: `mailto:?subject=Check this out&body=${currentUrl}`,
+              label: "Share via mail",
+              id: "mail",
+            },
           ].map(({ icon, color, href, label, id }) => (
             <OverlayTrigger key={id} overlay={<Tooltip id={id}>{label}</Tooltip>}>
               <Link

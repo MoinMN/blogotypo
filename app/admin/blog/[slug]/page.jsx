@@ -42,7 +42,6 @@ const AdminViewBlog = () => {
     fetchBlogData(slug);
   }, [slug]);
 
-  // metadata (FIXED: must NOT be inside useEffect)
   useMetadata(
     blogData?.title
       ? `${blogData.title} - Blogotypo`
