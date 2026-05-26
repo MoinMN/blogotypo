@@ -153,51 +153,80 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle }) => {
           </div>
 
           {/* Meta */}
-          <div className="
-            flex items-center justify-between
-            text-gray-400 dark:text-gray-500
-            text-[10px] sm:text-[11px] md:text-xs
-            mt-auto pt-2
-          ">
+          <div
+            className="
+    flex flex-col gap-2
+    sm:flex-row sm:items-center sm:justify-between
+    text-gray-400 dark:text-gray-500
+    text-[10px] sm:text-[11px] md:text-xs
+    mt-auto pt-2
+  "
+          >
 
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
+            {/* Top row mobile / left row desktop */}
+            <div className="flex items-center justify-between sm:justify-start">
               <span>{formatDateForBlog(blog?.date)}</span>
 
-              <span className="flex items-center gap-1">
-                <i className="fa-solid fa-comment-dots text-[10px]" />
-                {blog?.reviews?.length ?? 0}
-              </span>
+              {isOwner && (
+                <div className="flex items-center gap-2 md:gap-3 ml-3 sm:hidden">
+                  <button
+                    onClick={() => handleEditBlog(blog._id)}
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    Edit
+                  </button>
 
-              <span className="flex items-center gap-1">
-                <i className="fa-solid fa-eye text-[10px]" />
-                {blog?.viewedBy?.length ?? 0}
-              </span>
-
-              <span
-                onClick={() => handleCopyLink(blog?.slug)}
-                className="cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-400 transition"
-              >
-                <i className={`${isCopied ? 'fa-solid' : 'fa-regular'} fa-clone text-[10px]`} />
-              </span>
+                  <button
+                    onClick={() => handleConfirmationDeleteBlog(blog._id, blog?.title)}
+                    className="text-red-600 dark:text-red-400 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
 
-            {isOwner && (
-              <div className="flex items-center gap-2 md:gap-3 ml-2">
-                <button
-                  onClick={() => handleEditBlog(blog._id)}
-                  className="text-emerald-600 dark:text-emerald-400 hover:underline"
-                >
-                  Edit
-                </button>
+            {/* Bottom row mobile */}
+            <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 md:gap-4 flex-wrap">
 
-                <button
-                  onClick={() => handleConfirmationDeleteBlog(blog._id, blog?.title)}
-                  className="text-red-600 dark:text-red-400 hover:underline"
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                <span className="flex items-center gap-1">
+                  <i className="fa-solid fa-comment-dots text-[10px]" />
+                  {blog?.reviews?.length ?? 0}
+                </span>
+
+                <span className="flex items-center gap-1">
+                  <i className="fa-solid fa-eye text-[10px]" />
+                  {blog?.viewedBy?.length ?? 0}
+                </span>
+
+                <span
+                  onClick={() => handleCopyLink(blog?.slug)}
+                  className="cursor-pointer hover:text-indigo-500 dark:hover:text-indigo-400 transition"
                 >
-                  Delete
-                </button>
+                  <i className={`${isCopied ? 'fa-solid' : 'fa-regular'} fa-clone text-[10px]`} />
+                </span>
               </div>
-            )}
+
+              {/* Desktop owner actions */}
+              {isOwner && (
+                <div className="hidden sm:flex items-center gap-2 md:gap-3 ml-2">
+                  <button
+                    onClick={() => handleEditBlog(blog._id)}
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleConfirmationDeleteBlog(blog._id, blog?.title)}
+                    className="text-red-600 dark:text-red-400 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
