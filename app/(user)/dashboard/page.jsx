@@ -231,8 +231,11 @@ const UserDashboard = () => {
                   viewport={{ once: true }}
                 >
                   <HorizontalBlogList
-                    header={item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                    emoji="📂"
+                    header={item.category
+                      .split("-")
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}
+                    emoji={null}
                     list={item.blogs}
                   />
                 </motion.div>
