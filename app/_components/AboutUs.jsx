@@ -26,7 +26,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <section id="about" className="bg-gray-50 dark:bg-[#0d0d1a] scroll-mt-20 py-4 max-md:px-4 overflow-hidden select-none">
+    <section id="about" className="bg-gray-50 dark:bg-[#0d0d1a] scroll-mt-20 p-4 overflow-hidden select-none">
       <div className="max-w-7xl mx-auto">
 
         {/* Label */}

@@ -50,7 +50,7 @@ export async function POST(req) {
 
     const normalizedCategories = categories
       .filter((cat) => typeof cat === "string" && cat.trim() !== "")
-      .map((cat) => cat.trim().toLowerCase());
+      .map((cat) => cat.trim().split(" ").join("-").toLowerCase());
 
     const slug = await generateSlug(title);
 
@@ -152,7 +152,7 @@ export async function PATCH(req) {
 
     const normalizedCategories = categories
       .filter((cat) => typeof cat === "string" && cat.trim() !== "")
-      .map((cat) => cat.trim().toLowerCase());
+      .map((cat) => cat.trim().split(" ").join("-").toLowerCase());
 
     const cleanContent = sanitizeBlogContent(content.trim());
 

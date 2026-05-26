@@ -60,7 +60,7 @@ const CategorySlugPage = () => {
             className="max-md:text-base md:text-2xl font-bold text-gray-900 dark:text-gray-100 capitalize truncate"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            {slug}
+            {slug.split("-").join(" ")}
           </h1>
         </div>
 

@@ -15,6 +15,7 @@ import { fetchCategoryBlogs } from '@redux/slices/blog/category.slice';
 import Loading from '@app/loading';
 import { useAddMyBlogMutation, useUpdateMyBlogMutation } from '@redux/services/myBlogsApi';
 import { useDispatch } from '@node_modules/react-redux/dist/react-redux';
+import { updateBlogCache } from '@redux/slices/blog/blog.slice';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
@@ -196,10 +197,11 @@ const PublishBlog = () => {
       });
 
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (response.ok) {
         if (blogIdFromParams) {
           await updateMyBlog(result?.updatedBlog);
+          dispatch(updateBlogCache(result?.updatedBlog));
         } else {
           await addMyBlog(result?.newBlog);
         }

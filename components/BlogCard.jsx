@@ -131,7 +131,7 @@ const BlogCard = ({ blog, copiedLinkTitle, setCopiedLinkTitle }) => {
                   key={inx}
                   className="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer font-medium"
                 >
-                  #{category}
+                  #{category.split("-").join(" ")}
                 </span>
               ))}
             </div>

@@ -100,6 +100,26 @@ const blogCacheSlice = createSlice({
         cached: true,
       };
     },
+    // UPDATE BLOG LOCALLY
+    updateBlogCache(state, action) {
+      const updatedBlog = action.payload;
+
+      if (!updatedBlog) return;
+
+      const slug = updatedBlog.slug;
+
+      if (!slug) return;
+
+      // preserve old recommended data if exists
+      const oldRecommended =
+        state.blogs?.[slug]?.recommended || {};
+
+      state.blogs[slug] = {
+        blogData: updatedBlog,
+        recommended: oldRecommended,
+        cached: true,
+      };
+    },
     // DELETE BLOG LOCALLY
     removeBlogCache(state, action) {
       const { slug } = action.payload;
@@ -150,6 +170,7 @@ const blogCacheSlice = createSlice({
 
 export const {
   clearBlogCache,
+  updateBlogCache,
   removeBlogCache,
   addReviewToBlog,
   removeReviewFromBlog

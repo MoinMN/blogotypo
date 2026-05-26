@@ -15,7 +15,7 @@ const Features = () => {
   ];
 
   return (
-    <section id="features" className="bg-gray-50 dark:bg-[#0a0a14] scroll-mt-20 max-md:px-4 overflow-hidden py-4 select-none">
+    <section id="features" className="bg-gray-50 dark:bg-[#0a0a14] scroll-mt-20 p-4 overflow-hidden select-none">
       <div className="max-w-7xl mx-auto">
 
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.4 }} transition={{ duration: 0.5 }} className="flex items-center gap-3 mb-4">

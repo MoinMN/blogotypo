@@ -128,7 +128,7 @@ const ViewBlog = ({ slug, blogData, recommendBlogs, loading }) => {
                 key={inx}
                 className="inline-flex items-center text-[10px] font-semibold uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-full py-1 px-3 cursor-pointer transition-all duration-200"
               >
-                {category}
+                {category.split("-").join(" ")}
               </span>
             </Link>
           ))}

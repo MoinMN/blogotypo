@@ -4,69 +4,90 @@ export const BlogBoxSkeleton = () => {
   return (
     <div
       className="
-        bg-slate-100 dark:bg-[#111827]
-        md:py-4 max-md:py-2
-        md:px-6 max-md:px-3
-        rounded-2xl
-        border border-gray-200 dark:border-gray-800
-        shadow-sm hover:shadow-lg dark:hover:shadow-black/20
-        transition-all duration-300 ease-in-out
+        group
+        border-b border-gray-200 dark:border-gray-800
+        py-4 md:py-5
+        transition-colors duration-200
       "
     >
-      <div className="flex flex-col sm:grid sm:grid-cols-5 gap-3">
+      <div className="flex gap-3 md:gap-4">
 
-        {/* Thumbnail Image */}
-        <div className="w-full rounded-xl overflow-hidden sm:col-span-2 lg:col-span-1">
+        {/* ── Thumbnail ── */}
+        <div
+          className="
+        flex-shrink-0
+        w-28 h-28
+        sm:w-32 sm:h-24
+        md:w-44 md:h-28
+        overflow-hidden rounded-xl
+      "
+        >
           <SkeletonBox
-            height={200}
-            borderRadius={14}
+            width="100%"
+            height="100%"
+            borderRadius={12}
           />
         </div>
 
-        {/* Blog Content */}
-        <div className="flex flex-col gap-2 sm:col-span-3 lg:col-span-4">
+        {/* ── Right Content ── */}
+        <div className="flex flex-col flex-1 min-w-0">
 
           {/* Title */}
-          <SkeletonBox
-            height={25}
-            width="92%"
-          />
+          <div className="space-y-2">
+            <SkeletonBox
+              width="92%"
+              height={22}
+              borderRadius={8}
+            />
+
+            <SkeletonBox
+              width="70%"
+              height={22}
+              borderRadius={8}
+            />
+          </div>
 
           {/* Categories */}
-          <div className="flex flex-wrap gap-2 md:my-1">
-            <SkeletonBox width={75} height={24} borderRadius={30} />
-            <SkeletonBox width={75} height={24} borderRadius={30} />
-            <SkeletonBox width={75} height={24} borderRadius={30} />
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[...Array(3)].map((_, index) => (
+              <SkeletonBox
+                key={index}
+                width={70}
+                height={20}
+                borderRadius={999}
+              />
+            ))}
           </div>
 
-          {/* Content */}
-          <div className="flex flex-col gap-2">
-            <SkeletonBox width="100%" height={14} />
-            <SkeletonBox width="95%" height={14} />
-            <SkeletonBox width="90%" height={14} />
-            <SkeletonBox width="80%" height={14} />
+          {/* Description */}
+          <div className="hidden sm:flex flex-col gap-2 mt-3">
+            <SkeletonBox width="100%" height={12} />
+            <SkeletonBox width="95%" height={12} />
+            <SkeletonBox width="75%" height={12} />
           </div>
-        </div>
-      </div>
 
-      {/* Bottom Meta */}
-      <div className="flex max-sm:flex-col justify-between gap-3 md:mt-4 mt-3">
+          {/* Meta */}
+          <div
+            className="
+          flex items-center justify-between
+          gap-3
+          mt-auto pt-4
+        "
+          >
+            {/* Left meta */}
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
+              <SkeletonBox width={75} height={12} />
+              <SkeletonBox width={45} height={12} />
+              <SkeletonBox width={45} height={12} />
+              <SkeletonBox width={18} height={18} borderRadius={6} />
+            </div>
 
-        <SkeletonBox
-          width={110}
-          height={16}
-        />
-
-        <div className="flex items-center max-sm:justify-between gap-4 sm:gap-6">
-          <SkeletonBox
-            width={90}
-            height={16}
-          />
-
-          <SkeletonBox
-            width={90}
-            height={16}
-          />
+            {/* Right actions */}
+            <div className="flex items-center gap-3">
+              <SkeletonBox width={38} height={12} />
+              <SkeletonBox width={50} height={12} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
