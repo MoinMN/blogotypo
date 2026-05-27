@@ -1,7 +1,8 @@
 import Blog from "@models/blog";
 import connectMongoDB from "@utils/database";
 
-export const revalidate = 3600; // 1 hour  3600
+// export const revalidate = 3600; // 1 hour  3600
+export const dynamic = "force-dynamic";
 
 export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
@@ -9,10 +10,12 @@ export default async function sitemap() {
 
   await connectMongoDB();
 
-  const blogs = await Blog.find().select("slug updatedAt");
+  const blogs = await Blog.find()
+    .select("slug updatedAt")
+    .lean();
 
   const blogUrls = blogs.map((blog) => ({
-    url: `${baseUrl}/blog/${blog.slug}`,
+    url: `${baseUrl}/blog/${blog?.slug}`,
     lastModified: blog.updatedAt || nowDate,
     changeFrequency: "weekly",
     priority: 0.8,

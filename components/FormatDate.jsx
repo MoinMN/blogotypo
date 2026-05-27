@@ -1,16 +1,32 @@
-export const formatDateForBlog = (timestamp) => {
-  const istDate = new Date(
-    new Date(timestamp).toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
-  );
+// export const formatDateForBlog = (timestamp) => {
+//   const istDate = new Date(
+//     new Date(timestamp).toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+//   );
 
-  const hours = istDate.getHours();
-  const minutes = istDate.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'pm' : 'am';
+//   const hours = istDate.getHours();
+//   const minutes = istDate.getMinutes().toString().padStart(2, '0');
+//   const ampm = hours >= 12 ? 'pm' : 'am';
+//   const formattedHours = hours % 12 || 12;
+
+//   const day = istDate.getDate();
+//   const month = istDate.toLocaleString('default', { month: 'long' });
+//   const year = istDate.getFullYear();
+
+//   return `${formattedHours}:${minutes}${ampm}, ${day} ${month} ${year}`;
+// };
+
+export const formatDateForBlog = (timestamp) => {
+  const date = new Date(timestamp);
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  const ampm = hours >= 12 ? "pm" : "am";
   const formattedHours = hours % 12 || 12;
 
-  const day = istDate.getDate();
-  const month = istDate.toLocaleString('default', { month: 'long' });
-  const year = istDate.getFullYear();
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
 
   return `${formattedHours}:${minutes}${ampm}, ${day} ${month} ${year}`;
 };
