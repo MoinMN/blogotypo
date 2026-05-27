@@ -18,15 +18,15 @@
 export const formatDateForBlog = (timestamp) => {
   const date = new Date(timestamp);
 
-  const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
 
   const ampm = hours >= 12 ? "pm" : "am";
   const formattedHours = hours % 12 || 12;
 
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
+  const day = date.getUTCDate();
+  const month = date.toLocaleString("default", { month: "long", timeZone: "UTC" });
+  const year = date.getUTCFullYear();
 
   return `${formattedHours}:${minutes}${ampm}, ${day} ${month} ${year}`;
 };
