@@ -1,4 +1,5 @@
 import Profile from "@app/(user)/profile/page";
+import { createMetadata } from "@lib/metadataClient";
 
 export const metadata = createMetadata({
   title: "Admin Profile Settings - Blogotypo",
