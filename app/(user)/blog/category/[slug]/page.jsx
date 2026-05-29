@@ -23,7 +23,7 @@ export async function generateMetadata({ params }) {
     description:
       `Explore the latest ${categoryName} blogs, trending articles, expert insights, and engaging content on Blogotypo.`,
     slug: `/blog/category/${slug}`,
-    image: categories[categoryName] || "",
+    image: categories.find((item) => item.name === categoryName)?.image || "",
     type: "article",
   });
 }

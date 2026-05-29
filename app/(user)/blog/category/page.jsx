@@ -12,8 +12,6 @@ export const metadata = createMetadata({
 });
 
 const CategoryPages = () => {
-
-
   return (
     <div className="max-w-7xl mx-auto max-md:px-3 md:px-6 max-md:py-5 md:py-8">
 
