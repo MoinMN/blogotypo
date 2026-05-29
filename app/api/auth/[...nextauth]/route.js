@@ -7,7 +7,7 @@ import User from '@models/user';
 import bcrypt from 'bcrypt';
 import { welcomeNewUserMail } from '@app/api/auth/send-mail/welcomeNewUserMail';
 
-const authOptions = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
