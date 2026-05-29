@@ -7,7 +7,7 @@ import User from '@models/user';
 import bcrypt from 'bcrypt';
 import { welcomeNewUserMail } from '@app/api/auth/send-mail/welcomeNewUserMail';
 
-export const handler = NextAuth({
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -107,6 +107,8 @@ export const handler = NextAuth({
       return session;
     },
   }
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
