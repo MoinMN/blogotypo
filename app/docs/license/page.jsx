@@ -1,13 +1,14 @@
-"use client";
-
-import useMetadata from "@hooks/metadata";
+import { createMetadata } from "@lib/metadataClient";
 import Link from "next/link";
 
+export const metadata = createMetadata({
+  title: "License Information - Blogotypo",
+  description:
+    "Read the official Blogotypo license information, usage terms, permissions, limitations, and legal guidelines for the platform.",
+  slug: "/docs/license",
+});
 
 const License = () => {
-  // set title for page
-  useMetadata(`LICENSE - Blogotypo`, `License of blogotypo if any question arise then please contact developer`);
-
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-xl md:text-3xl font-bold text-center mb-6 montserrat_alternates_font">License</h1>

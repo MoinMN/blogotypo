@@ -1,15 +1,14 @@
-"use client";
-
-import useMetadata from "@hooks/metadata";
+import { createMetadata } from "@lib/metadataClient";
 import Link from "next/link";
 
-const ChildSafety = () => {
-  // set title for page
-  useMetadata(
-    "Child Safety Standards - Blogotypo",
-    "Blogotypo Child Safety Standards and policies against child sexual abuse and exploitation."
-  );
+export const metadata = createMetadata({
+  title: "Child Safety Standards & Policies - Blogotypo",
+  description:
+    "Read Blogotypo’s child safety standards, platform policies, reporting guidelines, and measures against child sexual abuse and exploitation.",
+  slug: "/docs/child-safety",
+});
 
+const ChildSafety = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-xl md:text-3xl font-bold text-center mb-6 montserrat_alternates_font">

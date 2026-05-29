@@ -109,13 +109,13 @@ const Navbar = () => {
                 <i className={`fa-solid ${theme === 'dark' ? 'fa-sun' : 'fa-moon'} text-sm`} />
               </button>
               <button
-                onClick={() => router.push("/user/login")}
+                onClick={() => router.push("/login")}
                 className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-100/10 hover:border-gray-400 dark:hover:border-gray-100/30 hover:text-gray-900 dark:hover:text-gray-100 rounded-lg transition-all duration-200"
               >
                 Log In
               </button>
               <button
-                onClick={() => router.push("/user/register")}
+                onClick={() => router.push("/register")}
                 className="px-4 py-2 text-sm font-semibold text-gray-100 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-all duration-200"
               >
                 Sign Up
@@ -175,13 +175,13 @@ const Navbar = () => {
               ) : (
                 <>
                   <button
-                    onClick={() => { setMobileOpen(false); router.push("/user/login"); }}
+                    onClick={() => { setMobileOpen(false); router.push("/login"); }}
                     className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-100/10 rounded-lg"
                   >
                     Log In
                   </button>
                   <button
-                    onClick={() => { setMobileOpen(false); router.push("/user/register"); }}
+                    onClick={() => { setMobileOpen(false); router.push("/register"); }}
                     className="px-4 py-2.5 text-sm font-semibold text-gray-100 bg-indigo-600 rounded-lg"
                   >
                     Sign Up

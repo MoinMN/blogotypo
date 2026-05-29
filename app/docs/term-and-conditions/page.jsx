@@ -1,12 +1,14 @@
-"use client";
-
-import useMetadata from "@hooks/metadata";
+import { createMetadata } from "@lib/metadataClient";
 import Link from "next/link";
 
-const TermsAndConditions = () => {
-  // set title for page
-  useMetadata('Terms and Conditions - Blogotypo', 'Terms and Conditions of blogotpo');
+export const metadata = createMetadata({
+  title: "Terms and Conditions - Blogotypo",
+  description:
+    "Read the Blogotypo terms and conditions covering platform usage, user responsibilities, content policies, and legal agreements.",
+  slug: "/docs/term-and-conditions",
+});
 
+const TermsAndConditions = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-xl md:text-3xl font-bold text-center montserrat_alternates_font mb-6">Terms and Conditions</h1>

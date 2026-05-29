@@ -27,7 +27,7 @@ export async function proxy(req) {
 
   if (token) {
     // Redirect authenticated users to dashborad
-    if (['/user/register', '/user/login', '/admin/login'].includes(pathname)) {
+    if (['/register', '/login', '/admin/login'].includes(pathname)) {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = token.role === 'admin' ? '/admin/dashboard' : '/dashboard';
       return NextResponse.redirect(redirectUrl);
@@ -51,7 +51,7 @@ export async function proxy(req) {
     // Protect routes for unauthenticated users
     if (protectedPaths.some((protectedPath) => pathname.startsWith(protectedPath))) {
       const loginUrl = req.nextUrl.clone();
-      loginUrl.pathname = '/user/login';
+      loginUrl.pathname = '/login';
       loginUrl.searchParams.set('callback', pathname)
       return NextResponse.redirect(loginUrl);
     }
@@ -78,8 +78,8 @@ export const config = {
     '/admin/:path*',
 
     // auth
-    '/user/register',
-    '/user/login',
+    '/register',
+    '/login',
 
     // api endpoint
     '/api/:path*',

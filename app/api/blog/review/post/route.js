@@ -45,12 +45,12 @@ export async function POST(req) {
       .populate({
         path: 'creator',
         model: 'User',
-        select: "_id email name image"
+        select: "_id name image"
       })
       .populate({
         path: 'reviews.user',
         model: 'User',
-        select: "_id email name image top_creator"
+        select: "_id name image top_creator"
       });
 
     const latestReview = updatedBlog.reviews[updatedBlog.reviews.length - 1];

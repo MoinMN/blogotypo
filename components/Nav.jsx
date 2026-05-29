@@ -134,7 +134,7 @@ const Nav = forwardRef(({ isSidebarOpen, setIsSidebarOpen }, ref) => {
             </button>
           ) : (
             <button
-              onClick={() => router.push("/user/login")}
+              onClick={() => router.push("/login")}
               className="
           flex items-center gap-2
           max-md:px-3 md:px-5
@@ -197,7 +197,7 @@ const Nav = forwardRef(({ isSidebarOpen, setIsSidebarOpen }, ref) => {
 
               {/* Sign Out */}
               <button
-                onClick={() => signOut({ callbackUrl: "/user/login" })}
+                onClick={() => signOut({ callbackUrl: "/login" })}
                 className="w-full flex items-center gap-2.5 max-md:px-2 md:px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all duration-150 mt-0.5"
               >
                 <i className="fa-solid fa-right-from-bracket text-xs w-3.5 text-center" />

@@ -1,57 +1,34 @@
-"use client";
+import getBlogBySlug from "@lib/getBlogBySlug";
+import UserBlog from "./UserBlog";
+import { createMetadata } from "@lib/metadataServer";
 
-import { useDispatch, useSelector } from '@node_modules/react-redux/dist/react-redux';
-import ViewBlog from "@components/ViewBlog";
-import useMetadata from "@hooks/metadata";
-import { useEffect, useMemo } from "react";
-import { fetchFullBlogData } from '@redux/slices/blog/blog.slice';
-import React from 'react';
-import { useParams } from '@node_modules/next/navigation';
-import BlogNotFound from '@components/BlogNotFound';
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const data = await getBlogBySlug(slug);
 
-const UserBlog = () => {
-  const dispatch = useDispatch();
+  if (!data) return { title: "Blogotypo" };
 
-  const params = useParams();
-
-  const slug = useMemo(() => {
-    return params?.slug || "";
-  }, [params]);
-
-  const { blogs, blogCacheLoading, blogCacheError } = useSelector(state => state.blogCache);
-
-  const cachedBlog = blogs?.[slug];
-
-  // Always fetch blog ONLY if not already cached
-  useEffect(() => {
-    if (!slug) return;
-    if (!cachedBlog) dispatch(fetchFullBlogData({ slug }));
-  }, [slug, cachedBlog, dispatch]);
-
-  // Blog data = prefer cached > fallback empty
-  const blogData = cachedBlog?.blogData || {};
-
-  // set title for page
-  useMetadata(
-    blogData?.title ? `${blogData.title} - Blogotypo` : "Blogotypo",
-    blogData?.title || "Blogotypo",
-    blogData?.thumbnail_image
-  );
-
-  if (blogCacheError) {
-    return <BlogNotFound />;
+  if (!data) {
+    return createMetadata({
+      title: "Blogotypo",
+      description: "Create your own blogs now!",
+    });
   }
 
-  return (
-    <>
-      <ViewBlog
-        slug={slug}
-        blogData={blogData}
-        recommendBlogs={cachedBlog?.recommended || {}}
-        loading={blogCacheLoading}
-      />
-    </>
-  )
+  return createMetadata({
+    title: `${data.title} - Blogotypo`,
+    description:
+      data.description ||
+      `Read "${data.title}" on Blogotypo and explore insightful articles, trending topics, and engaging blog content.`,
+    slug: `/blog/${slug}`,
+    image: data.thumbnail_image,
+    type: "article",
+  });
 }
 
-export default UserBlog
+export default async function BlogPage({ params }) {
+  const { slug } = await params;
+  const data = await getBlogBySlug(slug);
+
+  return <UserBlog slug={slug} />;
+}

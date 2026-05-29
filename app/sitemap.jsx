@@ -38,7 +38,7 @@ export default async function sitemap() {
       priority: 1,
     },
     {
-      url: `${baseUrl}/user/login`,
+      url: `${baseUrl}/login`,
       lastModified: nowDate,
       priority: 0.5,
     },

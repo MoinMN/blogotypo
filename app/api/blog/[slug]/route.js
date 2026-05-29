@@ -11,8 +11,8 @@ export async function GET(req, { params }) {
     const { slug } = await params;
 
     const blog = await Blog.findOne({ slug })
-      .populate("creator", "_id email name image")
-      .populate("reviews.user", "_id email name image top_creator");
+      .populate("creator", "_id name image")
+      .populate("reviews.user", "_id name image top_creator");
 
     if (!blog) {
       return NextResponse.json({ msg: "Blog not found!" }, { status: 404 });

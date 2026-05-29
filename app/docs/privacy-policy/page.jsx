@@ -1,13 +1,14 @@
-"use client";
-
-import useMetadata from "@hooks/metadata";
+import { createMetadata } from "@lib/metadataClient";
 import Link from "next/link";
 
+export const metadata = createMetadata({
+  title: "Privacy Policy - Blogotypo",
+  description:
+    "Learn how Blogotypo collects, uses, protects, and manages your personal information, data privacy, and account security.",
+  slug: "/docs/privacy-policy",
+});
 
 const PrivacyPolicy = () => {
-  // set title for page
-  useMetadata('Privacy Policy - Blogotypo', 'Privacy Policy of blogotypo. If more information needed please contact us');
-
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-xl md:text-3xl font-bold text-center mb-6 montserrat_alternates_font">Privacy Policy</h1>

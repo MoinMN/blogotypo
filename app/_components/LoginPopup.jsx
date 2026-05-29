@@ -55,13 +55,13 @@ const LoginPopup = () => {
             {/* Buttons */}
             <div className="mt-4 flex justify-center gap-4">
               <button
-                onClick={() => router.push('/user/register')}
+                onClick={() => router.push('/register')}
                 className="px-4 py-2 bg-purple-600 text-gray-100 rounded-lg hover:bg-purple-700 transition"
               >
                 Sign Up
               </button>
               <button
-                onClick={() => router.push('/user/login')}
+                onClick={() => router.push('/login')}
                 className="px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-gray-100 transition"
               >
                 Log In

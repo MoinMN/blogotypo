@@ -1,62 +1,29 @@
-"use client";
+import { createMetadata } from "@lib/metadataServer";
+import AdminBlogPage from "./AdminBlogPage";
+import getBlogBySlug from "@lib/getBlogBySlug";
 
-import ViewBlog from "@components/ViewBlog";
-import useMetadata from "@hooks/metadata";
-import { useEffect, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const data = await getBlogBySlug(slug);
 
-const AdminViewBlog = () => {
-  const [blogData, setBlogData] = useState({});
-  const [loading, setLoading] = useState(true);
+  if (!data) {
+    return createMetadata({
+      title: "Blogotypo",
+      description: "Create your own blogs now!",
+    });
+  }
 
-  const params = useParams();
+  return createMetadata({
+    title: `${data.title} - Blogotypo`,
+    description:
+      data.description ||
+      `Read "${data.title}" on Blogotypo and discover informative insights, trending discussions, and engaging blog content from talented writers.`,
+    slug: `/blog/${slug}`,
+    image: data.thumbnail_image,
+    type: "article",
+  });
+}
 
-  const slug = useMemo(() => {
-    return params?.slug || "";
-  }, [params]);
-
-  const fetchBlogData = async (currentSlug) => {
-    if (!currentSlug) return;
-
-    try {
-      setLoading(true);
-
-      const response = await fetch(`/api/blog/${currentSlug}`, {
-        method: "GET",
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setBlogData(data || {});
-      }
-    } catch (error) {
-      console.log("Error while fetching blogs: ", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!slug) return;
-    fetchBlogData(slug);
-  }, [slug]);
-
-  useMetadata(
-    blogData?.title
-      ? `${blogData.title} - Blogotypo`
-      : "Admin Blog - Blogotypo",
-    blogData?.title || "Admin View Blog",
-    blogData?.thumbnail_image
-  );
-
-  return (
-    <ViewBlog
-      blogData={blogData}
-      fetchBlogData={() => fetchBlogData(slug)}
-      loading={loading}
-    />
-  );
-};
+const AdminViewBlog = () => <AdminBlogPage />;
 
 export default AdminViewBlog;

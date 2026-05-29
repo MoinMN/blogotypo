@@ -92,7 +92,7 @@ const OtpInputBox = ({ userData, setUserData }) => {
       const data = await response.json();
 
       if (response.ok) {
-        router.push('/user/login');
+        router.push('/login');
         showAlert(data?.msg || "User verified!", "success", "top-right");
       } else {
         showAlert(data?.msg || "failed to verify user!", "danger", "top-right");

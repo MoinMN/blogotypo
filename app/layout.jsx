@@ -43,7 +43,10 @@ export const metadata = {
     description: "Create, share, and explore blogs on Blogotypo.",
     images: ["https://blogotypo.moinnaik.in/opengraph-image.jpg"],
   },
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {

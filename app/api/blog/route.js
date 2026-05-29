@@ -109,7 +109,7 @@ export async function PATCH(req) {
     const blog = await Blog.findById(_id).populate({
       path: 'creator',
       model: 'User',
-      select: "_id email name image"
+      select: "_id name image"
     });
 
     if (!blog) {
@@ -166,7 +166,7 @@ export async function PATCH(req) {
     const updatedBlog = await Blog.findById(blog._id).populate({
       path: 'creator',
       model: 'User',
-      select: "_id email name image"
+      select: "_id name image"
     });
 
     return NextResponse.json(

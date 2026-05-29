@@ -6,16 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 import Spinner from 'react-bootstrap/Spinner';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import useMetadata from '@hooks/metadata';
 import { useUI } from '@context/UIContext';
 
-
-const Login = () => {
-  // set title for page
-  useMetadata('User Login - Blogotypo', 'User login page for blogotypo');
-
+const LoginPage = () => {
   const { showAlert } = useUI();
 
   const userInputs = [
@@ -203,7 +196,7 @@ const Login = () => {
         <p className="text-center text-gray-200 text-sm mt-8">
           Don't have an account?{" "}
           <Link
-            href="/user/register"
+            href="/register"
             className="text-gray-100 font-semibold no-underline hover:underline"
           >
             Create Now
@@ -224,4 +217,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginPage

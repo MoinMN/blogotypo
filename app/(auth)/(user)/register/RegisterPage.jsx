@@ -5,16 +5,11 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 import Spinner from 'react-bootstrap/Spinner';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import OtpInputBox from '@app/(auth)/_components/OtpInputBox';
-import useMetadata from '@hooks/metadata';
 import { useUI } from '@context/UIContext';
 
-const Register = () => {
-  // set title for page
-  useMetadata('User Register - Blogotypo', 'User register page for blogotypo');
-
+const RegisterPage = () => {
   const { showAlert } = useUI();
 
   const userInputs = [
@@ -213,7 +208,7 @@ const Register = () => {
           <p className="text-center text-gray-200 text-sm mt-8">
             Already have an account?{" "}
             <Link
-              href="/user/login"
+              href="/login"
               className="text-gray-100 font-semibold hover:underline"
             >
               Log in
@@ -243,4 +238,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default RegisterPage

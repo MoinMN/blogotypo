@@ -35,47 +35,38 @@ const Sidebar = ({ setSidebarAsPerDevice }) => {
               href={nav.path}
               style={{ textDecoration: "none" }}
               className={`
-      relative overflow-hidden
-      flex items-center gap-3
-      px-3 py-2.5 rounded-xl
-      text-sm font-medium
-      border
-      transition-all duration-300 ease-out
-      group
-
-      ${active
-                  ? `
-          bg-indigo-50
-          dark:bg-indigo-500/[0.10]
-
-          text-indigo-600
-          dark:text-indigo-300
-
-          border-indigo-200
-          dark:border-indigo-500/20
-
-          shadow-sm
-          dark:shadow-indigo-500/5
-        `
-                  : `
-          text-gray-500
-          dark:text-gray-400
-
-          bg-transparent
-          hover:bg-gray-100
-          dark:hover:bg-gray-100/[0.04]
-
-          hover:text-gray-900
-          dark:hover:text-gray-100
-
-          border-transparent
-          dark:border-gray-100/[0.03]
-
-          hover:border-gray-200
-          dark:hover:border-gray-100/[0.06]
-        `
-                }
-    `}
+                relative overflow-hidden
+                flex items-center gap-3
+                px-3 py-2.5 rounded-xl
+                text-sm font-medium
+                border
+                transition-all duration-300 ease-out
+                group
+                  ${active
+                      ? `
+                      bg-indigo-50
+                      dark:bg-indigo-500/[0.10]
+                      text-indigo-600
+                      dark:text-indigo-300
+                      border-indigo-200
+                      dark:border-indigo-500/20
+                      shadow-sm
+                      dark:shadow-indigo-500/5
+                    `:`
+                      text-gray-500
+                      dark:text-gray-400
+                      bg-transparent
+                      hover:bg-gray-100
+                      dark:hover:bg-gray-100/[0.04]
+                      hover:text-gray-900
+                      dark:hover:text-gray-100
+                      border-transparent
+                      dark:border-gray-100/[0.03]
+                      hover:border-gray-200
+                      dark:hover:border-gray-100/[0.06]
+                    `
+                  }
+                `}
             >
 
               {/* Active glow */}
