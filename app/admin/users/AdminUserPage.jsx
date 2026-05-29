@@ -12,7 +12,6 @@ import {
 } from "next/navigation";
 import TableSkeleton from "@components/Skeletons/TableSkeleton";
 import { formatDateForAdmin } from "@components/FormatDate";
-import useMetadata from "@hooks/metadata";
 import {
   exportUsersContactsToExcel,
   exportUsersContactsToPDF,

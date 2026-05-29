@@ -10,9 +10,6 @@ import { useUI } from '@context/UIContext';
 const ProfilePage = () => {
   const { data: session, update } = useSession();
 
-  // set title for page
-  useMetadata(session?.user?.name ? `${session.user.name} Profile - Blogotypo` : "Blogotypo", `User Profile`);
-
   const { showAlert } = useUI();
 
   const [userData, setUserData] = useState({});
