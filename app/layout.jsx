@@ -30,9 +30,11 @@ export const metadata = {
     images: [
       {
         url: "https://blogotypo.moinnaik.in/opengraph-image.jpg",
+        secureUrl: "https://blogotypo.moinnaik.in/opengraph-image.jpg",
         width: 1200,
         height: 630,
         alt: "Blogotypo Open Graph Image",
+        type: "image/jpeg",
       },
     ],
     type: "website",
