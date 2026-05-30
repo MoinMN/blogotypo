@@ -17,14 +17,18 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "Blogotypo - Best Blogging Platform",
-  description: "Create, share, and explore blogs on Blogotypo. The best blogging platform for writers and readers.",
-  keywords: "Blog, Blogging, Write, Share, Blogotypo",
+  title: "Blogotypo - Free Blogging Platform for Writers and Readers",
+  description:
+    "Create, publish, and share blogs for free on Blogotypo. Explore technology, business, lifestyle, sports, education, and trending articles from writers worldwide.",
+  keywords:
+    "blogging platform, free blogging website, write blogs online, publish articles, blogotypo, content creators, writers community",
   manifest: "/manifest.json",
   metadataBase: new URL("https://blogotypo.moinnaik.in"),
+
   openGraph: {
-    title: "Blogotypo - Best Blogging Platform",
-    description: "Create, share, and explore blogs on Blogotypo.",
+    title: "Blogotypo - Free Blogging Platform for Writers and Readers",
+    description:
+      "Create, publish, and share blogs for free. Discover trending articles, expert insights, and stories across multiple categories on Blogotypo.",
     url: "https://blogotypo.moinnaik.in",
     siteName: "Blogotypo",
     images: [
@@ -33,18 +37,21 @@ export const metadata = {
         secureUrl: "https://blogotypo.moinnaik.in/opengraph-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Blogotypo Open Graph Image",
+        alt: "Blogotypo - Free Blogging Platform",
         type: "image/jpeg",
       },
     ],
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Blogotypo - Best Blogging Platform",
-    description: "Create, share, and explore blogs on Blogotypo.",
+    title: "Blogotypo - Free Blogging Platform for Writers and Readers",
+    description:
+      "Create, publish, and share blogs for free. Explore articles, insights, and stories from creators around the world.",
     images: ["https://blogotypo.moinnaik.in/opengraph-image.jpg"],
   },
+
   robots: {
     index: true,
     follow: true,
