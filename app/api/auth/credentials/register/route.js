@@ -2,8 +2,9 @@ import User from "@models/user";
 import OTPModel from "@models/OTP";
 import connectMongoDB from "@utils/database";
 import bcrypt from "bcrypt";
-import { welcomeNewUserMail } from "@app/api/auth/send-mail/welcomeNewUserMail";
 import { NextResponse } from "@node_modules/next/server";
+import welcomeTemplate from "@utils/templates/welcomeTemplate";
+import { sendMail } from "@lib/mail/sendMail";
 
 export async function POST(req) {
   const { email, name, password, otp } = await req.json();
@@ -45,7 +46,11 @@ export async function POST(req) {
 
     if (user) {
       // Send welcome email
-      await welcomeNewUserMail(user.email, user.name);
+      await sendMail({
+        to: user.email,
+        subject: 'Welcome to Blogotypo!',
+        html: welcomeTemplate(user.name)
+      });
 
       // Delete OTP after successful registration
       await OTPModel.deleteOne({ email });

@@ -1,7 +1,9 @@
+import { sendMail } from "@lib/mail/sendMail";
 import Blog from "@models/blog";
 import User from "@models/user";
 import { NextResponse } from "@node_modules/next/server";
 import connectMongoDB from "@utils/database";
+import newReviewTemplate from "@utils/templates/newReviewTemplate";
 import { getServerSession } from "next-auth";
 
 export async function POST(req) {
@@ -45,7 +47,7 @@ export async function POST(req) {
       .populate({
         path: 'creator',
         model: 'User',
-        select: "_id name image"
+        select: "_id name image email"
       })
       .populate({
         path: 'reviews.user',
@@ -54,6 +56,19 @@ export async function POST(req) {
       });
 
     const latestReview = updatedBlog.reviews[updatedBlog.reviews.length - 1];
+
+    await sendMail({
+      to: updatedBlog.creator.email,
+      subject: `💬 New Review on "${blog.title}" - Blogotypo`,
+      html: newReviewTemplate(
+        updatedBlog.creator.name,   // Blog author's name
+        user.name,                  // Reviewer name
+        blog.title,
+        review,
+        star,
+        blog.slug
+      ),
+    });
 
     return NextResponse.json({ review: latestReview, msg: "Comment added successfully!" }, { status: 200 });
   } catch (error) {

@@ -1,7 +1,8 @@
-import { sendOTPMail } from "@app/api/auth/send-mail/sendOTPMail";
+import { sendMail } from "@lib/mail/sendMail";
 import OTPModel from "@models/OTP";
 import { NextResponse } from "@node_modules/next/server";
 import connectMongoDB from "@utils/database";
+import otpTemplate from "@utils/templates/otpTemplate";
 
 export async function POST(req) {
   const { email } = await req.json();
@@ -20,7 +21,11 @@ export async function POST(req) {
     );
 
     // Send OTP to email
-    await sendOTPMail(email, otp);
+    await sendMail({
+      to: email,
+      subject: 'OTP Verification for Your Blogotypo Account',
+      html: otpTemplate(otp)
+    });
 
     return NextResponse.json({ msg: "OTP sent successfully!" }, { status: 200 });
   } catch (error) {

@@ -5,7 +5,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectMongoDB from '@utils/database';
 import User from '@models/user';
 import bcrypt from 'bcrypt';
-import { welcomeNewUserMail } from '@app/api/auth/send-mail/welcomeNewUserMail';
+import { sendMail } from '@lib/mail/sendMail';
+import welcomeTemplate from '@utils/templates/welcomeTemplate';
 
 export const authOptions = {
   providers: [
@@ -73,7 +74,12 @@ export const authOptions = {
               role: 'user',
             });
             await newUser.save();
-            await welcomeNewUserMail(newUser.email, newUser.name);
+            
+            await sendMail({
+              to: newUser.email,
+              subject: 'Welcome to Blogotypo!',
+              html: welcomeTemplate(newUser.name)
+            });
 
             token = {
               id: newUser._id.toString(),
