@@ -58,3 +58,6 @@ twa-android/*.idsig
 
 # Local files
 twa-android/manifest-checksum.txt
+
+# keystores
+keystores/*

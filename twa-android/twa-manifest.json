@@ -17,11 +17,11 @@
   "maskableIconUrl": "https://blogotypo.moinnaik.in/assets/icons/maskable-icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "/home/ubuntu/twa-android/android.keystore",
-    "alias": "android"
+    "path": "/home/ubuntu/blogotypo-keys/blogotypo-upload.keystore",
+    "alias": "blogotypo"
   },
-  "appVersionName": "4",
-  "appVersionCode": 4,
+  "appVersionName": "7",
+  "appVersionCode": 7,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://blogotypo.moinnaik.in/manifest.json",
@@ -43,5 +43,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "4"
+  "appVersion": "7"
 }
