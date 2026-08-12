@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Nav from "../../components/Nav";
 import Sidebar from "./_components/Sidebar";
 import Footer from "@components/Footer";
+import useIsTWA from "@lib/useIsTWA";
 
 const UserLayout = ({ children }) => {
   const sidebarRef = useRef(null);
   const navRef = useRef(null);
+  const isTWA = useIsTWA();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -98,14 +100,16 @@ const UserLayout = ({ children }) => {
       </div>
 
       {/* Footer */}
-      <div
-        className={`
-          ${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"}
-          mt-auto transition-all duration-300 ease-in-out
+      {!isTWA &&
+        <div
+          className={`
+        ${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"}
+        mt-auto transition-all duration-300 ease-in-out
         `}
-      >
-        <Footer />
-      </div>
+        >
+          <Footer />
+        </div>
+      }
     </div>
   );
 };

@@ -6,9 +6,11 @@ import { usePathname } from "next/navigation";
 import Nav from "@components/Nav";
 import Footer from "@components/Footer";
 import Sidebar from "./_components/Sidebar";
+import useIsTWA from "@lib/useIsTWA";
 
 const AdminLayout = ({ children }) => {
   const pathname = usePathname();
+  const isTWA = useIsTWA();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -63,9 +65,11 @@ const AdminLayout = ({ children }) => {
 
 
       {/* Footer  */}
-      <div className={`${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'} mt-auto transition-all duration-300 ease-in-out`}>
-        <Footer />
-      </div>
+      {!isTWA &&
+        <div className={`${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'} mt-auto transition-all duration-300 ease-in-out`}>
+          <Footer />
+        </div>
+      }
     </div>
   );
 };
