@@ -62,6 +62,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="monetag" content="aae9d184f9bfef3ade113f1d0fdab8c1">
         <script
           dangerouslySetInnerHTML={{
             __html: `
