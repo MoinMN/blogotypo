@@ -102,11 +102,7 @@ export default function RootLayout({ children }) {
           strategy="afterInteractive"
         />
         <script src="https://kit.fontawesome.com/93f8c5dee5.js" crossOrigin="anonymous"></script>
-        <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="276850"
-          data-cfasync="false"
-        />
+        <script src="https://quge5.com/88/tag.min.js" data-zone="276850" async data-cfasync="false"></script>
       </body>
     </html>
   );
