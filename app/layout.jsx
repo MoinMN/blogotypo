@@ -62,7 +62,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="monetag" content="aae9d184f9bfef3ade113f1d0fdab8c1">
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -77,6 +76,7 @@ export default function RootLayout({ children }) {
         `,
           }}
         />
+        <meta name="monetag" content="aae9d184f9bfef3ade113f1d0fdab8c1">
       </head>
       <body className="bg-gray-50 dark:bg-[#0a0a14] text-black dark:text-gray-50 transition-colors duration-300 roboto_font" cz-shortcut-listen="true">
 
