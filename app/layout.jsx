@@ -80,6 +80,11 @@ export default function RootLayout({ children }) {
         `,
           }}
         />
+        <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="276850"
+          async data-cfasync="false"
+        />
       </head>
       <body className="bg-gray-50 dark:bg-[#0a0a14] text-black dark:text-gray-50 transition-colors duration-300 roboto_font" cz-shortcut-listen="true">
 
