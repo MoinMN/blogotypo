@@ -80,12 +80,6 @@ export default function RootLayout({ children }) {
         `,
           }}
         />
-        <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="276850"
-          data-cfasync="false"
-          strategy="afterInteractive"
-        />
       </head>
       <body className="bg-gray-50 dark:bg-[#0a0a14] text-black dark:text-gray-50 transition-colors duration-300 roboto_font" cz-shortcut-listen="true">
 
@@ -108,6 +102,11 @@ export default function RootLayout({ children }) {
           strategy="afterInteractive"
         />
         <script src="https://kit.fontawesome.com/93f8c5dee5.js" crossOrigin="anonymous"></script>
+        <Script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="276850"
+          data-cfasync="false"
+        />
       </body>
     </html>
   );
